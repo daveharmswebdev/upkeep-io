@@ -5,6 +5,7 @@ import SignupView from '@/views/SignupView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import PropertyListView from '@/views/PropertyListView.vue';
 import PropertyFormView from '@/views/PropertyFormView.vue';
+import PropertyDetailsView from '@/views/PropertyDetailsView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,6 +42,12 @@ const router = createRouter({
       path: '/properties/add',
       name: 'properties-add',
       component: PropertyFormView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/properties/:id',
+      name: 'property-details',
+      component: PropertyDetailsView,
       meta: { requiresAuth: true },
     },
   ],

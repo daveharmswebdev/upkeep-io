@@ -8,24 +8,46 @@ Property management system for tracking maintenance activities, expenses, and ve
 
 ## Architecture
 
+### Monorepo Structure
+
+The project uses npm workspaces with shared libraries for maximum code reuse:
+
+```
+upkeep-io/
+├── apps/
+│   ├── backend/              # Node/Express API
+│   └── frontend/             # Vue 3 SPA
+└── libs/                     # Shared libraries
+    ├── domain/               # Entities, errors (Property, MaintenanceWork, User)
+    ├── validators/           # Zod schemas (shared between frontend & backend)
+    └── auth/                 # JWT utilities
+```
+
+**DRY Principle Implementation:**
+- Validation schemas in `@validators/*` used by both VeeValidate (frontend) and use cases (backend)
+- Domain entities in `@domain/*` shared across all layers
+- TypeScript path aliases (`@domain/*`, `@validators/*`, `@auth/*`) configured in both apps
+- Single source of truth for types and validation rules
+
 ### Clean Architecture Layers
 
 The backend follows domain-driven design with strict separation of concerns:
 
 ```
-src/
+apps/backend/src/
 ├── core/                      # Pure domain models, no external dependencies
 │   ├── entities/              # Property, MaintenanceWork, Vendor, WorkPerformer, Receipt, TravelActivity
 │   └── errors/                # DomainError, ValidationError, NotFoundError
 ├── domain/                    # Abstract boundaries (interfaces only)
-│   ├── repositories/          # IMaintenanceWorkRepository, IUserRepository, IVendorRepository
+│   ├── repositories/          # IPropertyRepository, IMaintenanceWorkRepository, IUserRepository
 │   └── services/              # IPasswordHasher, ITokenGenerator, ILogger
 ├── application/               # Use cases - pure business logic, fully testable without Express/DB
 │   ├── auth/                  # CreateUserUseCase, LoginUserUseCase
+│   ├── property/              # CreatePropertyUseCase, GetPropertyByIdUseCase, UpdatePropertyUseCase, DeletePropertyUseCase, ListPropertiesUseCase
 │   ├── maintenance/           # CreateMaintenanceWorkUseCase, AddWorkPerformerUseCase
 │   └── vendor/                # CreateVendorUseCase, ListVendorsUseCase
 ├── infrastructure/            # Concrete implementations
-│   ├── repositories/          # PrismaMaintenanceWorkRepository, PrismaUserRepository
+│   ├── repositories/          # PrismaPropertyRepository, PrismaMaintenanceWorkRepository, PrismaUserRepository
 │   └── services/              # BcryptPasswordHasher, JwtTokenGenerator
 ├── presentation/              # HTTP layer (thin controllers, middleware, routes)
 │   ├── controllers/
@@ -41,6 +63,7 @@ src/
 - All dependencies are injected via inversify container
 - Repositories abstract all database operations - use cases remain testable with mocked repositories
 - Changing from Prisma to MongoDB should require zero changes to domain/application layers
+- Frontend imports shared validators and types from `libs/` - backend API contract is source of truth
 
 ### Dependency Injection (inversify)
 
@@ -194,11 +217,18 @@ Environment variables managed through Railway dashboard.
 - `zod` - Runtime validation
 
 **Frontend:**
-- Vue 3 - Frontend framework
+- Vue 3 (Composition API) - Frontend framework
 - Vue Router - Client-side routing
-- Pinia - State management
+- Pinia - State management (property store with CRUD operations)
 - Axios - HTTP client with interceptors for JWT
 - Tailwind CSS v3 - Utility-first CSS framework with custom design system
+- VeeValidate + @vee-validate/zod - Form validation using shared Zod schemas
+- vue-toastification - Toast notifications for user feedback
+
+**Shared Libraries:**
+- `@upkeep-io/domain` - Entities and errors (Property, User, MaintenanceWork, etc.)
+- `@upkeep-io/validators` - Zod validation schemas (createPropertySchema, updatePropertySchema, etc.)
+- `@upkeep-io/auth` - JWT utilities and token management
 
 ## Cost Budget
 
@@ -206,10 +236,39 @@ $100/month total budget:
 - Railway services: ~$35-45/month (Express, Vue, PostgreSQL, Redis)
 - Leaves $55-65/month for experimentation and scaling
 
+## Property Management Implementation
+
+The property CRUD system demonstrates DRY principles and Clean Architecture:
+
+**Backend (apps/backend/src/application/property/):**
+- `CreatePropertyUseCase` - Validates with shared schema, creates property
+- `GetPropertyByIdUseCase` - Retrieves property with ownership verification
+- `UpdatePropertyUseCase` - Merges updates with existing data, validates merged result
+- `DeletePropertyUseCase` - Deletes property with ownership check
+- `ListPropertiesUseCase` - Lists all properties for authenticated user
+- All use cases have 100% unit test coverage (13 tests)
+
+**Frontend (apps/frontend/src/):**
+- `stores/property.ts` - Pinia store using shared `Property` type
+- `views/PropertyFormView.vue` - VeeValidate form using `createPropertySchema` from `@validators/property`
+- `views/PropertyListView.vue` - Mobile-first card layout
+- `components/PropertyCard.vue` - Reusable property display component
+- `components/FormInput.vue` - VeeValidate-integrated input with error handling
+
+**REST API Endpoints:**
+- `GET /properties` - List all user properties
+- `POST /properties` - Create new property
+- `GET /properties/:id` - Get property by ID
+- `PUT /properties/:id` - Update property
+- `DELETE /properties/:id` - Delete property
+
 ## Important Notes
 
+- **Backend leads frontend** - API contract is source of truth, frontend adapts to backend
 - MaintenanceWork is the central aggregate root - most features revolve around tracking work and costs
 - All material expenses, mileage, and labor must be tracked for tax deduction reporting
 - RecurringService entity handles scheduled vendor work (e.g., "HVAC service 4 properties twice yearly")
 - WorkPerformer flexibility allows tracking owner/family DIY work vs. vendor work
 - Keep use cases pure - no Express request/response objects in application layer
+- Shared validation schemas ensure frontend and backend validate identically
+- Build artifacts (*.js, *.d.ts) in `libs/` are gitignored - only TypeScript source is committed
