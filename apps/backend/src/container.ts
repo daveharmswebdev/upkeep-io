@@ -2,10 +2,14 @@ import { Container } from 'inversify';
 
 // Domain interfaces
 import { IUserRepository, IPropertyRepository } from './domain/repositories';
+import { IPersonRepository } from './domain/repositories/IPersonRepository';
+import { ITenantRepository } from './domain/repositories/ITenantRepository';
 import { IPasswordHasher, ITokenGenerator, ILogger } from './domain/services';
 
 // Infrastructure implementations
 import { PrismaUserRepository, PrismaPropertyRepository } from './infrastructure/repositories';
+import { PrismaPersonRepository } from './infrastructure/repositories/PrismaPersonRepository';
+import { PrismaTenantRepository } from './infrastructure/repositories/PrismaTenantRepository';
 import { BcryptPasswordHasher, JwtTokenGenerator, ConsoleLogger } from './infrastructure/services';
 
 // Use cases
@@ -17,9 +21,18 @@ import {
   UpdatePropertyUseCase,
   DeletePropertyUseCase,
 } from './application/property';
+import {
+  CreateTenantUseCase,
+  ListTenantsUseCase,
+  GetTenantByIdUseCase,
+  UpdateTenantUseCase,
+  DeleteTenantUseCase,
+  ListTenantsByPropertyUseCase,
+} from './application/tenant';
 
 // Controllers
 import { AuthController, PropertyController } from './presentation/controllers';
+import { TenantController } from './presentation/controllers/TenantController';
 
 export function createContainer(): Container {
   const container = new Container();
@@ -33,6 +46,16 @@ export function createContainer(): Container {
   container
     .bind<IPropertyRepository>('IPropertyRepository')
     .to(PrismaPropertyRepository)
+    .inTransientScope();
+
+  container
+    .bind<IPersonRepository>('IPersonRepository')
+    .to(PrismaPersonRepository)
+    .inTransientScope();
+
+  container
+    .bind<ITenantRepository>('ITenantRepository')
+    .to(PrismaTenantRepository)
     .inTransientScope();
 
   // Bind services
@@ -60,9 +83,17 @@ export function createContainer(): Container {
   container.bind(UpdatePropertyUseCase).toSelf().inTransientScope();
   container.bind(DeletePropertyUseCase).toSelf().inTransientScope();
 
+  container.bind(CreateTenantUseCase).toSelf().inTransientScope();
+  container.bind(ListTenantsUseCase).toSelf().inTransientScope();
+  container.bind(GetTenantByIdUseCase).toSelf().inTransientScope();
+  container.bind(UpdateTenantUseCase).toSelf().inTransientScope();
+  container.bind(DeleteTenantUseCase).toSelf().inTransientScope();
+  container.bind(ListTenantsByPropertyUseCase).toSelf().inTransientScope();
+
   // Bind controllers
   container.bind(AuthController).toSelf().inTransientScope();
   container.bind(PropertyController).toSelf().inTransientScope();
+  container.bind(TenantController).toSelf().inTransientScope();
 
   return container;
 }

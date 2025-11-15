@@ -1,0 +1,26 @@
+export type PersonType = 'OWNER' | 'FAMILY_MEMBER' | 'VENDOR';
+
+export interface Person {
+  id: string;
+  userId: string;
+  personType: PersonType;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email: string;
+  phone: string;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreatePersonData {
+  userId: string;
+  personType: PersonType;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email: string;
+  phone: string;
+  notes?: string;
+}

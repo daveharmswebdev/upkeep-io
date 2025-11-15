@@ -3,7 +3,7 @@ import { ValidationError, NotFoundError, DomainError } from '@domain/errors';
 import { ILogger } from '../../domain/services';
 
 export const createErrorMiddleware = (logger: ILogger) => {
-  return (err: Error, req: Request, res: Response, next: NextFunction) => {
+  return (err: Error, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof ValidationError) {
       res.status(400).json({
         error: err.message,

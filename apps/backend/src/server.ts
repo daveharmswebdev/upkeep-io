@@ -9,6 +9,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import { createContainer } from './container';
 import { createAuthRoutes, createPropertyRoutes } from './presentation/routes';
+import { createTenantRoutes } from './presentation/routes/tenantRoutes';
 import { createErrorMiddleware } from './presentation/middleware';
 import { ILogger } from './domain/services';
 
@@ -28,13 +29,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // Routes
 app.use('/api/auth', createAuthRoutes(container));
 app.use('/api/properties', createPropertyRoutes(container));
+app.use('/api/tenants', createTenantRoutes(container));
 
 // Error handling middleware (must be last)
 app.use(createErrorMiddleware(logger));

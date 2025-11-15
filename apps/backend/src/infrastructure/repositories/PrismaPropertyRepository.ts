@@ -20,6 +20,8 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return {
       ...property,
+      nickname: property.nickname ?? undefined,
+      purchaseDate: property.purchaseDate ?? undefined,
       purchasePrice: property.purchasePrice ? property.purchasePrice.toNumber() : undefined,
     };
   }
@@ -32,6 +34,8 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return properties.map(p => ({
       ...p,
+      nickname: p.nickname ?? undefined,
+      purchaseDate: p.purchaseDate ?? undefined,
       purchasePrice: p.purchasePrice ? p.purchasePrice.toNumber() : undefined,
     }));
   }
@@ -52,6 +56,8 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return {
       ...property,
+      nickname: property.nickname ?? undefined,
+      purchaseDate: property.purchaseDate ?? undefined,
       purchasePrice: property.purchasePrice ? property.purchasePrice.toNumber() : undefined,
     };
   }
@@ -64,6 +70,8 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return {
       ...property,
+      nickname: property.nickname ?? undefined,
+      purchaseDate: property.purchaseDate ?? undefined,
       purchasePrice: property.purchasePrice ? property.purchasePrice.toNumber() : undefined,
     };
   }
