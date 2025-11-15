@@ -88,6 +88,28 @@ container
   .inTransientScope();
 ```
 
+### TypeScript Configuration
+
+The monorepo uses a layered TypeScript configuration for different module systems. See [docs/typescript-configuration.md](docs/typescript-configuration.md) for complete details.
+
+**Key Points:**
+- `tsconfig.base.json` - Shared compiler options for all packages
+- `tsconfig.backend.json` - CommonJS for Node.js/Express (extends base)
+- `tsconfig.frontend.json` - ES Modules for Vite/Vue (extends base)
+- Shared libraries (`libs/*`) extend base config with `module: "ESNext"`
+- **Critical:** Shared library package.json files do NOT declare `"type": "module"` to avoid ES Module errors in backend
+
+**Common Issues:**
+- **ES Module errors in backend:** Remove `"type": "module"` from `libs/*/package.json`
+- **Stale .js files:** Run `find libs -path "*/src/*.js" -delete` to clean up
+- **vue-tsc compatibility:** Use vue-tsc 2.x with TypeScript 5.9+
+- **Vite import errors:** Ensure vite.config.ts aliases point to `src/` directories
+
+**Module Strategy:**
+- Backend: ts-node-dev imports TypeScript source via tsconfig-paths (CommonJS runtime)
+- Frontend: Vite bundles TypeScript source via aliases (ES Module output)
+- Both apps import the SAME TypeScript source from `libs/*/src/`, compiled differently
+
 ### Database: Prisma (Dev) + Flyway (Production)
 
 **Local Development:**

@@ -58,7 +58,6 @@
                 step="0.01"
                 :value="values.purchasePrice"
                 @input="handlePriceInput"
-                @blur="handleBlur"
                 placeholder="0.00"
                 class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
                 :class="{
@@ -111,7 +110,7 @@ const propertyStore = usePropertyStore();
 const toast = useToast();
 const submitError = ref('');
 
-const { handleSubmit, errors, values, meta, isSubmitting, setFieldValue, handleBlur } = useForm({
+const { handleSubmit, errors, values, meta, isSubmitting, setFieldValue } = useForm({
   validationSchema: toTypedSchema(createPropertySchema),
   validateOnMount: false,
 });
