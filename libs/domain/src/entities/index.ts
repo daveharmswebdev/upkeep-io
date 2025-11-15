@@ -1,2 +1,2 @@
-export { User, CreateUserData } from './User';
-export { Property, CreatePropertyData } from './Property';
+export type { User, CreateUserData } from './User';
+export type { Property, CreatePropertyData } from './Property';
