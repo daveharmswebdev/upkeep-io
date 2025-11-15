@@ -3,7 +3,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@domain/*": ["../../libs/domain/src/*"],
+      "@validators/*": ["../../libs/validators/src/*"],
+      "@auth/*": ["../../libs/auth/src/*"]
     },
     "strict": true,
     "noUnusedLocals": true,

@@ -10,7 +10,13 @@ import { BcryptPasswordHasher, JwtTokenGenerator, ConsoleLogger } from './infras
 
 // Use cases
 import { CreateUserUseCase, LoginUserUseCase } from './application/auth';
-import { CreatePropertyUseCase, ListPropertiesUseCase } from './application/property';
+import {
+  CreatePropertyUseCase,
+  ListPropertiesUseCase,
+  GetPropertyByIdUseCase,
+  UpdatePropertyUseCase,
+  DeletePropertyUseCase,
+} from './application/property';
 
 // Controllers
 import { AuthController, PropertyController } from './presentation/controllers';
@@ -50,6 +56,9 @@ export function createContainer(): Container {
   container.bind(LoginUserUseCase).toSelf().inTransientScope();
   container.bind(CreatePropertyUseCase).toSelf().inTransientScope();
   container.bind(ListPropertiesUseCase).toSelf().inTransientScope();
+  container.bind(GetPropertyByIdUseCase).toSelf().inTransientScope();
+  container.bind(UpdatePropertyUseCase).toSelf().inTransientScope();
+  container.bind(DeletePropertyUseCase).toSelf().inTransientScope();
 
   // Bind controllers
   container.bind(AuthController).toSelf().inTransientScope();

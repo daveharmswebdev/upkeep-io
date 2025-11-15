@@ -13,6 +13,10 @@ dist/
 build/
 *.tsbuildinfo
 
+# Compiled JS files in libs (TypeScript source only)
+libs/*/src/**/*.js
+libs/*/src/**/*.d.ts
+
 # Environment variables
 .env
 .env.local

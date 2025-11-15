@@ -3,6 +3,8 @@ import { useAuthStore } from '@/stores/auth';
 import LoginView from '@/views/LoginView.vue';
 import SignupView from '@/views/SignupView.vue';
 import DashboardView from '@/views/DashboardView.vue';
+import PropertyListView from '@/views/PropertyListView.vue';
+import PropertyFormView from '@/views/PropertyFormView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +29,18 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/properties',
+      name: 'properties',
+      component: PropertyListView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/properties/add',
+      name: 'properties-add',
+      component: PropertyFormView,
       meta: { requiresAuth: true },
     },
   ],

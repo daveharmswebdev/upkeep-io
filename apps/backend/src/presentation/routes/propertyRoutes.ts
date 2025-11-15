@@ -12,6 +12,9 @@ export const createPropertyRoutes = (container: Container): Router => {
 
   router.post('/', (req, res, next) => propertyController.create(req, res, next));
   router.get('/', (req, res, next) => propertyController.list(req, res, next));
+  router.get('/:id', (req, res, next) => propertyController.getById(req, res, next));
+  router.put('/:id', (req, res, next) => propertyController.update(req, res, next));
+  router.delete('/:id', (req, res, next) => propertyController.delete(req, res, next));
 
   return router;
 };

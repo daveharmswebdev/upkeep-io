@@ -7,6 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@domain': fileURLToPath(new URL('../../libs/domain/src', import.meta.url)),
+      '@validators': fileURLToPath(new URL('../../libs/validators/src', import.meta.url)),
+      '@auth': fileURLToPath(new URL('../../libs/auth/src', import.meta.url)),
     },
   },
   server: {
