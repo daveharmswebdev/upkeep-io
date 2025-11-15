@@ -34,20 +34,37 @@ export class UpdateTenantUseCase {
       throw new NotFoundError('Tenant', input.tenantId);
     }
 
-    // Prepare update data
-    const updateData: Partial<Tenant> = {};
-    if (input.propertyId !== undefined) updateData.propertyId = input.propertyId;
-    if (input.leaseStartDate !== undefined) updateData.leaseStartDate = input.leaseStartDate;
-    if (input.leaseEndDate !== undefined) updateData.leaseEndDate = input.leaseEndDate;
-    if (input.monthlyRent !== undefined) updateData.monthlyRent = input.monthlyRent;
-    if (input.securityDeposit !== undefined) updateData.securityDeposit = input.securityDeposit;
-    if (input.tenantNotes !== undefined) updateData.notes = input.tenantNotes;
+    // Prepare input data for validation (using API field names)
+    const inputData: Record<string, any> = {};
+    if (input.propertyId !== undefined) inputData.propertyId = input.propertyId;
+    if (input.leaseStartDate !== undefined) inputData.leaseStartDate = input.leaseStartDate;
+    if (input.leaseEndDate !== undefined) inputData.leaseEndDate = input.leaseEndDate;
+    if (input.monthlyRent !== undefined) inputData.monthlyRent = input.monthlyRent;
+    if (input.securityDeposit !== undefined) inputData.securityDeposit = input.securityDeposit;
+    if (input.tenantNotes !== undefined) inputData.tenantNotes = input.tenantNotes;
 
-    // Validate update data
-    const validation = updateTenantSchema.safeParse(updateData);
+    // Validate input data
+    const validation = updateTenantSchema.safeParse(inputData);
     if (!validation.success) {
       throw new ValidationError(validation.error.errors[0].message);
     }
+
+    // Map validated data to domain structure (API field names -> domain field names)
+    const updateData: Partial<Tenant> = {};
+    if (validation.data.propertyId !== undefined) updateData.propertyId = validation.data.propertyId;
+    if (validation.data.leaseStartDate !== undefined) {
+      updateData.leaseStartDate = typeof validation.data.leaseStartDate === 'string'
+        ? new Date(validation.data.leaseStartDate)
+        : validation.data.leaseStartDate;
+    }
+    if (validation.data.leaseEndDate !== undefined) {
+      updateData.leaseEndDate = typeof validation.data.leaseEndDate === 'string'
+        ? new Date(validation.data.leaseEndDate)
+        : validation.data.leaseEndDate;
+    }
+    if (validation.data.monthlyRent !== undefined) updateData.monthlyRent = validation.data.monthlyRent;
+    if (validation.data.securityDeposit !== undefined) updateData.securityDeposit = validation.data.securityDeposit;
+    if (validation.data.tenantNotes !== undefined) updateData.notes = validation.data.tenantNotes;
 
     // Update tenant
     const updatedTenant = await this.tenantRepository.update(input.tenantId, updateData);
