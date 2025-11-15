@@ -1,46 +1,53 @@
 <template>
-  <div class="auth-container">
-    <div class="auth-card">
-      <h1>Sign Up</h1>
+  <div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800 text-center">Sign Up</h1>
       <form @submit.prevent="handleSignup">
-        <div class="form-group">
-          <label for="name">Name</label>
+        <div class="mb-4">
+          <label for="name" class="block mb-2 text-gray-700 font-medium">Name</label>
           <input
             id="name"
             v-model="name"
             type="text"
             required
             placeholder="Enter your name"
+            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-complement-300 focus:ring-2 focus:ring-complement-200 transition-colors"
           />
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
+        <div class="mb-4">
+          <label for="email" class="block mb-2 text-gray-700 font-medium">Email</label>
           <input
             id="email"
             v-model="email"
             type="email"
             required
             placeholder="Enter your email"
+            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-complement-300 focus:ring-2 focus:ring-complement-200 transition-colors"
           />
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
+        <div class="mb-4">
+          <label for="password" class="block mb-2 text-gray-700 font-medium">Password</label>
           <input
             id="password"
             v-model="password"
             type="password"
             required
             placeholder="At least 8 characters"
+            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-complement-300 focus:ring-2 focus:ring-complement-200 transition-colors"
           />
         </div>
-        <div v-if="error" class="error-message">{{ error }}</div>
-        <button type="submit" :disabled="loading">
+        <div v-if="error" class="text-primary-400 mt-2 text-sm">{{ error }}</div>
+        <button
+          type="submit"
+          :disabled="loading"
+          class="w-full px-3 py-3 mt-4 bg-complement-300 text-white rounded font-medium cursor-pointer hover:bg-complement-400 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        >
           {{ loading ? 'Creating account...' : 'Sign Up' }}
         </button>
       </form>
-      <p class="auth-footer">
+      <p class="mt-6 text-center text-gray-600">
         Already have an account?
-        <router-link to="/login">Login</router-link>
+        <router-link to="/login" class="text-complement-300 hover:underline">Login</router-link>
       </p>
     </div>
   </div>
@@ -74,95 +81,3 @@ async function handleSignup() {
   }
 }
 </script>
-
-<style scoped>
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-}
-
-.auth-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-h1 {
-  margin-bottom: 1.5rem;
-  color: #333;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-weight: 500;
-}
-
-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-input:focus {
-  outline: none;
-  border-color: #4CAF50;
-}
-
-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-top: 1rem;
-}
-
-button:hover:not(:disabled) {
-  background-color: #45a049;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.error-message {
-  color: #f44336;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.auth-footer {
-  margin-top: 1.5rem;
-  text-align: center;
-  color: #666;
-}
-
-.auth-footer a {
-  color: #4CAF50;
-  text-decoration: none;
-}
-
-.auth-footer a:hover {
-  text-decoration: underline;
-}
-</style>

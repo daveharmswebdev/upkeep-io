@@ -132,6 +132,12 @@ npm run lint                 # Run ESLint
 npm run type-check           # TypeScript type checking
 ```
 
+**Styling (Tailwind CSS v3):**
+- Custom color palette: `primary` (red), `secondary-1` (orange/brown), `secondary-2` (teal), `complement` (green) - each with 100-500 shades
+- Custom fonts: `font-heading` (Montserrat), `font-sans` (Lato - default)
+- Configuration: `tailwind.config.js`, `postcss.config.js`
+- Global styles: `src/assets/styles/main.css`
+
 ### Docker (Local Development)
 
 ```bash
@@ -192,6 +198,7 @@ Environment variables managed through Railway dashboard.
 - Vue Router - Client-side routing
 - Pinia - State management
 - Axios - HTTP client with interceptors for JWT
+- Tailwind CSS v3 - Utility-first CSS framework with custom design system
 
 ## Cost Budget
 

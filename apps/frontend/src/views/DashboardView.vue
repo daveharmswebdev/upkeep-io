@@ -1,16 +1,21 @@
 <template>
-  <div class="dashboard">
-    <header class="dashboard-header">
-      <h1>Property Management Dashboard</h1>
-      <div class="user-info">
-        <span>Welcome, {{ authStore.user?.name }}</span>
-        <button @click="handleLogout" class="logout-btn">Logout</button>
+  <div class="min-h-screen bg-gray-100">
+    <header class="bg-white px-8 py-6 shadow-md flex justify-between items-center">
+      <h1 class="text-2xl font-heading font-bold text-gray-800">Property Management Dashboard</h1>
+      <div class="flex items-center gap-4">
+        <span class="text-gray-600">Welcome, {{ authStore.user?.name }}</span>
+        <button
+          @click="handleLogout"
+          class="px-4 py-2 bg-primary-300 text-white rounded cursor-pointer text-sm font-medium hover:bg-primary-400 transition-colors"
+        >
+          Logout
+        </button>
       </div>
     </header>
-    <main class="dashboard-content">
-      <section class="properties-section">
-        <h2>Your Properties</h2>
-        <p>Property management features coming soon...</p>
+    <main class="p-8 max-w-7xl mx-auto">
+      <section class="bg-white p-8 rounded-lg shadow">
+        <h2 class="text-xl font-heading font-semibold text-gray-800 mt-0 mb-4">Your Properties</h2>
+        <p class="text-gray-600">Property management features coming soon...</p>
       </section>
     </main>
   </div>
@@ -28,71 +33,3 @@ function handleLogout() {
   router.push('/login');
 }
 </script>
-
-<style scoped>
-.dashboard {
-  min-height: 100vh;
-  background-color: #f5f5f5;
-}
-
-.dashboard-header {
-  background: white;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.dashboard-header h1 {
-  margin: 0;
-  color: #333;
-  font-size: 1.5rem;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.user-info span {
-  color: #666;
-}
-
-.logout-btn {
-  padding: 0.5rem 1rem;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.logout-btn:hover {
-  background-color: #da190b;
-}
-
-.dashboard-content {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.properties-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.properties-section h2 {
-  margin-top: 0;
-  color: #333;
-}
-
-.properties-section p {
-  color: #666;
-}
-</style>
