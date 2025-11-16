@@ -208,7 +208,9 @@ const property = computed(() => propertyStore.currentProperty);
 
 // Computed property to get active lease
 const activeLease = computed(() =>
-  leaseStore.leases.find(lease => lease.status === LeaseStatus.ACTIVE)
+  leaseStore.leases.find(
+    lease => lease.status === LeaseStatus.ACTIVE || lease.status === LeaseStatus.MONTH_TO_MONTH
+  )
 );
 
 // Fetch property and leases on component mount

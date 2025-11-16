@@ -285,8 +285,114 @@ The property CRUD system demonstrates DRY principles and Clean Architecture:
 - `PUT /properties/:id` - Update property
 - `DELETE /properties/:id` - Delete property
 
+## Frontend Utilities (Use What's in the Pantry!)
+
+**CRITICAL: Before writing new logic, ALWAYS check existing utilities first.** The frontend has a comprehensive utility layer located in `apps/frontend/src/utils/` with 100% test coverage. Reuse these pure functions instead of duplicating logic.
+
+### Available Utility Modules
+
+**1. `formatters.ts`** - Display formatting (45+ lines of reusable code)
+```typescript
+import { formatPrice, formatDate, formatDateTime } from '@/utils/formatters';
+
+formatPrice(1234.56)                    // "1,234.56"
+formatDate(new Date(), 'short')         // "Jan 15, 2024"
+formatDate(new Date(), 'long')          // "January 15, 2024"
+formatDateTime(new Date())              // "Jan 15, 2024, 02:30 PM"
+```
+**When to use:** Displaying currency, dates, or timestamps in components/views
+
+**2. `dateHelpers.ts`** - Form date conversion
+```typescript
+import { convertFormDates, convertNestedDates } from '@/utils/dateHelpers';
+
+// Single object with multiple date fields
+const data = convertFormDates(formValues, ['startDate', 'endDate', 'purchaseDate']);
+
+// Array of objects with date fields (lessees, occupants, etc.)
+const data = {
+  ...convertFormDates(formValues, ['startDate']),
+  lessees: convertNestedDates(formValues.lessees, ['signedDate'])
+};
+```
+**When to use:** Converting form date strings to Date objects before API calls
+
+**3. `errorHandlers.ts`** - Centralized error extraction
+```typescript
+import { extractErrorMessage, isAuthError, isValidationError } from '@/utils/errorHandlers';
+
+catch (err: any) {
+  error.value = extractErrorMessage(err, 'Operation failed. Please try again.');
+
+  if (isAuthError(err)) {
+    // Handle 401/403
+  }
+  if (isValidationError(err)) {
+    // Handle 400/422
+  }
+}
+```
+**When to use:** All API error handling in views and stores
+
+**4. `storage.ts`** - LocalStorage abstraction
+```typescript
+import { authStorage, type User } from '@/utils/storage';
+
+authStorage.getToken()           // Get JWT token
+authStorage.setToken(token)      // Save JWT token
+authStorage.getUser()            // Get user object
+authStorage.setUser(user)        // Save user object
+authStorage.clear()              // Clear all auth data
+```
+**When to use:** Any authentication-related storage operations (instead of direct localStorage calls)
+
+### Development Workflow: Check the Pantry First
+
+**Before implementing ANY new feature:**
+
+1. **Check `apps/frontend/src/utils/`** - Does a utility already exist for this?
+2. **Check shared libraries** - `@domain/*`, `@validators/*`, `@auth/*`
+3. **Search for similar patterns** - How did existing features solve this?
+4. **Only create new code** if nothing reusable exists
+
+**Examples:**
+
+❌ **DON'T:** Write a new function to format prices
+```typescript
+const formatCurrency = (val: number) => `$${val.toFixed(2)}`;  // DUPLICATION!
+```
+
+✅ **DO:** Use existing utility
+```typescript
+import { formatPrice } from '@/utils/formatters';
+```
+
+❌ **DON'T:** Write inline error extraction
+```typescript
+catch (err: any) {
+  error.value = err.response?.data?.error || 'Failed';  // PATTERN ALREADY EXISTS!
+}
+```
+
+✅ **DO:** Use existing utility
+```typescript
+import { extractErrorMessage } from '@/utils/errorHandlers';
+catch (err: any) {
+  error.value = extractErrorMessage(err, 'Failed');
+}
+```
+
+**Metaphorically speaking: Use what's in the pantry before buying more groceries.**
+
+If you find yourself writing similar logic that exists elsewhere:
+1. **STOP** - Don't duplicate
+2. **REFACTOR** - Extract to utility if reusable
+3. **TEST** - Write unit tests for the utility
+4. **MIGRATE** - Update existing code to use it
+
 ## Important Notes
 
+- **ALWAYS check existing utilities before writing new code** - See "Frontend Utilities" section above. Use what's in the pantry before buying groceries!
 - **Backend leads frontend** - API contract is source of truth, frontend adapts to backend
 - MaintenanceWork is the central aggregate root - most features revolve around tracking work and costs
 - All material expenses, mileage, and labor must be tracked for tax deduction reporting
@@ -295,3 +401,4 @@ The property CRUD system demonstrates DRY principles and Clean Architecture:
 - Keep use cases pure - no Express request/response objects in application layer
 - Shared validation schemas ensure frontend and backend validate identically
 - Build artifacts (*.js, *.d.ts) in `libs/` are gitignored - only TypeScript source is committed
+- **Never duplicate logic** - Extract reusable code to utilities with tests, then migrate existing duplicates
