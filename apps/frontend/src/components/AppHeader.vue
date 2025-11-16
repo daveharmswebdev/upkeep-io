@@ -50,21 +50,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { RouterLink, useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { useToast } from 'vue-toastification';
+import { RouterLink } from 'vue-router';
+import { useAuth } from '@/composables/useAuth';
 
-const authStore = useAuthStore();
-const router = useRouter();
-const toast = useToast();
+const { isAuthenticated, user, logout } = useAuth();
 
-const isAuthenticated = computed(() => authStore.isAuthenticated);
-const user = computed(() => authStore.user);
-
-const handleLogout = () => {
-  authStore.logout();
-  toast.success('Logged out successfully');
-  router.push('/login');
-};
+const handleLogout = logout;
 </script>

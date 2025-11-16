@@ -173,27 +173,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { createLeaseSchema } from '@validators/lease';
 import { useLeaseStore } from '@/stores/lease';
-import { useToast } from 'vue-toastification';
 import FormInput from '@/components/FormInput.vue';
 import { convertFormDates, convertNestedDates } from '@/utils/dateHelpers';
-import { extractErrorMessage } from '@/utils/errorHandlers';
+import { useFormSubmission } from '@/composables/useFormSubmission';
+import { useMoneyInput } from '@/composables/useMoneyInput';
+import { useTextareaInput } from '@/composables/useTextareaInput';
 
 const router = useRouter();
 const route = useRoute();
 const leaseStore = useLeaseStore();
-const toast = useToast();
-const submitError = ref('');
 
 // Get propertyId from route params
 const propertyId = route.params.id as string;
 
-const { handleSubmit, errors, values, meta, isSubmitting, setFieldValue } = useForm({
+const { handleSubmit, errors, values, meta, setFieldValue } = useForm({
   validationSchema: toTypedSchema(createLeaseSchema),
   validateOnMount: false,
   initialValues: {
@@ -202,34 +200,37 @@ const { handleSubmit, errors, values, meta, isSubmitting, setFieldValue } = useF
   },
 });
 
+const { createMoneyInputHandler } = useMoneyInput();
+const handleMonthlyRentInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'monthlyRent');
+const handleSecurityDepositInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'securityDeposit');
+
+const { createTextareaHandler } = useTextareaInput();
+const handleTextareaInput = createTextareaHandler(setFieldValue as (field: string, value: any) => void, 'notes');
+
 const handleMoneyInput = (fieldName: 'monthlyRent' | 'securityDeposit', event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const value = target.value ? parseFloat(target.value) : undefined;
-  setFieldValue(fieldName, value);
+  if (fieldName === 'monthlyRent') {
+    handleMonthlyRentInput(event);
+  } else {
+    handleSecurityDepositInput(event);
+  }
 };
 
-const handleTextareaInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  setFieldValue('notes', target.value || undefined);
-};
-
-const onSubmit = handleSubmit(async (formValues) => {
-  submitError.value = '';
-  try {
-    // Convert date strings to Date objects if provided
+const { submitError, isSubmitting, submit } = useFormSubmission(
+  async (formValues: any) => {
     const data = {
       ...convertFormDates(formValues, ['startDate', 'endDate', 'depositPaidDate']),
       lessees: convertNestedDates(formValues.lessees, ['signedDate']),
     };
-
     await leaseStore.createLease(data);
-    toast.success('Lease created successfully');
-    router.push(`/properties/${propertyId}`);
-  } catch (err: any) {
-    submitError.value = extractErrorMessage(err, 'Failed to create lease. Please try again.');
-    toast.error(submitError.value);
+  },
+  {
+    successMessage: 'Lease created successfully',
+    successRoute: `/properties/${propertyId}`,
+    errorMessage: 'Failed to create lease. Please try again.'
   }
-});
+);
+
+const onSubmit = handleSubmit(submit);
 
 const handleCancel = () => {
   router.push(`/properties/${propertyId}`);

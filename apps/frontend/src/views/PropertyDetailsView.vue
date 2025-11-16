@@ -20,13 +20,13 @@
 
     <main class="max-w-4xl mx-auto px-4 py-8">
       <!-- Loading State -->
-      <div v-if="propertyStore.loading" class="flex justify-center items-center py-20">
+      <div v-if="loading" class="flex justify-center items-center py-20">
         <div class="text-gray-600">Loading property details...</div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="propertyStore.error" class="bg-primary-100 text-primary-500 p-4 rounded">
-        {{ propertyStore.error }}
+      <div v-else-if="error" class="bg-primary-100 text-primary-500 p-4 rounded">
+        {{ error }}
       </div>
 
       <!-- Property Not Found -->
@@ -120,7 +120,7 @@
           <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">Lease Information</h3>
 
           <!-- Loading Leases -->
-          <div v-if="leaseStore.loading" class="text-center text-gray-600">
+          <div v-if="loading" class="text-center text-gray-600">
             Loading lease information...
           </div>
 
@@ -191,40 +191,20 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePropertyStore } from '@/stores/property';
-import { useLeaseStore } from '@/stores/lease';
-import { LeaseStatus } from '@domain/entities';
 import { useToast } from 'vue-toastification';
 import { formatPrice, formatDate, formatDateTime } from '@/utils/formatters';
+import { usePropertyDetails } from '@/composables/usePropertyDetails';
 
 const route = useRoute();
 const router = useRouter();
-const propertyStore = usePropertyStore();
-const leaseStore = useLeaseStore();
 const toast = useToast();
 
-// Computed property to get the current property from the store
-const property = computed(() => propertyStore.currentProperty);
-
-// Computed property to get active lease
-const activeLease = computed(() =>
-  leaseStore.leases.find(
-    lease => lease.status === LeaseStatus.ACTIVE || lease.status === LeaseStatus.MONTH_TO_MONTH
-  )
-);
+// Use property details composable
+const propertyId = computed(() => route.params.id as string);
+const { property, activeLease, loading, error, fetchData } = usePropertyDetails(propertyId);
 
 // Fetch property and leases on component mount
-onMounted(async () => {
-  const propertyId = route.params.id as string;
-  if (propertyId) {
-    try {
-      await propertyStore.fetchPropertyById(propertyId);
-      await leaseStore.fetchLeasesByProperty(propertyId);
-    } catch (error) {
-      console.error('Failed to fetch property or leases:', error);
-    }
-  }
-});
+onMounted(fetchData);
 
 // Navigation handlers
 const handleBackToList = () => {
