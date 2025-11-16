@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import type { LeaseWithDetails } from '@domain/entities';
 import type { CreateLeaseInput } from '@validators/lease';
 import api from '@/api/client';
+import { extractErrorMessage } from '@/utils/errorHandlers';
 
 export const useLeaseStore = defineStore('lease', () => {
   const leases = ref<LeaseWithDetails[]>([]);
@@ -18,7 +19,7 @@ export const useLeaseStore = defineStore('lease', () => {
       leases.value = response.data;
       return response.data;
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to fetch leases';
+      error.value = extractErrorMessage(err, 'Failed to fetch leases');
       throw err;
     } finally {
       loading.value = false;
@@ -33,7 +34,7 @@ export const useLeaseStore = defineStore('lease', () => {
       leases.value.push(response.data);
       return response.data;
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to create lease';
+      error.value = extractErrorMessage(err, 'Failed to create lease');
       throw err;
     } finally {
       loading.value = false;
@@ -48,7 +49,7 @@ export const useLeaseStore = defineStore('lease', () => {
       currentLease.value = response.data;
       return response.data;
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to fetch lease';
+      error.value = extractErrorMessage(err, 'Failed to fetch lease');
       throw err;
     } finally {
       loading.value = false;

@@ -57,6 +57,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { extractErrorMessage } from '@/utils/errorHandlers';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -75,7 +76,7 @@ async function handleSignup() {
     await authStore.signup(email.value, password.value, name.value);
     router.push('/dashboard');
   } catch (err: any) {
-    error.value = err.response?.data?.error || 'Signup failed. Please try again.';
+    error.value = extractErrorMessage(err, 'Signup failed. Please try again.');
   } finally {
     loading.value = false;
   }

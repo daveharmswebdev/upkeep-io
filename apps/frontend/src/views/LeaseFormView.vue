@@ -181,6 +181,8 @@ import { createLeaseSchema } from '@validators/lease';
 import { useLeaseStore } from '@/stores/lease';
 import { useToast } from 'vue-toastification';
 import FormInput from '@/components/FormInput.vue';
+import { convertFormDates, convertNestedDates } from '@/utils/dateHelpers';
+import { extractErrorMessage } from '@/utils/errorHandlers';
 
 const router = useRouter();
 const route = useRoute();
@@ -216,21 +218,15 @@ const onSubmit = handleSubmit(async (formValues) => {
   try {
     // Convert date strings to Date objects if provided
     const data = {
-      ...formValues,
-      startDate: new Date(formValues.startDate),
-      endDate: formValues.endDate ? new Date(formValues.endDate) : undefined,
-      depositPaidDate: formValues.depositPaidDate ? new Date(formValues.depositPaidDate) : undefined,
-      lessees: formValues.lessees.map((lessee: any) => ({
-        ...lessee,
-        signedDate: lessee.signedDate ? new Date(lessee.signedDate) : undefined,
-      })),
+      ...convertFormDates(formValues, ['startDate', 'endDate', 'depositPaidDate']),
+      lessees: convertNestedDates(formValues.lessees, ['signedDate']),
     };
 
     await leaseStore.createLease(data);
     toast.success('Lease created successfully');
     router.push(`/properties/${propertyId}`);
   } catch (err: any) {
-    submitError.value = err.response?.data?.error || 'Failed to create lease. Please try again.';
+    submitError.value = extractErrorMessage(err, 'Failed to create lease. Please try again.');
     toast.error(submitError.value);
   }
 });
