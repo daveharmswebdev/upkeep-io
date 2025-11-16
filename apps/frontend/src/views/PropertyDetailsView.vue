@@ -115,11 +115,72 @@
           </div>
         </div>
 
-        <!-- Future Sections Placeholder -->
+        <!-- Lease Information Section -->
         <div class="bg-white rounded-lg shadow p-8">
-          <div class="text-center text-gray-500">
-            <p class="text-sm uppercase tracking-wide mb-2">Coming Soon</p>
-            <p class="text-lg">Tenant History • Maintenance Records • Recurring Services</p>
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">Lease Information</h3>
+
+          <!-- Loading Leases -->
+          <div v-if="leaseStore.loading" class="text-center text-gray-600">
+            Loading lease information...
+          </div>
+
+          <!-- No Active Lease -->
+          <div v-else-if="!activeLease" class="text-center py-6">
+            <p class="text-gray-600 mb-4">No active lease for this property</p>
+            <button
+              @click="handleAddLease"
+              class="px-6 py-3 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 transition-colors"
+            >
+              Add Lease
+            </button>
+          </div>
+
+          <!-- Active Lease Display -->
+          <div v-else class="space-y-4">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-600 mb-1">Lease Term</p>
+                <p class="text-lg font-medium text-gray-800">
+                  {{ formatDate(activeLease.startDate) }}
+                  <span v-if="activeLease.endDate"> - {{ formatDate(activeLease.endDate) }}</span>
+                  <span v-else class="text-sm text-gray-600"> (Month-to-Month)</span>
+                </p>
+              </div>
+              <div v-if="activeLease.monthlyRent" class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-600 mb-1">Monthly Rent</p>
+                <p class="text-2xl font-semibold text-complement-500">${{ formatPrice(activeLease.monthlyRent) }}</p>
+              </div>
+              <div v-if="activeLease.securityDeposit" class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-600 mb-1">Security Deposit</p>
+                <p class="text-xl font-medium text-gray-800">${{ formatPrice(activeLease.securityDeposit) }}</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-600 mb-1">Status</p>
+                <p class="text-lg font-medium text-gray-800">{{ activeLease.status }}</p>
+              </div>
+            </div>
+
+            <!-- Lessees -->
+            <div v-if="activeLease.lessees && activeLease.lessees.length > 0" class="border-t pt-4">
+              <p class="text-sm font-semibold text-gray-600 mb-2">Lessees</p>
+              <div class="space-y-2">
+                <div v-for="lessee in activeLease.lessees" :key="lessee.id" class="bg-gray-50 rounded p-3">
+                  <p class="font-medium text-gray-800">
+                    {{ lessee.person.firstName }} {{ lessee.person.lastName }}
+                  </p>
+                  <p class="text-sm text-gray-600">{{ lessee.person.email }} • {{ lessee.person.phone }}</p>
+                  <p v-if="lessee.signedDate" class="text-xs text-gray-500">
+                    Signed: {{ formatDate(lessee.signedDate) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div v-if="activeLease.notes" class="border-t pt-4">
+              <p class="text-sm font-semibold text-gray-600 mb-2">Notes</p>
+              <p class="text-gray-700">{{ activeLease.notes }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -131,24 +192,33 @@
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePropertyStore } from '@/stores/property';
+import { useLeaseStore } from '@/stores/lease';
+import { LeaseStatus } from '@domain/entities';
 import { useToast } from 'vue-toastification';
 
 const route = useRoute();
 const router = useRouter();
 const propertyStore = usePropertyStore();
+const leaseStore = useLeaseStore();
 const toast = useToast();
 
 // Computed property to get the current property from the store
 const property = computed(() => propertyStore.currentProperty);
 
-// Fetch property on component mount
+// Computed property to get active lease
+const activeLease = computed(() =>
+  leaseStore.leases.find(lease => lease.status === LeaseStatus.ACTIVE)
+);
+
+// Fetch property and leases on component mount
 onMounted(async () => {
   const propertyId = route.params.id as string;
   if (propertyId) {
     try {
       await propertyStore.fetchPropertyById(propertyId);
+      await leaseStore.fetchLeasesByProperty(propertyId);
     } catch (error) {
-      console.error('Failed to fetch property:', error);
+      console.error('Failed to fetch property or leases:', error);
     }
   }
 });
@@ -196,5 +266,9 @@ const handleDelete = () => {
   // For future implementation - will show confirmation modal
   toast.warning('Delete functionality coming soon!');
   // In future: Show confirmation modal, then call propertyStore.deleteProperty(route.params.id)
+};
+
+const handleAddLease = () => {
+  router.push(`/properties/${route.params.id}/leases/add`);
 };
 </script>
