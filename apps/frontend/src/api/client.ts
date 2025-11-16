@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { authStorage } from '@/utils/storage';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -12,7 +13,7 @@ const apiClient = axios.create({
 // Request interceptor to add JWT token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
+    const token = authStorage.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,8 +30,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Clear token and redirect to login
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
+      authStorage.clear();
       window.location.href = '/login';
     }
     return Promise.reject(error);

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { Property, CreatePropertyData } from '@domain/entities';
 import api from '@/api/client';
+import { extractErrorMessage } from '@/utils/errorHandlers';
 
 export const usePropertyStore = defineStore('property', () => {
   const properties = ref<Property[]>([]);
@@ -16,7 +17,7 @@ export const usePropertyStore = defineStore('property', () => {
       const response = await api.get<Property[]>('/properties');
       properties.value = response.data;
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to fetch properties';
+      error.value = extractErrorMessage(err, 'Failed to fetch properties');
       throw err;
     } finally {
       loading.value = false;
@@ -31,7 +32,7 @@ export const usePropertyStore = defineStore('property', () => {
       properties.value.push(response.data);
       return response.data;
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to create property';
+      error.value = extractErrorMessage(err, 'Failed to create property');
       throw err;
     } finally {
       loading.value = false;
@@ -46,7 +47,7 @@ export const usePropertyStore = defineStore('property', () => {
       currentProperty.value = response.data;
       return response.data;
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to fetch property';
+      error.value = extractErrorMessage(err, 'Failed to fetch property');
       throw err;
     } finally {
       loading.value = false;
@@ -67,7 +68,7 @@ export const usePropertyStore = defineStore('property', () => {
       }
       return response.data;
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to update property';
+      error.value = extractErrorMessage(err, 'Failed to update property');
       throw err;
     } finally {
       loading.value = false;
@@ -84,7 +85,7 @@ export const usePropertyStore = defineStore('property', () => {
         currentProperty.value = null;
       }
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to delete property';
+      error.value = extractErrorMessage(err, 'Failed to delete property');
       throw err;
     } finally {
       loading.value = false;

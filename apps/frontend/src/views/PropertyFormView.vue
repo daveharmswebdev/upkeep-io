@@ -104,6 +104,9 @@ import { createPropertySchema } from '@validators/property';
 import { usePropertyStore } from '@/stores/property';
 import { useToast } from 'vue-toastification';
 import FormInput from '@/components/FormInput.vue';
+import { convertFormDates } from '@/utils/dateHelpers';
+import { extractErrorMessage } from '@/utils/errorHandlers';
+import type { CreatePropertyData } from '@domain/entities';
 
 const router = useRouter();
 const propertyStore = usePropertyStore();
@@ -125,16 +128,13 @@ const onSubmit = handleSubmit(async (formValues) => {
   submitError.value = '';
   try {
     // Convert date string to Date object if provided
-    const data = {
-      ...formValues,
-      purchaseDate: formValues.purchaseDate ? new Date(formValues.purchaseDate) : undefined,
-    };
+    const data = convertFormDates(formValues, ['purchaseDate']) as Omit<CreatePropertyData, 'userId'>;
 
     await propertyStore.createProperty(data);
     toast.success('Property created successfully');
     router.push('/properties');
   } catch (err: any) {
-    submitError.value = err.response?.data?.error || 'Failed to create property. Please try again.';
+    submitError.value = extractErrorMessage(err, 'Failed to create property. Please try again.');
     toast.error(submitError.value);
   }
 });

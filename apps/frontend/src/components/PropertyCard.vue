@@ -27,7 +27,7 @@
           Purchase Price: <span class="font-medium text-gray-800">${{ formatPrice(property.purchasePrice) }}</span>
         </span>
         <span v-if="property.purchaseDate" class="text-gray-600">
-          {{ formatDate(property.purchaseDate) }}
+          {{ formatDate(property.purchaseDate, 'short') }}
         </span>
       </div>
     </div>
@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import type { Property } from '@domain/entities';
+import { formatPrice, formatDate } from '@/utils/formatters';
 
 interface Props {
   property: Property;
@@ -49,21 +50,5 @@ const emit = defineEmits<{
 
 const handleClick = () => {
   emit('click', props.property);
-};
-
-const formatPrice = (price: number): string => {
-  return price.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
-
-const formatDate = (date: Date | string): string => {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
 };
 </script>
