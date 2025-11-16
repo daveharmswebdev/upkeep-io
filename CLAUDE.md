@@ -140,7 +140,8 @@ Core entities represent maintenance workflows for rental properties:
 - **Receipt** - Material purchases from stores (tax deduction tracking)
 - **TravelActivity** - Mileage tracking for IRS deductions
 - **RecurringService** - Scheduled vendor services (HVAC twice yearly, etc.)
-- **Tenant** - Current/past tenants linked to properties
+- **Lease** - Rental agreements with support for multiple lessees, occupants, and lease history (see `docs/lease-entity.md`)
+- **Person** - People associated with properties (owners, lessees, occupants, vendors, family members)
 
 See `property-management-domain-model.md` for detailed entity relationships and use cases.
 

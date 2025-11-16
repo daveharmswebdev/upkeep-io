@@ -9,7 +9,8 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import { createContainer } from './container';
 import { createAuthRoutes, createPropertyRoutes } from './presentation/routes';
-import { createTenantRoutes } from './presentation/routes/tenantRoutes';
+// import { createTenantRoutes } from './presentation/routes/tenantRoutes';
+import { createLeaseRoutes } from './presentation/routes/leaseRoutes';
 import { createErrorMiddleware } from './presentation/middleware';
 import { ILogger } from './domain/services';
 
@@ -36,7 +37,8 @@ app.get('/health', (_req, res) => {
 // Routes
 app.use('/api/auth', createAuthRoutes(container));
 app.use('/api/properties', createPropertyRoutes(container));
-app.use('/api/tenants', createTenantRoutes(container));
+// app.use('/api/tenants', createTenantRoutes(container)); // Commented out - replaced with /api/leases
+app.use('/api/leases', createLeaseRoutes(container));
 
 // Error handling middleware (must be last)
 app.use(createErrorMiddleware(logger));

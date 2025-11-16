@@ -1,4 +1,4 @@
-export type PersonType = 'OWNER' | 'FAMILY_MEMBER' | 'VENDOR';
+export type PersonType = 'OWNER' | 'FAMILY_MEMBER' | 'VENDOR' | 'LESSEE' | 'OCCUPANT';
 
 export interface Person {
   id: string;
@@ -7,8 +7,8 @@ export interface Person {
   firstName: string;
   lastName: string;
   middleName?: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -20,7 +20,7 @@ export interface CreatePersonData {
   firstName: string;
   lastName: string;
   middleName?: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
   notes?: string;
 }

@@ -33,23 +33,41 @@ Address {
 
 ---
 
-### 2. Tenant
-**What it is**: A person renting one of your properties.
+### 2. Lease
+**What it is**: A rental agreement for a property, supporting multiple lessees, occupants, and lease history tracking.
 
 ```typescript
-Tenant {
+Lease {
   id: UUID
-  propertyId: UUID              // Which property they rent
-  name: string
-  email?: string
-  phone?: string
-  leaseStartDate: Date
-  leaseEndDate?: Date           // Optional: for past tenants
-  notes: string                 // Special notes, requests, issues
+  propertyId: UUID              // Which property is leased
+  startDate: Date
+  endDate?: Date               // Optional for month-to-month
+  monthlyRent?: number
+  securityDeposit?: number
+  status: LeaseStatus          // ACTIVE | MONTH_TO_MONTH | ENDED | VOIDED
+  lessees: LeaseLessee[]       // People on the lease (can sign, liable for rent)
+  occupants: LeaseOccupant[]   // People living there (children, non-signing adults)
+  notes?: string
+}
+
+Person {                       // Shared entity for all people (lessees, occupants, owners, vendors)
+  id: UUID
+  personType: PersonType       // LESSEE | OCCUPANT | OWNER | VENDOR | FAMILY_MEMBER
+  firstName: string
+  lastName: string
+  email?: string               // Optional for child occupants
+  phone?: string               // Optional for child occupants
 }
 ```
 
-**Why**: Track who's living at each property, contact info, lease dates. Useful for correlating maintenance issues to tenants (e.g., "tenant reported leak" or "before/after tenant turnover").
+**Why**: Track rental agreements with full history, support complex scenarios (couples, families with children, roommates), maintain lease history for tax records. See `docs/lease-entity.md` for detailed documentation.
+
+**Key Features**:
+- Multiple lessees per lease (couples, roommates)
+- Occupants (children, non-signing adults)
+- Lease history tracking (voided leases preserved)
+- Month-to-month support
+- Soft delete for tax record retention
 
 ---
 

@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { PrismaClient } from '@prisma/client';
 import { IPersonRepository } from '../../domain/repositories/IPersonRepository';
-import { Person, CreatePersonData } from '@domain/entities';
+import { Person, CreatePersonData, PersonType } from '@upkeep-io/domain';
 
 @injectable()
 export class PrismaPersonRepository implements IPersonRepository {
@@ -20,8 +20,10 @@ export class PrismaPersonRepository implements IPersonRepository {
 
     return {
       ...person,
-      personType: person.personType as 'OWNER' | 'FAMILY_MEMBER' | 'VENDOR',
+      personType: person.personType as PersonType,
       middleName: person.middleName ?? undefined,
+      email: person.email ?? undefined,
+      phone: person.phone ?? undefined,
       notes: person.notes ?? undefined,
     };
   }
@@ -34,8 +36,10 @@ export class PrismaPersonRepository implements IPersonRepository {
 
     return persons.map(p => ({
       ...p,
-      personType: p.personType as 'OWNER' | 'FAMILY_MEMBER' | 'VENDOR',
+      personType: p.personType as PersonType,
       middleName: p.middleName ?? undefined,
+      email: p.email ?? undefined,
+      phone: p.phone ?? undefined,
       notes: p.notes ?? undefined,
     }));
   }
@@ -56,8 +60,10 @@ export class PrismaPersonRepository implements IPersonRepository {
 
     return {
       ...person,
-      personType: person.personType as 'OWNER' | 'FAMILY_MEMBER' | 'VENDOR',
+      personType: person.personType as PersonType,
       middleName: person.middleName ?? undefined,
+      email: person.email ?? undefined,
+      phone: person.phone ?? undefined,
       notes: person.notes ?? undefined,
     };
   }
@@ -70,8 +76,10 @@ export class PrismaPersonRepository implements IPersonRepository {
 
     return {
       ...person,
-      personType: person.personType as 'OWNER' | 'FAMILY_MEMBER' | 'VENDOR',
+      personType: person.personType as PersonType,
       middleName: person.middleName ?? undefined,
+      email: person.email ?? undefined,
+      phone: person.phone ?? undefined,
       notes: person.notes ?? undefined,
     };
   }

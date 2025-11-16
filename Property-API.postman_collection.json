@@ -1,0 +1,375 @@
+{
+	"info": {
+		"_postman_id": "property-api-collection",
+		"name": "Upkeep.io - Property API",
+		"description": "Complete API collection for managing rental properties",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "your-jwt-token-here",
+			"type": "string"
+		},
+		{
+			"key": "propertyId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Properties",
+			"item": [
+				{
+					"name": "Create Property (All Fields)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('propertyId', response.id);",
+									"    pm.test('Property ID saved to variable', function() {",
+									"        pm.expect(response.id).to.be.a('string');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"123 Main Street\",\n  \"city\": \"Springfield\",\n  \"state\": \"CA\",\n  \"zipCode\": \"90210\",\n  \"nickname\": \"Main Street Duplex\",\n  \"purchaseDate\": \"2023-01-15T00:00:00.000Z\",\n  \"purchasePrice\": 450000\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "Create a new property with all optional fields included"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Property (Required Fields Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"456 Oak Avenue\",\n  \"city\": \"Portland\",\n  \"state\": \"OR\",\n  \"zipCode\": \"97201\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "Create a property with only required fields (address, city, state, zipCode)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Property (Extended ZIP)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"789 Elm Street, Unit 2B\",\n  \"city\": \"Austin\",\n  \"state\": \"TX\",\n  \"zipCode\": \"78701-1234\",\n  \"nickname\": \"Downtown Condo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "Create a property with extended ZIP+4 format"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Properties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "List all properties for the authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Property by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties", "{{propertyId}}"]
+						},
+						"description": "Get a specific property by ID (uses saved propertyId variable or replace with actual UUID)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Property (Partial)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nickname\": \"Updated Property Name\",\n  \"purchasePrice\": 475000\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties", "{{propertyId}}"]
+						},
+						"description": "Update specific fields of a property (partial update)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Property (Full)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"123 Main Street\",\n  \"city\": \"Springfield\",\n  \"state\": \"CA\",\n  \"zipCode\": \"90210\",\n  \"nickname\": \"Fully Updated Property\",\n  \"purchaseDate\": \"2023-06-01T00:00:00.000Z\",\n  \"purchasePrice\": 500000\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties", "{{propertyId}}"]
+						},
+						"description": "Update all fields of a property"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Property",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties", "{{propertyId}}"]
+						},
+						"description": "Delete a property by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Validation Examples",
+			"item": [
+				{
+					"name": "Invalid State (Should Fail)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"123 Test Street\",\n  \"city\": \"Test City\",\n  \"state\": \"California\",\n  \"zipCode\": \"90210\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "Test validation: State must be exactly 2 characters (e.g., CA)"
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid ZIP Code (Should Fail)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"123 Test Street\",\n  \"city\": \"Test City\",\n  \"state\": \"CA\",\n  \"zipCode\": \"9021\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "Test validation: ZIP code must be 5 digits or 5+4 format (12345 or 12345-6789)"
+					},
+					"response": []
+				},
+				{
+					"name": "Missing Required Fields (Should Fail)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"123 Test Street\",\n  \"nickname\": \"Missing required fields\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "Test validation: Missing required fields (city, state, zipCode)"
+					},
+					"response": []
+				},
+				{
+					"name": "Negative Purchase Price (Should Fail)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"123 Test Street\",\n  \"city\": \"Test City\",\n  \"state\": \"CA\",\n  \"zipCode\": \"90210\",\n  \"purchasePrice\": -100000\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "properties"]
+						},
+						"description": "Test validation: Purchase price must be positive"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

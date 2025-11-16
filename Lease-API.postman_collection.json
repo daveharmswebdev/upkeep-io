@@ -1,0 +1,369 @@
+{
+	"info": {
+		"_postman_id": "lease-api-collection",
+		"name": "Upkeep.io - Lease API",
+		"description": "Complete API collection for managing leases with multiple lessees and occupants",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "your-jwt-token-here",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Leases",
+			"item": [
+				{
+					"name": "Create Lease with Single Lessee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"propertyId\": \"<property-uuid>\",\n  \"startDate\": \"2025-01-01\",\n  \"endDate\": \"2025-12-31\",\n  \"monthlyRent\": 2000,\n  \"securityDeposit\": 4000,\n  \"depositPaidDate\": \"2025-01-01\",\n  \"notes\": \"One year lease\",\n  \"lessees\": [\n    {\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Doe\",\n      \"email\": \"jane.doe@example.com\",\n      \"phone\": \"555-0101\",\n      \"signedDate\": \"2024-12-15\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases"]
+						},
+						"description": "Scenario 1: Create a new lease with a single lessee (inline person creation)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lease with Multiple Lessees (Couple)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"propertyId\": \"<property-uuid>\",\n  \"startDate\": \"2025-01-01\",\n  \"endDate\": \"2025-12-31\",\n  \"monthlyRent\": 2500,\n  \"securityDeposit\": 5000,\n  \"notes\": \"Couple lease\",\n  \"lessees\": [\n    {\n      \"firstName\": \"John\",\n      \"lastName\": \"Smith\",\n      \"email\": \"john.smith@example.com\",\n      \"phone\": \"555-0201\",\n      \"signedDate\": \"2024-12-20\"\n    },\n    {\n      \"firstName\": \"Mary\",\n      \"lastName\": \"Smith\",\n      \"email\": \"mary.smith@example.com\",\n      \"phone\": \"555-0202\",\n      \"signedDate\": \"2024-12-20\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases"]
+						},
+						"description": "Scenario 3: Create a lease with multiple lessees (couple signing together)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lease with Family (Lessees + Occupants)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"propertyId\": \"<property-uuid>\",\n  \"startDate\": \"2025-02-01\",\n  \"monthlyRent\": 3000,\n  \"securityDeposit\": 6000,\n  \"notes\": \"Family with children\",\n  \"lessees\": [\n    {\n      \"firstName\": \"Bob\",\n      \"lastName\": \"Johnson\",\n      \"email\": \"bob.johnson@example.com\",\n      \"phone\": \"555-0301\"\n    },\n    {\n      \"firstName\": \"Alice\",\n      \"lastName\": \"Johnson\",\n      \"email\": \"alice.johnson@example.com\",\n      \"phone\": \"555-0302\"\n    }\n  ],\n  \"occupants\": [\n    {\n      \"firstName\": \"Tommy\",\n      \"lastName\": \"Johnson\",\n      \"isAdult\": false,\n      \"moveInDate\": \"2025-02-01\"\n    },\n    {\n      \"firstName\": \"Sally\",\n      \"lastName\": \"Johnson\",\n      \"isAdult\": false,\n      \"moveInDate\": \"2025-02-01\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases"]
+						},
+						"description": "Scenario 4: Family with two lessees (parents) and two child occupants"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lease with Adult Occupant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"propertyId\": \"<property-uuid>\",\n  \"startDate\": \"2025-03-01\",\n  \"monthlyRent\": 1800,\n  \"notes\": \"Primary lessee with roommate occupant\",\n  \"lessees\": [\n    {\n      \"firstName\": \"Sarah\",\n      \"lastName\": \"Williams\",\n      \"email\": \"sarah.williams@example.com\",\n      \"phone\": \"555-0401\"\n    }\n  ],\n  \"occupants\": [\n    {\n      \"firstName\": \"Mike\",\n      \"lastName\": \"Brown\",\n      \"email\": \"mike.brown@example.com\",\n      \"phone\": \"555-0402\",\n      \"isAdult\": true,\n      \"moveInDate\": \"2025-03-01\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases"]
+						},
+						"description": "Scenario 5: One lessee with adult occupant (requires email/phone)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Leases",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/leases",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases"]
+						},
+						"description": "List all leases for the authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lease by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/<lease-id>",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "<lease-id>"]
+						},
+						"description": "Get specific lease with all lessees and occupants"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Leases by Property",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/property/<property-id>",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "property", "<property-id>"]
+						},
+						"description": "Get all leases for a specific property"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Lease",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monthlyRent\": 2200,\n  \"status\": \"MONTH_TO_MONTH\",\n  \"notes\": \"Converted to month-to-month after year lease\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/<lease-id>",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "<lease-id>"]
+						},
+						"description": "Scenario 2: Update lease to month-to-month status"
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete Lease",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/<lease-id>",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "<lease-id>"]
+						},
+						"description": "Soft delete a lease (sets deletedAt timestamp)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lessee Management",
+			"item": [
+				{
+					"name": "Add Lessee to Existing Lease",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"personId\": \"<existing-person-uuid>\",\n  \"signedDate\": \"2025-06-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/<lease-id>/lessees",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "<lease-id>", "lessees"]
+						},
+						"description": "Add an existing person as a lessee to a lease"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Lessee (Void & Create New Lease)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"voidedReason\": \"Couple split up - one person moved out\",\n  \"newLeaseData\": {\n    \"startDate\": \"2025-07-01\",\n    \"monthlyRent\": 1800,\n    \"notes\": \"Sole lessee after breakup\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/<lease-id>/lessees/<person-id>",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "<lease-id>", "lessees", "<person-id>"]
+						},
+						"description": "Scenario 3: Remove lessee from couple lease, void old lease, create new lease with remaining lessee"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Occupant Management",
+			"item": [
+				{
+					"name": "Add Occupant to Lease",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"personId\": \"<existing-person-uuid>\",\n  \"isAdult\": false,\n  \"moveInDate\": \"2025-08-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/<lease-id>/occupants",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "<lease-id>", "occupants"]
+						},
+						"description": "Add an existing person as an occupant to a lease"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Occupant from Lease",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/leases/<lease-id>/occupants/<occupant-id>",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "leases", "<lease-id>", "occupants", "<occupant-id>"]
+						},
+						"description": "Soft delete an occupant from a lease"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
