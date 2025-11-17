@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-8">
-    <div class="max-w-4xl mx-auto px-4">
-      <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+    <div class="max-w-4xl mx-auto px-2 sm:px-4">
+      <div class="bg-white p-4 md:p-6 lg:p-8 rounded-lg shadow-lg">
         <!-- Back Button -->
         <button
           type="button"
@@ -24,20 +24,25 @@
               Enter the lease term and financial information. Leave end date blank for month-to-month leases.
             </p>
 
-            <FormInput
-              name="startDate"
-              label="Start Date"
-              type="date"
-              :required="true"
-            />
+            <!-- Two-column grid for Lease Details -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
+              <!-- Left Column -->
+              <FormInput
+                name="startDate"
+                label="Start Date"
+                type="date"
+                :required="true"
+              />
 
-            <FormInput
-              name="endDate"
-              label="End Date (Optional)"
-              type="date"
-            />
+              <!-- Right Column -->
+              <FormInput
+                name="endDate"
+                label="End Date (Optional)"
+                type="date"
+              />
 
-            <div class="mb-4">
+              <!-- Left Column - Money input -->
+              <div class="mb-4">
               <label for="monthlyRent" class="block mb-2 text-gray-700 font-medium">
                 Monthly Rent (Optional)
               </label>
@@ -59,9 +64,10 @@
                 />
               </div>
               <p v-if="errors.monthlyRent" class="text-primary-400 text-sm mt-1">{{ errors.monthlyRent }}</p>
-            </div>
+              </div>
 
-            <div class="mb-4">
+              <!-- Right Column - Money input -->
+              <div class="mb-4">
               <label for="securityDeposit" class="block mb-2 text-gray-700 font-medium">
                 Security Deposit (Optional)
               </label>
@@ -83,15 +89,18 @@
                 />
               </div>
               <p v-if="errors.securityDeposit" class="text-primary-400 text-sm mt-1">{{ errors.securityDeposit }}</p>
-            </div>
+              </div>
 
-            <FormInput
-              name="depositPaidDate"
-              label="Deposit Paid Date (Optional)"
-              type="date"
-            />
+              <!-- Left Column -->
+              <FormInput
+                name="depositPaidDate"
+                label="Deposit Paid Date (Optional)"
+                type="date"
+              />
 
-            <div class="mb-4">
+              <!-- Notes Textarea - Full width (span both columns) -->
+              <div class="lg:col-span-2">
+                <div class="mb-4">
               <label for="notes" class="block mb-2 text-gray-700 font-medium">
                 Notes (Optional)
               </label>
@@ -109,6 +118,8 @@
                 }"
               ></textarea>
               <p v-if="errors.notes" class="text-primary-400 text-sm mt-1">{{ errors.notes }}</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -121,47 +132,56 @@
               Enter contact information for the primary lessee.
             </p>
 
-            <FormInput
-              name="lessees[0].firstName"
-              label="First Name"
-              placeholder="John"
-              :required="true"
-            />
+            <!-- Two-column grid for Lessee -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
+              <!-- Left Column -->
+              <FormInput
+                name="lessees[0].firstName"
+                label="First Name"
+                placeholder="John"
+                :required="true"
+              />
 
-            <FormInput
-              name="lessees[0].lastName"
-              label="Last Name"
-              placeholder="Doe"
-              :required="true"
-            />
+              <!-- Right Column -->
+              <FormInput
+                name="lessees[0].lastName"
+                label="Last Name"
+                placeholder="Doe"
+                :required="true"
+              />
 
-            <FormInput
-              name="lessees[0].middleName"
-              label="Middle Name (Optional)"
-              placeholder="M"
-            />
+              <!-- Left Column -->
+              <FormInput
+                name="lessees[0].middleName"
+                label="Middle Name (Optional)"
+                placeholder="M"
+              />
 
-            <FormInput
-              name="lessees[0].email"
-              label="Email"
-              type="email"
-              placeholder="john.doe@example.com"
-              :required="true"
-            />
+              <!-- Right Column -->
+              <FormInput
+                name="lessees[0].phone"
+                label="Phone"
+                type="tel"
+                placeholder="555-123-4567"
+                :required="true"
+              />
 
-            <FormInput
-              name="lessees[0].phone"
-              label="Phone"
-              type="tel"
-              placeholder="555-123-4567"
-              :required="true"
-            />
+              <!-- Left Column -->
+              <FormInput
+                name="lessees[0].email"
+                label="Email"
+                type="email"
+                placeholder="john.doe@example.com"
+                :required="true"
+              />
 
-            <FormInput
-              name="lessees[0].signedDate"
-              label="Signed Date (Optional)"
-              type="date"
-            />
+              <!-- Right Column -->
+              <FormInput
+                name="lessees[0].signedDate"
+                label="Signed Date (Optional)"
+                type="date"
+              />
+            </div>
           </div>
 
           <div v-if="submitError" class="mb-4 p-3 bg-primary-100 text-primary-500 rounded">

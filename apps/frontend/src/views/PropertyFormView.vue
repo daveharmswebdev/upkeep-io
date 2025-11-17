@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-8">
-    <div class="max-w-4xl mx-auto px-4">
-      <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+    <div class="max-w-4xl mx-auto px-2 sm:px-4">
+      <div class="bg-white p-4 md:p-6 lg:p-8 rounded-lg shadow-lg">
         <!-- Back Button -->
         <button
           type="button"
@@ -17,47 +17,58 @@
         <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800">Add Property</h1>
 
         <form @submit="onSubmit">
-          <FormInput
-            name="address"
-            label="Address"
-            placeholder="123 Main St"
-            :required="true"
-          />
+          <!-- Two-column grid for laptop, single column for mobile/tablet -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
+            <!-- Address - Full width on all screens -->
+            <div class="lg:col-span-2">
+              <FormInput
+                name="address"
+                label="Address"
+                placeholder="123 Main St"
+                :required="true"
+              />
+            </div>
 
-          <FormInput
-            name="city"
-            label="City"
-            placeholder="San Francisco"
-            :required="true"
-          />
+            <!-- Left Column -->
+            <FormInput
+              name="city"
+              label="City"
+              placeholder="San Francisco"
+              :required="true"
+            />
 
-          <FormInput
-            name="state"
-            label="State"
-            placeholder="CA"
-            :required="true"
-          />
+            <!-- Right Column -->
+            <FormInput
+              name="zipCode"
+              label="ZIP Code"
+              placeholder="94102"
+              :required="true"
+            />
 
-          <FormInput
-            name="zipCode"
-            label="ZIP Code"
-            placeholder="94102"
-            :required="true"
-          />
+            <!-- Left Column -->
+            <FormInput
+              name="state"
+              label="State"
+              placeholder="CA"
+              :required="true"
+            />
 
-          <FormInput
-            name="nickname"
-            label="Nickname (Optional)"
-            placeholder="Downtown Apartment"
-          />
+            <!-- Right Column -->
+            <FormInput
+              name="purchaseDate"
+              label="Purchase Date (Optional)"
+              type="date"
+            />
 
-          <FormInput
-            name="purchaseDate"
-            label="Purchase Date (Optional)"
-            type="date"
-          />
+            <!-- Left Column -->
+            <FormInput
+              name="nickname"
+              label="Nickname (Optional)"
+              placeholder="Downtown Apartment"
+            />
 
-          <div class="mb-4">
+            <!-- Right Column - Money input -->
+            <div class="mb-4">
             <label for="purchasePrice" class="block mb-2 text-gray-700 font-medium">
               Purchase Price (Optional)
             </label>
@@ -79,9 +90,11 @@
               />
             </div>
             <p v-if="errors.purchasePrice" class="text-primary-400 text-sm mt-1">{{ errors.purchasePrice }}</p>
+            </div>
           </div>
 
-          <div v-if="submitError" class="mb-4 p-3 bg-primary-100 text-primary-500 rounded">
+          <!-- Error Message and Buttons - Full width below grid -->
+          <div v-if="submitError" class="mt-4 mb-4 p-3 bg-primary-100 text-primary-500 rounded">
             {{ submitError }}
           </div>
 
