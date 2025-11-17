@@ -1,7 +1,10 @@
 <template>
   <div
-    class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer"
+    class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-complement-300 focus:ring-offset-2"
+    tabindex="0"
+    role="button"
     @click="handleClick"
+    @keydown.enter="handleClick"
   >
     <div class="flex justify-between items-start mb-3">
       <div class="flex-1">
@@ -30,7 +33,7 @@
     <div v-if="property.purchasePrice || property.purchaseDate" class="mt-4 pt-4 border-t border-gray-200">
       <div class="flex justify-between text-sm">
         <span v-if="property.purchasePrice" class="text-gray-600">
-          Purchase Price: <span class="font-medium text-gray-800">${{ formatPrice(property.purchasePrice) }}</span>
+          Purchase Price: <span class="font-semibold text-complement-500">${{ formatPrice(property.purchasePrice) }}</span>
         </span>
         <span v-if="property.purchaseDate" class="text-gray-600">
           {{ formatDate(property.purchaseDate, 'short') }}
