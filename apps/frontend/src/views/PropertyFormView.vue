@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-8">
-    <div class="max-w-2xl mx-auto px-4">
+    <div class="max-w-4xl mx-auto px-4">
       <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
         <!-- Back Button -->
         <button
