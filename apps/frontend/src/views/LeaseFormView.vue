@@ -17,170 +17,157 @@
         <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800">Add Lease</h1>
 
         <form @submit="onSubmit">
-          <!-- Lease Details Section -->
-          <div class="mb-6">
-            <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">Lease Details</h2>
-            <p class="text-sm text-gray-600 mb-4">
-              Enter the lease term and financial information. Leave end date blank for month-to-month leases.
-            </p>
+          <!-- Two-column layout: Lessee (left) and Lease Details (right) -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 mb-6">
+            <!-- LEFT COLUMN: Lessee Section -->
+            <div>
+              <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">
+                Lessee <span class="text-primary-400">*</span>
+              </h2>
+              <p class="text-sm text-gray-600 mb-4">
+                Enter contact information for the primary lessee.
+              </p>
 
-            <!-- Two-column grid for Lease Details -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
-              <!-- Left Column -->
-              <FormInput
-                name="startDate"
-                label="Start Date"
-                type="date"
-                :required="true"
-              />
-
-              <!-- Right Column -->
-              <FormInput
-                name="endDate"
-                label="End Date (Optional)"
-                type="date"
-              />
-
-              <!-- Left Column - Money input -->
-              <div class="mb-4">
-              <label for="monthlyRent" class="block mb-2 text-gray-700 font-medium">
-                Monthly Rent (Optional)
-              </label>
-              <div class="relative">
-                <span class="absolute left-3 top-2 text-gray-500">$</span>
-                <input
-                  id="monthlyRent"
-                  name="monthlyRent"
-                  type="number"
-                  step="0.01"
-                  :value="values.monthlyRent"
-                  @input="handleMoneyInput('monthlyRent', $event)"
-                  placeholder="0.00"
-                  class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
-                  :class="{
-                    'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.monthlyRent,
-                    'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.monthlyRent,
-                  }"
+              <div class="space-y-4">
+                <FormInput
+                  name="lessees[0].firstName"
+                  label="First Name"
+                  placeholder="John"
+                  :required="true"
                 />
-              </div>
-              <p v-if="errors.monthlyRent" class="text-primary-400 text-sm mt-1">{{ errors.monthlyRent }}</p>
-              </div>
 
-              <!-- Right Column - Money input -->
-              <div class="mb-4">
-              <label for="securityDeposit" class="block mb-2 text-gray-700 font-medium">
-                Security Deposit (Optional)
-              </label>
-              <div class="relative">
-                <span class="absolute left-3 top-2 text-gray-500">$</span>
-                <input
-                  id="securityDeposit"
-                  name="securityDeposit"
-                  type="number"
-                  step="0.01"
-                  :value="values.securityDeposit"
-                  @input="handleMoneyInput('securityDeposit', $event)"
-                  placeholder="0.00"
-                  class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
-                  :class="{
-                    'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.securityDeposit,
-                    'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.securityDeposit,
-                  }"
+                <FormInput
+                  name="lessees[0].lastName"
+                  label="Last Name"
+                  placeholder="Doe"
+                  :required="true"
                 />
-              </div>
-              <p v-if="errors.securityDeposit" class="text-primary-400 text-sm mt-1">{{ errors.securityDeposit }}</p>
-              </div>
 
-              <!-- Left Column -->
-              <FormInput
-                name="depositPaidDate"
-                label="Deposit Paid Date (Optional)"
-                type="date"
-              />
+                <FormInput
+                  name="lessees[0].middleName"
+                  label="Middle Name (Optional)"
+                  placeholder="M"
+                />
 
-              <!-- Notes Textarea - Full width (span both columns) -->
-              <div class="lg:col-span-2">
-                <div class="mb-4">
-              <label for="notes" class="block mb-2 text-gray-700 font-medium">
-                Notes (Optional)
-              </label>
-              <textarea
-                id="notes"
-                name="notes"
-                :value="values.notes"
-                @input="handleTextareaInput"
-                placeholder="Additional lease notes..."
-                rows="3"
-                class="w-full px-3 py-2 border rounded focus:outline-none transition-colors"
-                :class="{
-                  'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.notes,
-                  'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.notes,
-                }"
-              ></textarea>
-              <p v-if="errors.notes" class="text-primary-400 text-sm mt-1">{{ errors.notes }}</p>
-                </div>
+                <FormInput
+                  name="lessees[0].phone"
+                  label="Phone"
+                  type="tel"
+                  placeholder="555-123-4567"
+                  :required="true"
+                />
+
+                <FormInput
+                  name="lessees[0].email"
+                  label="Email"
+                  type="email"
+                  placeholder="john.doe@example.com"
+                  :required="true"
+                />
+
+                <FormInput
+                  name="lessees[0].signedDate"
+                  label="Signed Date (Optional)"
+                  type="date"
+                />
               </div>
             </div>
-          </div>
 
-          <!-- Lessee Section -->
-          <div class="mb-6">
-            <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">
-              Lessee <span class="text-primary-400">*</span>
-            </h2>
-            <p class="text-sm text-gray-600 mb-4">
-              Enter contact information for the primary lessee.
-            </p>
+            <!-- RIGHT COLUMN: Lease Details Section -->
+            <div>
+              <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">Lease Details</h2>
+              <p class="text-sm text-gray-600 mb-4">
+                Enter the lease term and financial information. Leave end date blank for month-to-month leases.
+              </p>
 
-            <!-- Two-column grid for Lessee -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
-              <!-- Left Column -->
-              <FormInput
-                name="lessees[0].firstName"
-                label="First Name"
-                placeholder="John"
-                :required="true"
-              />
+              <div class="space-y-4">
+                <FormInput
+                  name="startDate"
+                  label="Start Date"
+                  type="date"
+                  :required="true"
+                />
 
-              <!-- Right Column -->
-              <FormInput
-                name="lessees[0].lastName"
-                label="Last Name"
-                placeholder="Doe"
-                :required="true"
-              />
+                <FormInput
+                  name="endDate"
+                  label="End Date (Optional)"
+                  type="date"
+                />
 
-              <!-- Left Column -->
-              <FormInput
-                name="lessees[0].middleName"
-                label="Middle Name (Optional)"
-                placeholder="M"
-              />
+                <div>
+                  <label for="monthlyRent" class="block mb-2 text-gray-700 font-medium">
+                    Monthly Rent (Optional)
+                  </label>
+                  <div class="relative">
+                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                    <input
+                      id="monthlyRent"
+                      name="monthlyRent"
+                      type="number"
+                      step="0.01"
+                      :value="values.monthlyRent"
+                      @input="handleMoneyInput('monthlyRent', $event)"
+                      placeholder="0.00"
+                      class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
+                      :class="{
+                        'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.monthlyRent,
+                        'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.monthlyRent,
+                      }"
+                    />
+                  </div>
+                  <p v-if="errors.monthlyRent" class="text-primary-400 text-sm mt-1">{{ errors.monthlyRent }}</p>
+                </div>
 
-              <!-- Right Column -->
-              <FormInput
-                name="lessees[0].phone"
-                label="Phone"
-                type="tel"
-                placeholder="555-123-4567"
-                :required="true"
-              />
+                <div>
+                  <label for="securityDeposit" class="block mb-2 text-gray-700 font-medium">
+                    Security Deposit (Optional)
+                  </label>
+                  <div class="relative">
+                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                    <input
+                      id="securityDeposit"
+                      name="securityDeposit"
+                      type="number"
+                      step="0.01"
+                      :value="values.securityDeposit"
+                      @input="handleMoneyInput('securityDeposit', $event)"
+                      placeholder="0.00"
+                      class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
+                      :class="{
+                        'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.securityDeposit,
+                        'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.securityDeposit,
+                      }"
+                    />
+                  </div>
+                  <p v-if="errors.securityDeposit" class="text-primary-400 text-sm mt-1">{{ errors.securityDeposit }}</p>
+                </div>
 
-              <!-- Left Column -->
-              <FormInput
-                name="lessees[0].email"
-                label="Email"
-                type="email"
-                placeholder="john.doe@example.com"
-                :required="true"
-              />
+                <FormInput
+                  name="depositPaidDate"
+                  label="Deposit Paid Date (Optional)"
+                  type="date"
+                />
 
-              <!-- Right Column -->
-              <FormInput
-                name="lessees[0].signedDate"
-                label="Signed Date (Optional)"
-                type="date"
-              />
+                <div>
+                  <label for="notes" class="block mb-2 text-gray-700 font-medium">
+                    Notes (Optional)
+                  </label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    :value="values.notes"
+                    @input="handleTextareaInput"
+                    placeholder="Additional lease notes..."
+                    rows="3"
+                    class="w-full px-3 py-2 border rounded focus:outline-none transition-colors"
+                    :class="{
+                      'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.notes,
+                      'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.notes,
+                    }"
+                  ></textarea>
+                  <p v-if="errors.notes" class="text-primary-400 text-sm mt-1">{{ errors.notes }}</p>
+                </div>
+              </div>
             </div>
           </div>
 
