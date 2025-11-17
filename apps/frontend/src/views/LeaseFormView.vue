@@ -1,13 +1,28 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-8">
     <div class="max-w-2xl mx-auto px-4">
-      <div class="bg-white p-8 rounded-lg shadow-lg">
+      <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+        <!-- Back Button -->
+        <button
+          type="button"
+          @click="handleCancel"
+          class="text-gray-600 hover:text-gray-800 flex items-center gap-2 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Property
+        </button>
+
         <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800">Add Lease</h1>
 
         <form @submit="onSubmit">
           <!-- Lease Details Section -->
           <div class="mb-6">
-            <h2 class="text-xl font-heading font-semibold mb-4 text-gray-700">Lease Details</h2>
+            <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">Lease Details</h2>
+            <p class="text-sm text-gray-600 mb-4">
+              Enter the lease term and financial information. Leave end date blank for month-to-month leases.
+            </p>
 
             <FormInput
               name="startDate"
@@ -99,9 +114,12 @@
 
           <!-- Lessee Section -->
           <div class="mb-6">
-            <h2 class="text-xl font-heading font-semibold mb-4 text-gray-700">
+            <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">
               Lessee <span class="text-primary-400">*</span>
             </h2>
+            <p class="text-sm text-gray-600 mb-4">
+              Enter contact information for the primary lessee.
+            </p>
 
             <FormInput
               name="lessees[0].firstName"
@@ -150,18 +168,21 @@
             {{ submitError }}
           </div>
 
-          <div class="flex gap-4">
+          <div class="flex flex-col sm:flex-row gap-4">
             <button
               type="submit"
               :disabled="!meta.valid || isSubmitting"
-              class="flex-1 px-6 py-3 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              class="w-full sm:flex-1 px-6 py-3 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-complement-300 focus:ring-offset-2"
             >
+              <svg v-if="!isSubmitting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               {{ isSubmitting ? 'Creating...' : 'Create Lease' }}
             </button>
             <button
               type="button"
               @click="handleCancel"
-              class="px-6 py-3 bg-gray-200 text-gray-700 rounded font-medium hover:bg-gray-300 transition-colors"
+              class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 rounded font-medium hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
             >
               Cancel
             </button>
