@@ -5,8 +5,11 @@
         <h1 class="text-2xl font-heading font-bold text-gray-800">Properties</h1>
         <button
           @click="handleAddProperty"
-          class="px-6 py-2 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 transition-colors"
+          class="px-6 py-2 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 transition-colors flex items-center gap-2"
         >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
           Add Property
         </button>
       </div>
@@ -15,7 +18,12 @@
     <main class="max-w-7xl mx-auto px-4 py-8">
       <!-- Loading State -->
       <div v-if="propertyStore.loading" class="flex justify-center items-center py-20">
-        <div class="text-gray-600">Loading properties...</div>
+        <div class="flex items-center gap-3 text-gray-600">
+          <svg class="w-6 h-6 animate-spin text-complement-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Loading properties...</span>
+        </div>
       </div>
 
       <!-- Error State -->
@@ -26,12 +34,18 @@
       <!-- Empty State -->
       <div v-else-if="propertyStore.properties.length === 0" class="text-center py-20">
         <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow">
+          <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
           <h2 class="text-xl font-heading font-semibold text-gray-800 mb-4">No Properties Yet</h2>
           <p class="text-gray-600 mb-6">Get started by adding your first rental property.</p>
           <button
             @click="handleAddProperty"
-            class="px-6 py-3 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 transition-colors"
+            class="px-6 py-3 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 transition-colors flex items-center gap-2 mx-auto"
           >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
             Add Your First Property
           </button>
         </div>
