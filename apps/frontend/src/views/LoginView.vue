@@ -44,29 +44,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { extractErrorMessage } from '@/utils/errorHandlers';
+import { useAuthForm } from '@/composables/useAuthForm';
 
-const router = useRouter();
 const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
-const loading = ref(false);
-const error = ref('');
 
-async function handleLogin() {
-  loading.value = true;
-  error.value = '';
+const { loading, error, submitAuth } = useAuthForm();
 
-  try {
-    await authStore.login(email.value, password.value);
-    router.push('/dashboard');
-  } catch (err: any) {
-    error.value = extractErrorMessage(err, 'Login failed. Please try again.');
-  } finally {
-    loading.value = false;
-  }
-}
+const handleLogin = () =>
+  submitAuth(
+    () => authStore.login(email.value, password.value),
+    '/dashboard',
+    'Login failed. Please try again.'
+  );
 </script>

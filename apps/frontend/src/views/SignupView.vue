@@ -55,30 +55,21 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { extractErrorMessage } from '@/utils/errorHandlers';
+import { useAuthForm } from '@/composables/useAuthForm';
 
-const router = useRouter();
 const authStore = useAuthStore();
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
-const loading = ref(false);
-const error = ref('');
 
-async function handleSignup() {
-  loading.value = true;
-  error.value = '';
+const { loading, error, submitAuth } = useAuthForm();
 
-  try {
-    await authStore.signup(email.value, password.value, name.value);
-    router.push('/dashboard');
-  } catch (err: any) {
-    error.value = extractErrorMessage(err, 'Signup failed. Please try again.');
-  } finally {
-    loading.value = false;
-  }
-}
+const handleSignup = () =>
+  submitAuth(
+    () => authStore.signup(email.value, password.value, name.value),
+    '/dashboard',
+    'Signup failed. Please try again.'
+  );
 </script>

@@ -96,48 +96,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { createPropertySchema } from '@validators/property';
 import { usePropertyStore } from '@/stores/property';
-import { useToast } from 'vue-toastification';
 import FormInput from '@/components/FormInput.vue';
 import { convertFormDates } from '@/utils/dateHelpers';
-import { extractErrorMessage } from '@/utils/errorHandlers';
+import { useFormSubmission } from '@/composables/useFormSubmission';
+import { useMoneyInput } from '@/composables/useMoneyInput';
 import type { CreatePropertyData } from '@domain/entities';
 
 const router = useRouter();
 const propertyStore = usePropertyStore();
-const toast = useToast();
-const submitError = ref('');
 
-const { handleSubmit, errors, values, meta, isSubmitting, setFieldValue } = useForm({
+const { handleSubmit, errors, values, meta, setFieldValue } = useForm({
   validationSchema: toTypedSchema(createPropertySchema),
   validateOnMount: false,
 });
 
-const handlePriceInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const value = target.value ? parseFloat(target.value) : undefined;
-  setFieldValue('purchasePrice', value);
-};
+const { createMoneyInputHandler } = useMoneyInput();
+const handlePriceInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'purchasePrice');
 
-const onSubmit = handleSubmit(async (formValues) => {
-  submitError.value = '';
-  try {
-    // Convert date string to Date object if provided
+const { submitError, isSubmitting, submit } = useFormSubmission(
+  async (formValues: any) => {
     const data = convertFormDates(formValues, ['purchaseDate']) as Omit<CreatePropertyData, 'userId'>;
-
     await propertyStore.createProperty(data);
-    toast.success('Property created successfully');
-    router.push('/properties');
-  } catch (err: any) {
-    submitError.value = extractErrorMessage(err, 'Failed to create property. Please try again.');
-    toast.error(submitError.value);
+  },
+  {
+    successMessage: 'Property created successfully',
+    successRoute: '/properties',
+    errorMessage: 'Failed to create property. Please try again.'
   }
-});
+);
+
+const onSubmit = handleSubmit(submit);
 
 const handleCancel = () => {
   router.push('/properties');
