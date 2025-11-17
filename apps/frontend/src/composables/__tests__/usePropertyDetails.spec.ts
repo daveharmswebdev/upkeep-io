@@ -226,8 +226,8 @@ describe('usePropertyDetails', () => {
     it('should return active lease when one exists', () => {
       const propertyId = ref('property-123');
       const activeLease = { id: 'lease-1', status: LeaseStatus.ACTIVE };
-      const terminatedLease = { id: 'lease-2', status: LeaseStatus.MONTH_TO_MONTH };
-      mockLeaseStore.leases = [activeLease, terminatedLease];
+      const endedLease = { id: 'lease-2', status: LeaseStatus.ENDED };
+      mockLeaseStore.leases = [activeLease, endedLease];
 
       const { activeLease: activeLeaseComputed } = usePropertyDetails(propertyId);
 
@@ -237,8 +237,8 @@ describe('usePropertyDetails', () => {
     it('should return undefined when no active lease', () => {
       const propertyId = ref('property-123');
       mockLeaseStore.leases = [
-        { id: 'lease-1', status: LeaseStatus.MONTH_TO_MONTH },
-        { id: 'lease-2', status: LeaseStatus.MONTH_TO_MONTH }
+        { id: 'lease-1', status: LeaseStatus.ENDED },
+        { id: 'lease-2', status: LeaseStatus.VOIDED }
       ];
 
       const { activeLease } = usePropertyDetails(propertyId);
@@ -249,8 +249,8 @@ describe('usePropertyDetails', () => {
     it('should return historical leases (non-active)', () => {
       const propertyId = ref('property-123');
       const lease1 = { id: 'lease-1', status: LeaseStatus.ACTIVE };
-      const lease2 = { id: 'lease-2', status: LeaseStatus.MONTH_TO_MONTH };
-      const lease3 = { id: 'lease-3', status: LeaseStatus.MONTH_TO_MONTH };
+      const lease2 = { id: 'lease-2', status: LeaseStatus.ENDED };
+      const lease3 = { id: 'lease-3', status: LeaseStatus.VOIDED };
       mockLeaseStore.leases = [lease1, lease2, lease3];
 
       const { historicalLeases } = usePropertyDetails(propertyId);
@@ -272,14 +272,49 @@ describe('usePropertyDetails', () => {
     it('should return all leases as historical when none are active', () => {
       const propertyId = ref('property-123');
       const leases = [
-        { id: 'lease-1', status: LeaseStatus.MONTH_TO_MONTH },
-        { id: 'lease-2', status: LeaseStatus.MONTH_TO_MONTH }
+        { id: 'lease-1', status: LeaseStatus.ENDED },
+        { id: 'lease-2', status: LeaseStatus.VOIDED }
       ];
       mockLeaseStore.leases = leases;
 
       const { historicalLeases } = usePropertyDetails(propertyId);
 
       expect(historicalLeases.value).toEqual(leases);
+    });
+
+    it('should return MONTH_TO_MONTH lease as active', () => {
+      const propertyId = ref('property-123');
+      const monthToMonthLease = { id: 'lease-1', status: LeaseStatus.MONTH_TO_MONTH };
+      const endedLease = { id: 'lease-2', status: LeaseStatus.ENDED };
+      mockLeaseStore.leases = [monthToMonthLease, endedLease];
+
+      const { activeLease } = usePropertyDetails(propertyId);
+
+      expect(activeLease.value).toEqual(monthToMonthLease);
+    });
+
+    it('should exclude MONTH_TO_MONTH leases from historical leases', () => {
+      const propertyId = ref('property-123');
+      const activeLease = { id: 'lease-1', status: LeaseStatus.ACTIVE };
+      const monthToMonthLease = { id: 'lease-2', status: LeaseStatus.MONTH_TO_MONTH };
+      const endedLease = { id: 'lease-3', status: LeaseStatus.ENDED };
+      mockLeaseStore.leases = [activeLease, monthToMonthLease, endedLease];
+
+      const { historicalLeases } = usePropertyDetails(propertyId);
+
+      expect(historicalLeases.value).toEqual([endedLease]);
+    });
+
+    it('should return first active lease when both ACTIVE and MONTH_TO_MONTH exist', () => {
+      const propertyId = ref('property-123');
+      const activeLease = { id: 'lease-1', status: LeaseStatus.ACTIVE };
+      const monthToMonthLease = { id: 'lease-2', status: LeaseStatus.MONTH_TO_MONTH };
+      mockLeaseStore.leases = [activeLease, monthToMonthLease];
+
+      const { activeLease: activeLeaseComputed } = usePropertyDetails(propertyId);
+
+      // Should return the first one found (ACTIVE)
+      expect(activeLeaseComputed.value).toEqual(activeLease);
     });
   });
 

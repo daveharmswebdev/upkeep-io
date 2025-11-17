@@ -43,6 +43,7 @@
           v-for="property in propertyStore.properties"
           :key="property.id"
           :property="property"
+          :lease-status="getPropertyLeaseStatus(property.id)"
           @click="handlePropertyClick"
         />
       </div>
@@ -51,22 +52,59 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import type { Property } from '@domain/entities';
+import { LeaseStatus } from '@domain/entities';
 import { usePropertyStore } from '@/stores/property';
+import { useLeaseStore } from '@/stores/lease';
+import { isActiveLease } from '@/utils/leaseHelpers';
 import PropertyCard from '@/components/PropertyCard.vue';
 
 const router = useRouter();
 const propertyStore = usePropertyStore();
+const leaseStore = useLeaseStore();
+
+// Map to store lease status for each property
+const propertyLeaseStatuses = ref<Map<string, LeaseStatus>>(new Map());
 
 onMounted(async () => {
   try {
     await propertyStore.fetchProperties();
+    // Fetch leases for all properties
+    await fetchAllPropertyLeases();
   } catch (error) {
     // Error is already handled in the store
   }
 });
+
+/**
+ * Fetch leases for all properties and store their active lease status
+ */
+const fetchAllPropertyLeases = async () => {
+  const fetchPromises = propertyStore.properties.map(async (property) => {
+    try {
+      const leases = await leaseStore.fetchLeasesByProperty(property.id);
+      // Find the active lease (ACTIVE or MONTH_TO_MONTH)
+      const activeLease = leases.find(lease => isActiveLease(lease.status));
+      if (activeLease) {
+        propertyLeaseStatuses.value.set(property.id, activeLease.status);
+      }
+    } catch (error) {
+      // Ignore errors for individual properties
+      console.error(`Failed to fetch leases for property ${property.id}`, error);
+    }
+  });
+
+  await Promise.all(fetchPromises);
+};
+
+/**
+ * Get the lease status for a specific property
+ */
+const getPropertyLeaseStatus = (propertyId: string): LeaseStatus | undefined => {
+  return propertyLeaseStatuses.value.get(propertyId);
+};
 
 const handleAddProperty = () => {
   router.push('/properties/add');

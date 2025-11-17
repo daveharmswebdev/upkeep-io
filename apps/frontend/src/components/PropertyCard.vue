@@ -12,8 +12,14 @@
           {{ property.address }}
         </p>
       </div>
-      <span class="px-3 py-1 bg-complement-100 text-complement-500 text-sm font-medium rounded-full">
-        Vacant
+      <span
+        :class="[
+          'px-3 py-1 text-sm font-medium rounded-full',
+          badgeClasses.bg,
+          badgeClasses.text
+        ]"
+      >
+        {{ statusText }}
       </span>
     </div>
 
@@ -35,11 +41,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { Property } from '@domain/entities';
+import { LeaseStatus } from '@domain/entities';
 import { formatPrice, formatDate } from '@/utils/formatters';
+import { getLeaseStatusDisplay, getLeaseStatusBadgeClass } from '@/utils/leaseHelpers';
 
 interface Props {
   property: Property;
+  leaseStatus?: LeaseStatus;
 }
 
 const props = defineProps<Props>();
@@ -51,4 +61,7 @@ const emit = defineEmits<{
 const handleClick = () => {
   emit('click', props.property);
 };
+
+const statusText = computed(() => getLeaseStatusDisplay(props.leaseStatus));
+const badgeClasses = computed(() => getLeaseStatusBadgeClass(props.leaseStatus));
 </script>

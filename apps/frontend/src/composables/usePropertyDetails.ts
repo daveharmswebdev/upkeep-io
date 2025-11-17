@@ -52,16 +52,22 @@ export function usePropertyDetails(propertyId: Ref<string>) {
 
   /**
    * Computed property for the active lease (if any)
+   * Includes both ACTIVE and MONTH_TO_MONTH leases
    */
   const activeLease = computed(() =>
-    leaseStore.leases.find(lease => lease.status === LeaseStatus.ACTIVE)
+    leaseStore.leases.find(lease =>
+      lease.status === LeaseStatus.ACTIVE || lease.status === LeaseStatus.MONTH_TO_MONTH
+    )
   );
 
   /**
    * Computed property for historical leases
+   * Excludes both ACTIVE and MONTH_TO_MONTH leases
    */
   const historicalLeases = computed(() =>
-    leaseStore.leases.filter(lease => lease.status !== LeaseStatus.ACTIVE)
+    leaseStore.leases.filter(lease =>
+      lease.status !== LeaseStatus.ACTIVE && lease.status !== LeaseStatus.MONTH_TO_MONTH
+    )
   );
 
   return {
