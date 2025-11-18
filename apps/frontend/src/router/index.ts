@@ -6,7 +6,6 @@ import DashboardView from '@/views/DashboardView.vue';
 import PropertyListView from '@/views/PropertyListView.vue';
 import PropertyFormView from '@/views/PropertyFormView.vue';
 import PropertyDetailsView from '@/views/PropertyDetailsView.vue';
-import TenantListView from '@/views/TenantListView.vue';
 import LeaseFormView from '@/views/LeaseFormView.vue';
 
 const router = createRouter({
@@ -56,12 +55,6 @@ const router = createRouter({
       path: '/properties/:id/leases/add',
       name: 'lease-add',
       component: LeaseFormView,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/tenants',
-      name: 'tenants',
-      component: TenantListView,
       meta: { requiresAuth: true },
     },
   ],

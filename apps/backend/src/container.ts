@@ -3,14 +3,12 @@ import { Container } from 'inversify';
 // Domain interfaces
 import { IUserRepository, IPropertyRepository } from './domain/repositories';
 import { IPersonRepository } from './domain/repositories/IPersonRepository';
-// import { ITenantRepository } from './domain/repositories/ITenantRepository';
 import { ILeaseRepository } from './domain/repositories/ILeaseRepository';
 import { IPasswordHasher, ITokenGenerator, ILogger } from './domain/services';
 
 // Infrastructure implementations
 import { PrismaUserRepository, PrismaPropertyRepository } from './infrastructure/repositories';
 import { PrismaPersonRepository } from './infrastructure/repositories/PrismaPersonRepository';
-// import { PrismaTenantRepository } from './infrastructure/repositories/PrismaTenantRepository';
 import { PrismaLeaseRepository } from './infrastructure/repositories/PrismaLeaseRepository';
 import { BcryptPasswordHasher, JwtTokenGenerator, ConsoleLogger } from './infrastructure/services';
 
@@ -23,15 +21,6 @@ import {
   UpdatePropertyUseCase,
   DeletePropertyUseCase,
 } from './application/property';
-// Tenant use cases commented out - Tenant entity replaced with Lease
-// import {
-//   CreateTenantUseCase,
-//   ListTenantsUseCase,
-//   GetTenantByIdUseCase,
-//   UpdateTenantUseCase,
-//   DeleteTenantUseCase,
-//   ListTenantsByPropertyUseCase,
-// } from './application/tenant';
 import { CreateLeaseUseCase } from './application/lease/CreateLeaseUseCase';
 import { GetLeaseByIdUseCase } from './application/lease/GetLeaseByIdUseCase';
 import { UpdateLeaseUseCase } from './application/lease/UpdateLeaseUseCase';
@@ -45,7 +34,6 @@ import { RemoveOccupantFromLeaseUseCase } from './application/lease/RemoveOccupa
 
 // Controllers
 import { AuthController, PropertyController } from './presentation/controllers';
-// import { TenantController } from './presentation/controllers/TenantController';
 import { LeaseController } from './presentation/controllers/LeaseController';
 
 export function createContainer(): Container {
@@ -66,12 +54,6 @@ export function createContainer(): Container {
     .bind<IPersonRepository>('IPersonRepository')
     .to(PrismaPersonRepository)
     .inTransientScope();
-
-  // Tenant repository commented out - Tenant entity replaced with Lease
-  // container
-  //   .bind<ITenantRepository>('ITenantRepository')
-  //   .to(PrismaTenantRepository)
-  //   .inTransientScope();
 
   container
     .bind<ILeaseRepository>('ILeaseRepository')
@@ -103,14 +85,6 @@ export function createContainer(): Container {
   container.bind(UpdatePropertyUseCase).toSelf().inTransientScope();
   container.bind(DeletePropertyUseCase).toSelf().inTransientScope();
 
-  // Tenant use cases commented out - Tenant entity replaced with Lease
-  // container.bind(CreateTenantUseCase).toSelf().inTransientScope();
-  // container.bind(ListTenantsUseCase).toSelf().inTransientScope();
-  // container.bind(GetTenantByIdUseCase).toSelf().inTransientScope();
-  // container.bind(UpdateTenantUseCase).toSelf().inTransientScope();
-  // container.bind(DeleteTenantUseCase).toSelf().inTransientScope();
-  // container.bind(ListTenantsByPropertyUseCase).toSelf().inTransientScope();
-
   container.bind(CreateLeaseUseCase).toSelf().inTransientScope();
   container.bind(GetLeaseByIdUseCase).toSelf().inTransientScope();
   container.bind(UpdateLeaseUseCase).toSelf().inTransientScope();
@@ -125,7 +99,6 @@ export function createContainer(): Container {
   // Bind controllers
   container.bind(AuthController).toSelf().inTransientScope();
   container.bind(PropertyController).toSelf().inTransientScope();
-  // container.bind(TenantController).toSelf().inTransientScope(); // Commented out - replaced with LeaseController
   container.bind(LeaseController).toSelf().inTransientScope();
 
   return container;

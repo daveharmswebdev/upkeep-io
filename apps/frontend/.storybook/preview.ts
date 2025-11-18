@@ -10,7 +10,6 @@ const routes = [
   { path: '/', name: 'home', component: { template: '<div>Home</div>' } },
   { path: '/dashboard', name: 'dashboard', component: { template: '<div>Dashboard</div>' } },
   { path: '/properties', name: 'properties', component: { template: '<div>Properties</div>' } },
-  { path: '/tenants', name: 'tenants', component: { template: '<div>Tenants</div>' } },
   { path: '/login', name: 'login', component: { template: '<div>Login</div>' } },
 ];
 

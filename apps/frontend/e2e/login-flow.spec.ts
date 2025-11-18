@@ -76,16 +76,12 @@ test.describe('Successful Login Flow', () => {
     // Verify navigation links are visible
     const dashboardLink = page.locator('nav a[href="/dashboard"]');
     const propertiesLink = page.locator('nav a[href="/properties"]');
-    const tenantsLink = page.locator('nav a[href="/tenants"]');
 
     await expect(dashboardLink).toBeVisible();
     await expect(dashboardLink).toContainText('Dashboard');
 
     await expect(propertiesLink).toBeVisible();
     await expect(propertiesLink).toContainText('Properties');
-
-    await expect(tenantsLink).toBeVisible();
-    await expect(tenantsLink).toContainText('Tenants');
   });
 
   test('should display logout button after login', async ({ page }) => {
@@ -124,7 +120,6 @@ test.describe('Successful Login Flow', () => {
     await expect(page.locator('header').getByText('Upkeep')).toBeVisible();
     await expect(page.locator('nav a[href="/dashboard"]')).toBeVisible();
     await expect(page.locator('nav a[href="/properties"]')).toBeVisible();
-    await expect(page.locator('nav a[href="/tenants"]')).toBeVisible();
     await expect(page.locator('button').filter({ hasText: 'Logout' })).toBeVisible();
     await expect(page.locator('h2').filter({ hasText: 'Your Properties' })).toBeVisible();
   });

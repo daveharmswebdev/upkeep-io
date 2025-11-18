@@ -10,7 +10,6 @@ import DashboardView from '@/views/DashboardView.vue';
 import PropertyListView from '@/views/PropertyListView.vue';
 import PropertyFormView from '@/views/PropertyFormView.vue';
 import PropertyDetailsView from '@/views/PropertyDetailsView.vue';
-import TenantListView from '@/views/TenantListView.vue';
 
 describe('Router Navigation Guards', () => {
   let router: Router;
@@ -65,12 +64,6 @@ describe('Router Navigation Guards', () => {
           component: PropertyDetailsView,
           meta: { requiresAuth: true },
         },
-        {
-          path: '/tenants',
-          name: 'tenants',
-          component: TenantListView,
-          meta: { requiresAuth: true },
-        },
       ],
     });
 
@@ -114,12 +107,6 @@ describe('Router Navigation Guards', () => {
 
     it('should redirect to login when accessing property details', async () => {
       await router.push('/properties/123');
-      await router.isReady();
-      expect(router.currentRoute.value.path).toBe('/login');
-    });
-
-    it('should redirect to login when accessing tenants', async () => {
-      await router.push('/tenants');
       await router.isReady();
       expect(router.currentRoute.value.path).toBe('/login');
     });
@@ -172,12 +159,6 @@ describe('Router Navigation Guards', () => {
       expect(router.currentRoute.value.path).toBe('/properties/123');
     });
 
-    it('should allow access to tenants', async () => {
-      await router.push('/tenants');
-      await router.isReady();
-      expect(router.currentRoute.value.path).toBe('/tenants');
-    });
-
     it('should redirect to dashboard when accessing login page', async () => {
       await router.push('/login');
       await router.isReady();
@@ -197,7 +178,6 @@ describe('Router Navigation Guards', () => {
         '/dashboard',
         '/properties',
         '/properties/add',
-        '/tenants',
       ];
 
       protectedRoutes.forEach((path) => {
