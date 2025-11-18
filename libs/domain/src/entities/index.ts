@@ -5,5 +5,3 @@ export type { Lease, LeaseWithDetails } from './Lease';
 export { LeaseStatus } from './Lease';
 export type { LeaseLessee } from './LeaseLessee';
 export type { LeaseOccupant } from './LeaseOccupant';
-export type { Tenant, CreateTenantData } from './Tenant';
-export type { Pet, CreatePetData } from './Pet';
