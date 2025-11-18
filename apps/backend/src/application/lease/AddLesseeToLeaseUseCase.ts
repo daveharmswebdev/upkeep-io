@@ -14,7 +14,7 @@ export class AddLesseeToLeaseUseCase {
     const lease = await this.leaseRepository.findById(leaseId);
 
     if (!lease) {
-      throw new NotFoundError('Lease not found');
+      throw new NotFoundError('Lease', leaseId);
     }
 
     if (lease.userId !== userId) {
@@ -24,7 +24,7 @@ export class AddLesseeToLeaseUseCase {
     const person = await this.personRepository.findById(personId);
 
     if (!person) {
-      throw new NotFoundError('Person not found');
+      throw new NotFoundError('Person', personId);
     }
 
     if (person.userId !== userId) {

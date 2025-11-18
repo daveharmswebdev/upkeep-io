@@ -15,7 +15,7 @@ export class ListLeasesByPropertyUseCase {
     const property = await this.propertyRepository.findById(propertyId);
 
     if (!property) {
-      throw new NotFoundError('Property not found');
+      throw new NotFoundError('Property', propertyId);
     }
 
     if (property.userId !== userId) {
