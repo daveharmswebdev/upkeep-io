@@ -3,16 +3,12 @@ Please analyze and fix the GitHub issue: $ARGUMENTS.
 Follow these steps:
 
 1. Use `gh issue view` to get the issue details
-2. Think harder to understand the problem described in the issue
-3. Create a feature branch for this issue giving it an appropriate name
-4. Search the codebase for relevant files
-5. Implement the necessary changes to fix the issue
-6. Write and run tests to verify the fix
-7. Ensure code passes linting and type checking
-8. Ensure `npm run build` executes without error.
-9. Ensure `npm run dev` executes without error.
-10. Create a descriptive commit message
-11. Push and create a PR
-
+2. Create a git branch for the issue
+3. Pass the issue to the lead-dev agent
+4. Have the lead dev work the issue
+5. Have the qa-tester check the work
+6. If the qa-tester is satisifed, create a pr for me check
+7. If the qa-tester is not satisfied then pass the work back to lead-dev and keep iterating until the qa-tester is satisfied
 
 Remember to use the GitHub CLI (`gh`) for all GitHub-related tasks.
+Remind the qa-tester that he has the playwright mcp at his disposal.
