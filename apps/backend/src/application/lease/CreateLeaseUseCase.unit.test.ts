@@ -2,7 +2,7 @@ import { CreateLeaseUseCase } from './CreateLeaseUseCase';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
 import { IPropertyRepository } from '../../domain/repositories/IPropertyRepository';
 import { IPersonRepository } from '../../domain/repositories/IPersonRepository';
-import { Property, Person, LeaseWithDetails, LeaseStatus } from '@upkeep-io/domain';
+import { Property, Person, LeaseWithDetails, LeaseStatus, NotFoundError } from '@upkeep-io/domain';
 
 describe('CreateLeaseUseCase', () => {
   let createLeaseUseCase: CreateLeaseUseCase;
@@ -351,7 +351,7 @@ describe('CreateLeaseUseCase', () => {
 
       mockPropertyRepository.findById.mockResolvedValue(null);
 
-      await expect(createLeaseUseCase.execute(input)).rejects.toThrow('Property not found');
+      await expect(createLeaseUseCase.execute(input)).rejects.toThrow(NotFoundError);
 
       expect(mockLeaseRepository.create).not.toHaveBeenCalled();
     });

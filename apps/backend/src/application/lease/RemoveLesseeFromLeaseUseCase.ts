@@ -27,7 +27,7 @@ export class RemoveLesseeFromLeaseUseCase {
     const lease = await this.leaseRepository.findById(leaseId);
 
     if (!lease) {
-      throw new NotFoundError('Lease not found');
+      throw new NotFoundError('Lease', leaseId);
     }
 
     if (lease.userId !== userId) {

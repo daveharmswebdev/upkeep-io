@@ -49,7 +49,7 @@ export class CreateLeaseUseCase {
     // Verify property exists and belongs to user
     const property = await this.propertyRepository.findById(input.propertyId);
     if (!property) {
-      throw new NotFoundError('Property not found');
+      throw new NotFoundError('Property', input.propertyId);
     }
     if (property.userId !== input.userId) {
       throw new ValidationError('Property does not belong to this user');
@@ -91,7 +91,7 @@ export class CreateLeaseUseCase {
           // Verify person exists and belongs to user
           const person = await this.personRepository.findById(personId);
           if (!person) {
-            throw new NotFoundError(`Person ${personId} not found`);
+            throw new NotFoundError('Person', personId);
           }
           if (person.userId !== input.userId) {
             throw new ValidationError('Person does not belong to this user');
@@ -139,7 +139,7 @@ export class CreateLeaseUseCase {
               // Verify person exists and belongs to user
               const person = await this.personRepository.findById(personId);
               if (!person) {
-                throw new NotFoundError(`Person ${personId} not found`);
+                throw new NotFoundError('Person', personId);
               }
               if (person.userId !== input.userId) {
                 throw new ValidationError('Person does not belong to this user');
