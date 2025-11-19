@@ -5,7 +5,7 @@ describe('createPropertySchema', () => {
   describe('valid data', () => {
     it('should accept complete valid property data with all fields', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -20,7 +20,7 @@ describe('createPropertySchema', () => {
 
     it('should accept valid property data with only required fields', () => {
       const validData = {
-        address: '456 Oak Ave',
+        street: '456 Oak Ave',
         city: 'Los Angeles',
         state: 'NY',
         zipCode: '10001',
@@ -32,7 +32,7 @@ describe('createPropertySchema', () => {
 
     it('should accept 5-digit ZIP code format', () => {
       const validData = {
-        address: '789 Pine St',
+        street: '789 Pine St',
         city: 'Chicago',
         state: 'IL',
         zipCode: '60601',
@@ -43,7 +43,7 @@ describe('createPropertySchema', () => {
 
     it('should accept ZIP+4 code format', () => {
       const validData = {
-        address: '101 Elm St',
+        street: '101 Elm St',
         city: 'Boston',
         state: 'MA',
         zipCode: '02101-1234',
@@ -54,7 +54,7 @@ describe('createPropertySchema', () => {
 
     it('should accept datetime string for purchaseDate', () => {
       const validData = {
-        address: '202 Maple Dr',
+        street: '202 Maple Dr',
         city: 'Seattle',
         state: 'WA',
         zipCode: '98101',
@@ -66,7 +66,7 @@ describe('createPropertySchema', () => {
 
     it('should accept Date object for purchaseDate', () => {
       const validData = {
-        address: '303 Cedar Ln',
+        street: '303 Cedar Ln',
         city: 'Portland',
         state: 'OR',
         zipCode: '97201',
@@ -76,9 +76,34 @@ describe('createPropertySchema', () => {
       expect(() => createPropertySchema.parse(validData)).not.toThrow();
     });
 
+    it('should accept HTML5 date format for purchaseDate', () => {
+      const validData = {
+        street: '404 Ash Ave',
+        city: 'Minneapolis',
+        state: 'MN',
+        zipCode: '55401',
+        purchaseDate: '2024-01-15', // HTML5 date input format
+      };
+
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
+    });
+
+    it('should treat empty string purchaseDate as optional', () => {
+      const validData = {
+        street: '505 Poplar Dr',
+        city: 'Nashville',
+        state: 'TN',
+        zipCode: '37201',
+        purchaseDate: '', // User cleared the date field
+      };
+
+      const result = createPropertySchema.parse(validData);
+      expect(result.purchaseDate).toBeUndefined();
+    });
+
     it('should accept zero purchase price (edge case)', () => {
       const validData = {
-        address: '404 Birch Rd',
+        street: '404 Birch Rd',
         city: 'Austin',
         state: 'TX',
         zipCode: '73301',
@@ -88,9 +113,9 @@ describe('createPropertySchema', () => {
       expect(() => createPropertySchema.parse(validData)).not.toThrow();
     });
 
-    it('should accept maximum length address', () => {
+    it('should accept maximum length street', () => {
       const validData = {
-        address: 'A'.repeat(200),
+        street: 'A'.repeat(200),
         city: 'Denver',
         state: 'CO',
         zipCode: '80201',
@@ -101,7 +126,7 @@ describe('createPropertySchema', () => {
 
     it('should accept maximum length city', () => {
       const validData = {
-        address: '505 Walnut Ave',
+        street: '505 Walnut Ave',
         city: 'B'.repeat(100),
         state: 'NV',
         zipCode: '89101',
@@ -112,7 +137,7 @@ describe('createPropertySchema', () => {
 
     it('should accept maximum length nickname', () => {
       const validData = {
-        address: '606 Spruce St',
+        street: '606 Spruce St',
         city: 'Phoenix',
         state: 'AZ',
         zipCode: '85001',
@@ -121,10 +146,60 @@ describe('createPropertySchema', () => {
 
       expect(() => createPropertySchema.parse(validData)).not.toThrow();
     });
+
+    it('should accept valid address2 with value', () => {
+      const validData = {
+        street: '707 Oak Blvd',
+        address2: 'Apt 5B',
+        city: 'Miami',
+        state: 'FL',
+        zipCode: '33101',
+      };
+
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
+    });
+
+    it('should accept empty string address2', () => {
+      const validData = {
+        street: '808 Elm Ave',
+        address2: '',
+        city: 'Dallas',
+        state: 'TX',
+        zipCode: '75201',
+      };
+
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
+    });
+
+    it('should accept property with both street and address2', () => {
+      const validData = {
+        street: '909 Pine Rd',
+        address2: 'Unit 12',
+        city: 'Atlanta',
+        state: 'GA',
+        zipCode: '30301',
+      };
+
+      const result = createPropertySchema.parse(validData);
+      expect(result.street).toBe('909 Pine Rd');
+      expect(result.address2).toBe('Unit 12');
+    });
+
+    it('should accept maximum length address2', () => {
+      const validData = {
+        street: '1010 Maple Ct',
+        address2: 'D'.repeat(100),
+        city: 'Houston',
+        state: 'TX',
+        zipCode: '77001',
+      };
+
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
+    });
   });
 
   describe('required field validation', () => {
-    it('should reject missing address', () => {
+    it('should reject missing street', () => {
       const invalidData = {
         city: 'San Francisco',
         state: 'CA',
@@ -134,9 +209,9 @@ describe('createPropertySchema', () => {
       expect(() => createPropertySchema.parse(invalidData)).toThrow(ZodError);
     });
 
-    it('should reject empty address', () => {
+    it('should reject empty street', () => {
       const invalidData = {
-        address: '',
+        street: '',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -147,7 +222,7 @@ describe('createPropertySchema', () => {
 
     it('should reject missing city', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         state: 'CA',
         zipCode: '94102',
       };
@@ -157,7 +232,7 @@ describe('createPropertySchema', () => {
 
     it('should reject empty city', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: '',
         state: 'CA',
         zipCode: '94102',
@@ -168,7 +243,7 @@ describe('createPropertySchema', () => {
 
     it('should reject missing state', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         zipCode: '94102',
       };
@@ -178,7 +253,7 @@ describe('createPropertySchema', () => {
 
     it('should reject missing zipCode', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
       };
@@ -188,9 +263,21 @@ describe('createPropertySchema', () => {
   });
 
   describe('field length validation', () => {
-    it('should reject address longer than 200 characters', () => {
+    it('should reject street longer than 200 characters', () => {
       const invalidData = {
-        address: 'A'.repeat(201),
+        street: 'A'.repeat(201),
+        city: 'San Francisco',
+        state: 'CA',
+        zipCode: '94102',
+      };
+
+      expect(() => createPropertySchema.parse(invalidData)).toThrow(ZodError);
+    });
+
+    it('should reject address2 longer than 100 characters', () => {
+      const invalidData = {
+        street: '123 Main St',
+        address2: 'D'.repeat(101),
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -201,7 +288,7 @@ describe('createPropertySchema', () => {
 
     it('should reject city longer than 100 characters', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'B'.repeat(101),
         state: 'CA',
         zipCode: '94102',
@@ -212,7 +299,7 @@ describe('createPropertySchema', () => {
 
     it('should reject nickname longer than 100 characters', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -226,7 +313,7 @@ describe('createPropertySchema', () => {
   describe('state validation', () => {
     it('should reject state with less than 2 characters', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'C',
         zipCode: '94102',
@@ -237,7 +324,7 @@ describe('createPropertySchema', () => {
 
     it('should reject state with more than 2 characters', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CAL',
         zipCode: '94102',
@@ -248,7 +335,7 @@ describe('createPropertySchema', () => {
 
     it('should accept any 2-character state code', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'XX', // Not a real state, but format is valid
         zipCode: '94102',
@@ -261,7 +348,7 @@ describe('createPropertySchema', () => {
   describe('ZIP code validation', () => {
     it('should reject ZIP code with less than 5 digits', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '9410',
@@ -272,7 +359,7 @@ describe('createPropertySchema', () => {
 
     it('should reject ZIP code with letters', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: 'ABCDE',
@@ -283,7 +370,7 @@ describe('createPropertySchema', () => {
 
     it('should reject ZIP code with more than 5 digits without hyphen', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '941022',
@@ -294,7 +381,7 @@ describe('createPropertySchema', () => {
 
     it('should reject invalid ZIP+4 format with wrong number of digits after hyphen', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102-123',
@@ -305,7 +392,7 @@ describe('createPropertySchema', () => {
 
     it('should reject ZIP code with special characters other than hyphen', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102.1234',
@@ -316,7 +403,7 @@ describe('createPropertySchema', () => {
 
     it('should reject ZIP code with space', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102 1234',
@@ -329,7 +416,7 @@ describe('createPropertySchema', () => {
   describe('purchasePrice validation', () => {
     it('should reject zero purchase price', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -341,7 +428,7 @@ describe('createPropertySchema', () => {
 
     it('should reject negative purchase price', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -353,7 +440,7 @@ describe('createPropertySchema', () => {
 
     it('should accept very large purchase price', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -365,7 +452,7 @@ describe('createPropertySchema', () => {
 
     it('should accept decimal purchase price', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -379,7 +466,7 @@ describe('createPropertySchema', () => {
   describe('optional fields', () => {
     it('should allow undefined nickname', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -391,7 +478,7 @@ describe('createPropertySchema', () => {
 
     it('should allow undefined purchaseDate', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -403,7 +490,7 @@ describe('createPropertySchema', () => {
 
     it('should allow undefined purchasePrice', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -415,7 +502,7 @@ describe('createPropertySchema', () => {
 
     it('should allow empty string nickname to be treated as optional', () => {
       const validData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -425,12 +512,24 @@ describe('createPropertySchema', () => {
       // Empty string is valid for optional field (not the same as min length validation)
       expect(() => createPropertySchema.parse(validData)).not.toThrow();
     });
+
+    it('should allow undefined address2', () => {
+      const validData = {
+        street: '123 Main St',
+        city: 'San Francisco',
+        state: 'CA',
+        zipCode: '94102',
+        address2: undefined,
+      };
+
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
+    });
   });
 
   describe('type validation', () => {
-    it('should reject non-string address', () => {
+    it('should reject non-string street', () => {
       const invalidData = {
-        address: 123,
+        street: 123,
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -441,7 +540,7 @@ describe('createPropertySchema', () => {
 
     it('should reject non-string city', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 123,
         state: 'CA',
         zipCode: '94102',
@@ -452,7 +551,7 @@ describe('createPropertySchema', () => {
 
     it('should reject non-string state', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 12,
         zipCode: '94102',
@@ -463,7 +562,7 @@ describe('createPropertySchema', () => {
 
     it('should reject non-string zipCode', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: 94102,
@@ -474,7 +573,7 @@ describe('createPropertySchema', () => {
 
     it('should reject non-number purchasePrice', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -486,7 +585,7 @@ describe('createPropertySchema', () => {
 
     it('should reject invalid date string for purchaseDate', () => {
       const invalidData = {
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -496,16 +595,17 @@ describe('createPropertySchema', () => {
       expect(() => createPropertySchema.parse(invalidData)).toThrow(ZodError);
     });
 
-    it('should reject invalid date format for purchaseDate', () => {
-      const invalidData = {
-        address: '123 Main St',
+    it('should accept various date formats via coerce for purchaseDate', () => {
+      const validData = {
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
-        purchaseDate: '01/15/2024', // Not ISO datetime format
+        purchaseDate: '01/15/2024', // z.coerce.date() converts this
       };
 
-      expect(() => createPropertySchema.parse(invalidData)).toThrow(ZodError);
+      // z.coerce.date() is permissive and accepts various formats
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
     });
   });
 });

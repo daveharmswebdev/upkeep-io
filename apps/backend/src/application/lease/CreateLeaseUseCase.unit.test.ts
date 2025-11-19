@@ -2,7 +2,8 @@ import { CreateLeaseUseCase } from './CreateLeaseUseCase';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
 import { IPropertyRepository } from '../../domain/repositories/IPropertyRepository';
 import { IPersonRepository } from '../../domain/repositories/IPersonRepository';
-import { Property, Person, LeaseWithDetails, LeaseStatus, NotFoundError } from '@upkeep-io/domain';
+import { Property, Person, LeaseWithDetails, LeaseStatus } from '@domain/entities';
+import { NotFoundError } from '@domain/errors';
 
 describe('CreateLeaseUseCase', () => {
   let createLeaseUseCase: CreateLeaseUseCase;
@@ -56,7 +57,7 @@ describe('CreateLeaseUseCase', () => {
     const mockProperty: Property = {
       id: validPropertyId,
       userId: validUserId,
-      address: '123 Main St',
+      street: '123 Main St',
       city: 'San Francisco',
       state: 'CA',
       zipCode: '94102',

@@ -19,13 +19,22 @@
         <form @submit="onSubmit">
           <!-- Two-column grid for laptop, single column for mobile/tablet -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
-            <!-- Address - Full width on all screens -->
+            <!-- Street - Full width on all screens -->
             <div class="lg:col-span-2">
               <FormInput
-                name="address"
-                label="Address"
+                name="street"
+                label="Street Address"
                 placeholder="123 Main St"
                 :required="true"
+              />
+            </div>
+
+            <!-- Address 2 - Full width on all screens -->
+            <div class="lg:col-span-2">
+              <FormInput
+                name="address2"
+                label="Address Line 2 (Optional)"
+                placeholder="Apt, Suite, Unit, etc."
               />
             </div>
 

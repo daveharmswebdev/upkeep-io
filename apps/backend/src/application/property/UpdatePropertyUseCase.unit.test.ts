@@ -23,7 +23,7 @@ describe('UpdatePropertyUseCase', () => {
     const existingProperty: Property = {
       id: 'prop-123',
       userId: 'user-123',
-      address: '123 Main St',
+      street: '123 Main St',
       city: 'San Francisco',
       state: 'CA',
       zipCode: '94102',
@@ -38,13 +38,13 @@ describe('UpdatePropertyUseCase', () => {
       const input = {
         userId: 'user-123',
         propertyId: 'prop-123',
-        address: '456 New St',
+        street: '456 New St',
         city: 'Los Angeles',
       };
 
       const updatedProperty: Property = {
         ...existingProperty,
-        address: '456 New St',
+        street: '456 New St',
         city: 'Los Angeles',
         updatedAt: new Date(),
       };
@@ -56,7 +56,7 @@ describe('UpdatePropertyUseCase', () => {
 
       expect(mockPropertyRepository.findById).toHaveBeenCalledWith('prop-123');
       expect(mockPropertyRepository.update).toHaveBeenCalledWith('prop-123', expect.objectContaining({
-        address: '456 New St',
+        street: '456 New St',
         city: 'Los Angeles',
         state: 'CA',
         zipCode: '94102',
@@ -68,7 +68,7 @@ describe('UpdatePropertyUseCase', () => {
       const input = {
         userId: 'user-123',
         propertyId: 'nonexistent-prop',
-        address: '456 New St',
+        street: '456 New St',
       };
 
       mockPropertyRepository.findById.mockResolvedValue(null);
@@ -82,7 +82,7 @@ describe('UpdatePropertyUseCase', () => {
       const input = {
         userId: 'user-123',
         propertyId: 'prop-123',
-        address: '456 New St',
+        street: '456 New St',
       };
 
       const otherUserProperty: Property = {
@@ -130,12 +130,88 @@ describe('UpdatePropertyUseCase', () => {
 
       expect(mockPropertyRepository.update).toHaveBeenCalledWith('prop-123', expect.objectContaining({
         nickname: 'New Nickname',
-        address: existingProperty.address,
+        street: existingProperty.street,
         city: existingProperty.city,
         state: existingProperty.state,
         zipCode: existingProperty.zipCode,
       }));
       expect(result).toEqual(updatedProperty);
+    });
+
+    it('should update street only', async () => {
+      const input = {
+        userId: 'user-123',
+        propertyId: 'prop-123',
+        street: '789 Pine Rd',
+      };
+
+      const updatedProperty: Property = {
+        ...existingProperty,
+        street: '789 Pine Rd',
+        updatedAt: new Date(),
+      };
+
+      mockPropertyRepository.findById.mockResolvedValue(existingProperty);
+      mockPropertyRepository.update.mockResolvedValue(updatedProperty);
+
+      const result = await updatePropertyUseCase.execute(input);
+
+      expect(mockPropertyRepository.update).toHaveBeenCalledWith('prop-123', expect.objectContaining({
+        street: '789 Pine Rd',
+      }));
+      expect(result.street).toBe('789 Pine Rd');
+    });
+
+    it('should update address2 only', async () => {
+      const input = {
+        userId: 'user-123',
+        propertyId: 'prop-123',
+        address2: 'Unit 42',
+      };
+
+      const updatedProperty: Property = {
+        ...existingProperty,
+        address2: 'Unit 42',
+        updatedAt: new Date(),
+      };
+
+      mockPropertyRepository.findById.mockResolvedValue(existingProperty);
+      mockPropertyRepository.update.mockResolvedValue(updatedProperty);
+
+      const result = await updatePropertyUseCase.execute(input);
+
+      expect(mockPropertyRepository.update).toHaveBeenCalledWith('prop-123', expect.objectContaining({
+        address2: 'Unit 42',
+      }));
+      expect(result.address2).toBe('Unit 42');
+    });
+
+    it('should update both street and address2', async () => {
+      const input = {
+        userId: 'user-123',
+        propertyId: 'prop-123',
+        street: '999 Elm Blvd',
+        address2: 'Suite 100',
+      };
+
+      const updatedProperty: Property = {
+        ...existingProperty,
+        street: '999 Elm Blvd',
+        address2: 'Suite 100',
+        updatedAt: new Date(),
+      };
+
+      mockPropertyRepository.findById.mockResolvedValue(existingProperty);
+      mockPropertyRepository.update.mockResolvedValue(updatedProperty);
+
+      const result = await updatePropertyUseCase.execute(input);
+
+      expect(mockPropertyRepository.update).toHaveBeenCalledWith('prop-123', expect.objectContaining({
+        street: '999 Elm Blvd',
+        address2: 'Suite 100',
+      }));
+      expect(result.street).toBe('999 Elm Blvd');
+      expect(result.address2).toBe('Suite 100');
     });
 
     it('should keep existing values when optional fields are undefined', async () => {

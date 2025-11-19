@@ -20,6 +20,7 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return {
       ...property,
+      address2: property.address2 ?? undefined,
       nickname: property.nickname ?? undefined,
       purchaseDate: property.purchaseDate ?? undefined,
       purchasePrice: property.purchasePrice ? property.purchasePrice.toNumber() : undefined,
@@ -34,6 +35,7 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return properties.map(p => ({
       ...p,
+      address2: p.address2 ?? undefined,
       nickname: p.nickname ?? undefined,
       purchaseDate: p.purchaseDate ?? undefined,
       purchasePrice: p.purchasePrice ? p.purchasePrice.toNumber() : undefined,
@@ -44,7 +46,8 @@ export class PrismaPropertyRepository implements IPropertyRepository {
     const property = await this.prisma.property.create({
       data: {
         userId: data.userId,
-        address: data.address,
+        street: data.street,
+        address2: data.address2,
         city: data.city,
         state: data.state,
         zipCode: data.zipCode,
@@ -56,6 +59,7 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return {
       ...property,
+      address2: property.address2 ?? undefined,
       nickname: property.nickname ?? undefined,
       purchaseDate: property.purchaseDate ?? undefined,
       purchasePrice: property.purchasePrice ? property.purchasePrice.toNumber() : undefined,
@@ -70,6 +74,7 @@ export class PrismaPropertyRepository implements IPropertyRepository {
 
     return {
       ...property,
+      address2: property.address2 ?? undefined,
       nickname: property.nickname ?? undefined,
       purchaseDate: property.purchaseDate ?? undefined,
       purchasePrice: property.purchasePrice ? property.purchasePrice.toNumber() : undefined,
