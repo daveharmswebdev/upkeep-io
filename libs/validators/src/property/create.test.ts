@@ -76,6 +76,31 @@ describe('createPropertySchema', () => {
       expect(() => createPropertySchema.parse(validData)).not.toThrow();
     });
 
+    it('should accept HTML5 date format for purchaseDate', () => {
+      const validData = {
+        street: '404 Ash Ave',
+        city: 'Minneapolis',
+        state: 'MN',
+        zipCode: '55401',
+        purchaseDate: '2024-01-15', // HTML5 date input format
+      };
+
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
+    });
+
+    it('should treat empty string purchaseDate as optional', () => {
+      const validData = {
+        street: '505 Poplar Dr',
+        city: 'Nashville',
+        state: 'TN',
+        zipCode: '37201',
+        purchaseDate: '', // User cleared the date field
+      };
+
+      const result = createPropertySchema.parse(validData);
+      expect(result.purchaseDate).toBeUndefined();
+    });
+
     it('should accept zero purchase price (edge case)', () => {
       const validData = {
         street: '404 Birch Rd',
@@ -570,16 +595,17 @@ describe('createPropertySchema', () => {
       expect(() => createPropertySchema.parse(invalidData)).toThrow(ZodError);
     });
 
-    it('should reject invalid date format for purchaseDate', () => {
-      const invalidData = {
+    it('should accept various date formats via coerce for purchaseDate', () => {
+      const validData = {
         street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
-        purchaseDate: '01/15/2024', // Not ISO datetime format
+        purchaseDate: '01/15/2024', // z.coerce.date() converts this
       };
 
-      expect(() => createPropertySchema.parse(invalidData)).toThrow(ZodError);
+      // z.coerce.date() is permissive and accepts various formats
+      expect(() => createPropertySchema.parse(validData)).not.toThrow();
     });
   });
 });
