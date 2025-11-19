@@ -50,10 +50,10 @@
           <!-- Property Title Section -->
           <div class="mb-8">
             <h2 class="text-3xl font-heading font-bold text-gray-800 mb-2">
-              {{ property.nickname || property.address }}
+              {{ property.nickname || fullAddress }}
             </h2>
             <p v-if="property.nickname" class="text-lg text-gray-600">
-              {{ property.address }}
+              {{ fullAddress }}
             </p>
           </div>
 
@@ -61,7 +61,7 @@
           <div class="mb-8">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Location</h3>
             <div class="bg-gray-50 rounded-lg p-4">
-              <p class="text-lg text-gray-800">{{ property.address }}</p>
+              <p class="text-lg text-gray-800">{{ fullAddress }}</p>
               <p class="text-gray-600">{{ property.city }}, {{ property.state }} {{ property.zipCode }}</p>
             </div>
           </div>
@@ -202,6 +202,16 @@ const toast = useToast();
 // Use property details composable
 const propertyId = computed(() => route.params.id as string);
 const { property, activeLease, loading, error, fetchData } = usePropertyDetails(propertyId);
+
+// Compute full address from street and address2
+const fullAddress = computed(() => {
+  if (!property.value) return '';
+  const parts = [property.value.street];
+  if (property.value.address2) {
+    parts.push(property.value.address2);
+  }
+  return parts.join(' ');
+});
 
 // Fetch property and leases on component mount
 onMounted(fetchData);

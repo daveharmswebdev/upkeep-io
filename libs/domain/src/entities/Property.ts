@@ -1,7 +1,8 @@
 export interface Property {
   id: string;
   userId: string;
-  address: string;
+  street: string;
+  address2?: string;
   city: string;
   state: string;
   zipCode: string;
@@ -14,7 +15,8 @@ export interface Property {
 
 export interface CreatePropertyData {
   userId: string;
-  address: string;
+  street: string;
+  address2?: string;
   city: string;
   state: string;
   zipCode: string;

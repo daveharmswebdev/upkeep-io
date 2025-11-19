@@ -6,7 +6,7 @@ describe('Property types', () => {
       const property: Property = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         userId: '123e4567-e89b-12d3-a456-426614174001',
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -16,14 +16,14 @@ describe('Property types', () => {
 
       expect(property.id).toBeDefined();
       expect(property.userId).toBeDefined();
-      expect(property.address).toBeDefined();
+      expect(property.street).toBeDefined();
     });
 
     it('should accept Property with optional fields', () => {
       const property: Property = {
         id: '123',
         userId: '456',
-        address: '456 Oak Ave',
+        street: '456 Oak Ave',
         city: 'Los Angeles',
         state: 'CA',
         zipCode: '90001',
@@ -43,7 +43,7 @@ describe('Property types', () => {
       const property: Property = {
         id: '123',
         userId: '456',
-        address: '789 Pine St',
+        street: '789 Pine St',
         city: 'Chicago',
         state: 'IL',
         zipCode: '60601',
@@ -63,7 +63,7 @@ describe('Property types', () => {
       const property: Property = {
         id: '123',
         userId: '456',
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -73,7 +73,7 @@ describe('Property types', () => {
 
       expect(property).toHaveProperty('id');
       expect(property).toHaveProperty('userId');
-      expect(property).toHaveProperty('address');
+      expect(property).toHaveProperty('street');
       expect(property).toHaveProperty('city');
       expect(property).toHaveProperty('state');
       expect(property).toHaveProperty('zipCode');
@@ -86,20 +86,20 @@ describe('Property types', () => {
     it('should accept valid CreatePropertyData object', () => {
       const data: CreatePropertyData = {
         userId: '123',
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
       };
 
       expect(data.userId).toBe('123');
-      expect(data.address).toBe('123 Main St');
+      expect(data.street).toBe('123 Main St');
     });
 
     it('should accept CreatePropertyData with optional fields', () => {
       const data: CreatePropertyData = {
         userId: '123',
-        address: '456 Oak Ave',
+        street: '456 Oak Ave',
         city: 'Los Angeles',
         state: 'CA',
         zipCode: '90001',
@@ -116,7 +116,7 @@ describe('Property types', () => {
     it('should work without optional fields', () => {
       const data: CreatePropertyData = {
         userId: '123',
-        address: '789 Pine St',
+        street: '789 Pine St',
         city: 'Chicago',
         state: 'IL',
         zipCode: '60601',
@@ -130,7 +130,7 @@ describe('Property types', () => {
     it('should not have id, createdAt, or updatedAt fields', () => {
       const data: CreatePropertyData = {
         userId: '123',
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -146,7 +146,7 @@ describe('Property types', () => {
     it('should allow assigning CreatePropertyData fields to Property', () => {
       const createData: CreatePropertyData = {
         userId: '123',
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -161,7 +161,7 @@ describe('Property types', () => {
       };
 
       expect(property.userId).toBe(createData.userId);
-      expect(property.address).toBe(createData.address);
+      expect(property.street).toBe(createData.street);
       expect(property.nickname).toBe(createData.nickname);
     });
   });

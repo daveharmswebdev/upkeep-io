@@ -7,7 +7,8 @@ import { Property } from '@domain/entities';
 interface UpdatePropertyInput {
   userId: string;
   propertyId: string;
-  address?: string;
+  street?: string;
+  address2?: string;
   city?: string;
   state?: string;
   zipCode?: string;
@@ -36,7 +37,8 @@ export class UpdatePropertyUseCase {
 
     // Merge existing data with updates for validation
     const updateData = {
-      address: input.address ?? existingProperty.address,
+      street: input.street ?? existingProperty.street,
+      address2: input.address2 !== undefined ? input.address2 : existingProperty.address2,
       city: input.city ?? existingProperty.city,
       state: input.state ?? existingProperty.state,
       zipCode: input.zipCode ?? existingProperty.zipCode,

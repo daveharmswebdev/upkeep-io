@@ -27,7 +27,7 @@ describe('GetPropertyByIdUseCase', () => {
       const mockProperty: Property = {
         id: propertyId,
         userId,
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',
@@ -63,7 +63,7 @@ describe('GetPropertyByIdUseCase', () => {
       const mockProperty: Property = {
         id: propertyId,
         userId: 'different-user-456', // Different owner
-        address: '123 Main St',
+        street: '123 Main St',
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94102',

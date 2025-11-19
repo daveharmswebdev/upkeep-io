@@ -9,10 +9,10 @@
     <div class="flex justify-between items-start mb-3">
       <div class="flex-1">
         <h3 class="text-lg font-heading font-semibold text-gray-800 mb-1">
-          {{ property.nickname || property.address }}
+          {{ property.nickname || fullAddress }}
         </h3>
         <p v-if="property.nickname" class="text-sm text-gray-600">
-          {{ property.address }}
+          {{ fullAddress }}
         </p>
       </div>
       <span
@@ -64,6 +64,14 @@ const emit = defineEmits<{
 const handleClick = () => {
   emit('click', props.property);
 };
+
+const fullAddress = computed(() => {
+  const parts = [props.property.street];
+  if (props.property.address2) {
+    parts.push(props.property.address2);
+  }
+  return parts.join(' ');
+});
 
 const statusText = computed(() => getLeaseStatusDisplay(props.leaseStatus));
 const badgeClasses = computed(() => getLeaseStatusBadgeClass(props.leaseStatus));

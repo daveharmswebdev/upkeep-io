@@ -6,7 +6,8 @@ import { Property } from '@domain/entities';
 
 interface CreatePropertyInput {
   userId: string;
-  address: string;
+  street: string;
+  address2?: string;
   city: string;
   state: string;
   zipCode: string;
@@ -31,7 +32,8 @@ export class CreatePropertyUseCase {
     // Create property
     const property = await this.propertyRepository.create({
       userId: input.userId,
-      address: input.address,
+      street: input.street,
+      address2: input.address2,
       city: input.city,
       state: input.state,
       zipCode: input.zipCode,

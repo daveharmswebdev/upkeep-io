@@ -44,7 +44,8 @@ model User {
 model Property {
   id            String    @id @default(uuid())
   userId        String    @map("user_id")
-  address       String
+  street        String
+  address2      String?
   city          String
   state         String    @db.VarChar(2)
   zipCode       String    @map("zip_code")

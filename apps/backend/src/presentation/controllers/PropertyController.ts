@@ -26,11 +26,12 @@ export class PropertyController {
         return;
       }
 
-      const { address, city, state, zipCode, nickname, purchaseDate, purchasePrice } = req.body;
+      const { street, address2, city, state, zipCode, nickname, purchaseDate, purchasePrice } = req.body;
 
       const property = await this.createPropertyUseCase.execute({
         userId: req.user.userId,
-        address,
+        street,
+        address2,
         city,
         state,
         zipCode,
@@ -87,12 +88,13 @@ export class PropertyController {
         return;
       }
 
-      const { address, city, state, zipCode, nickname, purchaseDate, purchasePrice } = req.body;
+      const { street, address2, city, state, zipCode, nickname, purchaseDate, purchasePrice } = req.body;
 
       const property = await this.updatePropertyUseCase.execute({
         userId: req.user.userId,
         propertyId: req.params.id,
-        address,
+        street,
+        address2,
         city,
         state,
         zipCode,

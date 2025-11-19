@@ -20,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 
 const sampleProperty: Property = {
   id: '123',
-  address: '123 Main St',
+  street: '123 Main St',
   city: 'Springfield',
   state: 'IL',
   zipCode: '62701',
@@ -34,7 +34,7 @@ const sampleProperty: Property = {
 
 const propertyWithoutNickname: Property = {
   id: '456',
-  address: '456 Oak Avenue',
+  street: '456 Oak Avenue',
   city: 'Portland',
   state: 'OR',
   zipCode: '97201',
@@ -45,7 +45,7 @@ const propertyWithoutNickname: Property = {
 
 const propertyWithoutPurchaseInfo: Property = {
   id: '789',
-  address: '789 Pine Street',
+  street: '789 Pine Street',
   city: 'Seattle',
   state: 'WA',
   zipCode: '98101',
@@ -109,7 +109,7 @@ export const ExpensiveProperty: Story = {
     property: {
       ...sampleProperty,
       nickname: 'Luxury Penthouse',
-      address: '1000 Park Avenue',
+      street: '1000 Park Avenue',
       city: 'New York',
       state: 'NY',
       zipCode: '10028',
