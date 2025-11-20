@@ -7,11 +7,13 @@ dotenv.config();
 
 import express, { Application } from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 import { createContainer } from './container';
 import { createAuthRoutes, createPropertyRoutes } from './presentation/routes';
 import { createLeaseRoutes } from './presentation/routes/leaseRoutes';
 import { createErrorMiddleware } from './presentation/middleware';
 import { ILogger } from './domain/services';
+import { swaggerSpec } from './presentation/swagger/openapi.config';
 
 const PORT = process.env.PORT || 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
@@ -32,6 +34,12 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Swagger API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Upkeep.io API Documentation',
+}));
 
 // Routes
 app.use('/api/auth', createAuthRoutes(container));

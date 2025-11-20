@@ -198,15 +198,42 @@ upkeep-io/
 
 See `property-management-domain-model.md` for detailed specifications.
 
-## API Endpoints
+## API Documentation
 
-### Authentication
+**Interactive API Documentation:** http://localhost:3000/api-docs
+
+Full Swagger/OpenAPI 3.0 documentation is available at `/api-docs` when running the backend server. The interactive UI allows you to:
+- Browse all endpoints with detailed descriptions
+- View request/response schemas auto-generated from Zod validators
+- Test endpoints directly with "Try it out" functionality
+- Authenticate with JWT tokens for protected endpoints
+
+### Quick Reference
+
+#### Authentication
 - `POST /api/auth/signup` - Create new user account
 - `POST /api/auth/login` - Login and receive JWT token
 
-### Properties (Protected)
+#### Properties (Protected - requires JWT)
 - `POST /api/properties` - Create a new property
 - `GET /api/properties` - List all properties for authenticated user
+- `GET /api/properties/:id` - Get property by ID
+- `PUT /api/properties/:id` - Update property
+- `DELETE /api/properties/:id` - Delete property
+
+#### Leases (Protected - requires JWT)
+- `POST /api/leases` - Create a new lease with lessees and occupants
+- `GET /api/leases` - List all leases
+- `GET /api/leases/:id` - Get lease by ID with details
+- `PUT /api/leases/:id` - Update lease
+- `DELETE /api/leases/:id` - Delete lease (soft delete)
+- `GET /api/leases/property/:propertyId` - List leases for a property
+- `POST /api/leases/:id/lessees` - Add lessee to lease
+- `DELETE /api/leases/:id/lessees/:personId` - Remove lessee from lease
+- `POST /api/leases/:id/occupants` - Add occupant to lease
+- `DELETE /api/leases/:id/occupants/:occupantId` - Remove occupant from lease
+
+**For complete details, examples, and to test the API interactively, visit `/api-docs`**
 
 ## Environment Variables
 
