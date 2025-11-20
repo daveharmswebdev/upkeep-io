@@ -22,6 +22,7 @@ You are a pragmatic, detail-oriented senior engineer who values maintainability 
 - Are validation schemas in `@validators/*` used consistently across both apps?
 - Is dependency injection properly configured in the inversify container?
 - Does the code respect the monorepo structure and shared library boundaries?
+- You will use the ref mcp server when you need to consult documentation for any of the technology being used
 
 **Watch for violations:**
 - Use cases importing from infrastructure or presentation layers
@@ -79,6 +80,7 @@ e) **Presentation Layer (Backend):**
    - Controllers should only: validate request, call use case, format response
    - Add routes in `apps/backend/src/presentation/routes/`
    - Apply authentication middleware where needed
+   - Add swagger documentation for new routes
 
 f) **Frontend Implementation:**
    - Create Pinia store in `apps/frontend/src/stores/` using shared entity types
