@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { convertFormDateToDate, convertFormDates, convertNestedDates } from '../dateHelpers';
+import { convertFormDateToDate, convertFormDates, convertNestedDates, formatDateForInput } from '../dateHelpers';
 
 describe('dateHelpers', () => {
   describe('convertFormDateToDate', () => {
@@ -195,6 +195,31 @@ describe('dateHelpers', () => {
       expect(result[0].name).toBe('John');
       expect(result[0].email).toBe('john@example.com');
       expect(result[0].active).toBe(true);
+    });
+  });
+
+  describe('formatDateForInput', () => {
+    it('should convert Date object to YYYY-MM-DD format', () => {
+      const date = new Date('2024-01-15T10:30:00Z');
+      expect(formatDateForInput(date)).toBe('2024-01-15');
+    });
+
+    it('should convert ISO string to YYYY-MM-DD format', () => {
+      const dateString = '2024-01-15T10:30:00Z';
+      expect(formatDateForInput(dateString as any)).toBe('2024-01-15');
+    });
+
+    it('should return undefined for undefined input', () => {
+      expect(formatDateForInput(undefined)).toBeUndefined();
+    });
+
+    it('should return undefined for null input', () => {
+      expect(formatDateForInput(null as any)).toBeUndefined();
+    });
+
+    it('should handle dates with different times correctly', () => {
+      const date = new Date('2024-12-31T23:59:59Z');
+      expect(formatDateForInput(date)).toBe('2024-12-31');
     });
   });
 });

@@ -1,0 +1,15 @@
+import { z } from 'zod';
+
+// All fields optional for updates (partial updates allowed)
+export const updatePropertySchema = z.object({
+  street: z.string().min(1, 'Street address is required').max(200, 'Street address too long').optional(),
+  address2: z.string().max(100, 'Address line 2 too long').optional().or(z.literal('')),
+  city: z.string().min(1, 'City is required').max(100, 'City too long').optional(),
+  state: z.string().length(2, 'State must be 2 characters (e.g., CA, NY)').optional(),
+  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, 'Invalid ZIP code format').optional(),
+  nickname: z.string().max(100, 'Nickname too long').optional().or(z.literal('')),
+  purchaseDate: z.coerce.date().optional().or(z.literal('').transform(() => undefined)),
+  purchasePrice: z.number().positive('Purchase price must be positive').optional(),
+});
+
+export type UpdatePropertyInput = z.infer<typeof updatePropertySchema>;

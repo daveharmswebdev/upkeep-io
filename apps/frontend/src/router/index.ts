@@ -46,6 +46,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/properties/:id/edit',
+      name: 'property-edit',
+      component: PropertyFormView,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/properties/:id',
       name: 'property-details',
       component: PropertyDetailsView,
