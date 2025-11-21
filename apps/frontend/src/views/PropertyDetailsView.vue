@@ -185,15 +185,27 @@
         </div>
       </div>
     </main>
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmModal
+      v-if="showDeleteModal"
+      title="Delete Property"
+      :message="`Are you sure you want to delete ${fullAddress}?`"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { formatPrice, formatDate, formatDateTime } from '@/utils/formatters';
+import { extractErrorMessage } from '@/utils/errorHandlers';
 import { usePropertyDetails } from '@/composables/usePropertyDetails';
+import { usePropertyStore } from '@/stores/property';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -202,6 +214,12 @@ const toast = useToast();
 // Use property details composable
 const propertyId = computed(() => route.params.id as string);
 const { property, activeLease, loading, error, fetchData } = usePropertyDetails(propertyId);
+
+// Use property store for delete operation
+const propertyStore = usePropertyStore();
+
+// Modal state
+const showDeleteModal = ref(false);
 
 // Compute full address from street and address2
 const fullAddress = computed(() => {
@@ -226,9 +244,24 @@ const handleEdit = () => {
 };
 
 const handleDelete = () => {
-  // For future implementation - will show confirmation modal
-  toast.warning('Delete functionality coming soon!');
-  // In future: Show confirmation modal, then call propertyStore.deleteProperty(route.params.id)
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async () => {
+  try {
+    await propertyStore.deleteProperty(route.params.id as string);
+    toast.success('Property deleted successfully');
+    router.push('/properties');
+  } catch (err: any) {
+    error.value = extractErrorMessage(err, 'Failed to delete property');
+    toast.error(error.value);
+  } finally {
+    showDeleteModal.value = false;
+  }
+};
+
+const cancelDelete = () => {
+  showDeleteModal.value = false;
 };
 
 const handleAddLease = () => {

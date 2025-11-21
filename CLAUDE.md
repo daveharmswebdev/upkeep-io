@@ -178,6 +178,15 @@ npm run lint                 # Run ESLint
 npm run type-check           # TypeScript type checking
 ```
 
+**Vue 3 Development Best Practices:**
+- **Always use the `vue-development` skill** when planning or implementing Vue 3 components
+- The skill enforces TypeScript-first patterns with Composition API
+- Use `defineProps<{ }>()` without const assignment unless props are used in script
+- Use `defineEmits<{ event: [args] }>()` for type-safe event emissions
+- Use `defineModel<type>()` for two-way binding instead of manual `modelValue` props
+- Follow user-behavior testing patterns with @vue/test-utils
+- The skill helps avoid common pitfalls and ensures modern Vue 3 patterns
+
 **Styling (Tailwind CSS v3):**
 - Custom color palette: `primary` (red), `secondary-1` (orange/brown), `secondary-2` (teal), `complement` (green) - each with 100-500 shades
 - Custom fonts: `font-heading` (Montserrat), `font-sans` (Lato - default)
