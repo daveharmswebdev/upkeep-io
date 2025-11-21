@@ -14,9 +14,21 @@
           Back to Properties
         </button>
 
-        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800">Add Property</h1>
+        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800">
+          {{ isEditMode ? 'Edit Property' : 'Add Property' }}
+        </h1>
 
-        <form @submit="onSubmit">
+        <!-- Loading State -->
+        <div v-if="fetchLoading" class="flex justify-center items-center py-12">
+          <div class="text-gray-600">Loading property data...</div>
+        </div>
+
+        <!-- Fetch Error State -->
+        <div v-else-if="fetchError" class="mb-6 p-4 bg-primary-100 text-primary-500 rounded">
+          {{ fetchError }}
+        </div>
+
+        <form v-else @submit="onSubmit">
           <!-- Two-column grid for laptop, single column for mobile/tablet -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
             <!-- Street - Full width on all screens -->
@@ -114,9 +126,14 @@
               class="w-full sm:flex-1 px-6 py-3 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-complement-300 focus:ring-offset-2"
             >
               <svg v-if="!isSubmitting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                <path v-if="isEditMode" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
-              {{ isSubmitting ? 'Creating...' : 'Create Property' }}
+              {{
+                isSubmitting
+                  ? (isEditMode ? 'Updating...' : 'Creating...')
+                  : (isEditMode ? 'Update Property' : 'Create Property')
+              }}
             </button>
             <button
               type="button"
@@ -133,43 +150,113 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import { createPropertySchema } from '@validators/property';
+import { useToast } from 'vue-toastification';
+import { createPropertySchema, updatePropertySchema } from '@validators/property';
 import { usePropertyStore } from '@/stores/property';
 import FormInput from '@/components/FormInput.vue';
-import { convertFormDates } from '@/utils/dateHelpers';
-import { useFormSubmission } from '@/composables/useFormSubmission';
+import { convertFormDates, formatDateForInput } from '@/utils/dateHelpers';
 import { useMoneyInput } from '@/composables/useMoneyInput';
+import { extractErrorMessage } from '@/utils/errorHandlers';
 import type { CreatePropertyData } from '@domain/entities';
 
 const router = useRouter();
+const route = useRoute();
+const toast = useToast();
 const propertyStore = usePropertyStore();
 
-const { handleSubmit, errors, values, meta, setFieldValue } = useForm({
-  validationSchema: toTypedSchema(createPropertySchema),
+// Detect edit mode
+const isEditMode = computed(() => !!route.params.id);
+const propertyId = computed(() => route.params.id as string);
+
+// Separate error state for fetching existing property
+const fetchLoading = ref(false);
+const fetchError = ref('');
+
+// Use different schema based on mode
+const validationSchema = computed(() =>
+  isEditMode.value ? updatePropertySchema : createPropertySchema
+);
+
+const { handleSubmit, errors, values, meta, setFieldValue, setValues } = useForm({
+  validationSchema: toTypedSchema(validationSchema.value),
   validateOnMount: false,
 });
 
 const { createMoneyInputHandler } = useMoneyInput();
 const handlePriceInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'purchasePrice');
 
-const { submitError, isSubmitting, submit } = useFormSubmission(
-  async (formValues: any) => {
+// Submission logic
+const submitError = ref('');
+const isSubmitting = ref(false);
+
+const submit = async (formValues: any) => {
+  submitError.value = '';
+  isSubmitting.value = true;
+
+  try {
     const data = convertFormDates(formValues, ['purchaseDate']) as Omit<CreatePropertyData, 'userId'>;
-    await propertyStore.createProperty(data);
-  },
-  {
-    successMessage: 'Property created successfully',
-    successRoute: '/properties',
-    errorMessage: 'Failed to create property. Please try again.'
+
+    if (isEditMode.value) {
+      await propertyStore.updateProperty(propertyId.value, data);
+      toast.success('Property updated successfully');
+      await router.push(`/properties/${propertyId.value}`);
+    } else {
+      await propertyStore.createProperty(data);
+      toast.success('Property created successfully');
+      await router.push('/properties');
+    }
+  } catch (err: any) {
+    const errorMsg = extractErrorMessage(
+      err,
+      isEditMode.value ? 'Failed to update property. Please try again.' : 'Failed to create property. Please try again.'
+    );
+    submitError.value = errorMsg;
+    toast.error(errorMsg);
+    throw err;
+  } finally {
+    isSubmitting.value = false;
   }
-);
+};
 
 const onSubmit = handleSubmit(submit);
 
 const handleCancel = () => {
-  router.push('/properties');
+  if (isEditMode.value) {
+    router.push(`/properties/${propertyId.value}`);
+  } else {
+    router.push('/properties');
+  }
 };
+
+// Fetch existing property data in edit mode
+onMounted(async () => {
+  if (isEditMode.value) {
+    fetchLoading.value = true;
+    fetchError.value = '';
+
+    try {
+      const property = await propertyStore.fetchPropertyById(propertyId.value);
+
+      // Pre-populate form with existing data
+      setValues({
+        street: property.street,
+        address2: property.address2 || '',
+        city: property.city,
+        state: property.state,
+        zipCode: property.zipCode,
+        nickname: property.nickname || '',
+        purchaseDate: formatDateForInput(property.purchaseDate) as any,
+        purchasePrice: property.purchasePrice,
+      });
+    } catch (err: any) {
+      fetchError.value = extractErrorMessage(err, 'Failed to load property. Please try again.');
+    } finally {
+      fetchLoading.value = false;
+    }
+  }
+});
 </script>

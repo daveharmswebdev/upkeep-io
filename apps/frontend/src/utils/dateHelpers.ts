@@ -59,3 +59,17 @@ export const convertNestedDates = <T extends Record<string, any>>(
 ): T[] => {
   return items.map((item) => convertFormDates(item, dateFields));
 };
+
+/**
+ * Convert Date object to YYYY-MM-DD format for form date inputs
+ * @param date - Date object to convert
+ * @returns String in YYYY-MM-DD format or undefined if date is not provided
+ * @example
+ * formatDateForInput(new Date('2024-01-15')) // "2024-01-15"
+ * formatDateForInput(undefined) // undefined
+ */
+export const formatDateForInput = (date?: Date | string): string | undefined => {
+  if (!date) return undefined;
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toISOString().split('T')[0];
+};

@@ -222,9 +222,7 @@ const handleBackToList = () => {
 };
 
 const handleEdit = () => {
-  // For future implementation - will navigate to edit form
-  toast.info('Edit functionality coming soon!');
-  // In future: router.push(`/properties/${route.params.id}/edit`);
+  router.push(`/properties/${route.params.id}/edit`);
 };
 
 const handleDelete = () => {
