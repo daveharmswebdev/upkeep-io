@@ -123,4 +123,64 @@ test.describe('Successful Login Flow', () => {
     await expect(page.locator('button').filter({ hasText: 'Logout' })).toBeVisible();
     await expect(page.locator('h2').filter({ hasText: 'Your Properties' })).toBeVisible();
   });
+
+  test('should display both "View Properties" and "Add Property" buttons on dashboard', async ({ page }) => {
+    // Navigate to login page
+    await page.goto('/login');
+
+    // Login
+    await page.fill('input[type="email"]', TEST_EMAIL);
+    await page.fill('input[type="password"]', TEST_PASSWORD);
+    await page.click('button[type="submit"]');
+
+    // Wait for dashboard
+    await page.waitForURL('/dashboard');
+
+    // Verify both buttons are visible
+    const viewPropertiesButton = page.locator('button').filter({ hasText: 'View Properties' });
+    const addPropertyButton = page.locator('button').filter({ hasText: 'Add Property' });
+
+    await expect(viewPropertiesButton).toBeVisible();
+    await expect(addPropertyButton).toBeVisible();
+  });
+
+  test('should navigate to properties list when "View Properties" button is clicked', async ({ page }) => {
+    // Navigate to login page
+    await page.goto('/login');
+
+    // Login
+    await page.fill('input[type="email"]', TEST_EMAIL);
+    await page.fill('input[type="password"]', TEST_PASSWORD);
+    await page.click('button[type="submit"]');
+
+    // Wait for dashboard
+    await page.waitForURL('/dashboard');
+
+    // Click "View Properties" button
+    await page.click('button:has-text("View Properties")');
+
+    // Verify navigation to properties list
+    await page.waitForURL('/properties');
+    expect(page.url()).toContain('/properties');
+  });
+
+  test('should navigate to add property form when "Add Property" button is clicked', async ({ page }) => {
+    // Navigate to login page
+    await page.goto('/login');
+
+    // Login
+    await page.fill('input[type="email"]', TEST_EMAIL);
+    await page.fill('input[type="password"]', TEST_PASSWORD);
+    await page.click('button[type="submit"]');
+
+    // Wait for dashboard
+    await page.waitForURL('/dashboard');
+
+    // Click "Add Property" button
+    await page.click('button:has-text("Add Property")');
+
+    // Verify navigation to add property form
+    await page.waitForURL('/properties/add');
+    expect(page.url()).toContain('/properties/add');
+  });
 });
