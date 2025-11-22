@@ -1,0 +1,14 @@
+# act configuration file
+# https://github.com/nektos/act
+
+# Use medium-sized runner image (500MB, compatible with most actions)
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Enable offline mode to use cached images and actions (faster)
+--action-offline-mode
+
+# Fix M-series chip compatibility (Apple Silicon)
+--container-architecture linux/amd64
+
+# Watch mode - auto-rerun on workflow file changes (optional, comment out if not needed)
+# --watch

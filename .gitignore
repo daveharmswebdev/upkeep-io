@@ -23,6 +23,7 @@ libs/*/src/**/*.d.ts
 .env
 .env.local
 .env.*.local
+.secrets
 
 # Logs
 logs/
