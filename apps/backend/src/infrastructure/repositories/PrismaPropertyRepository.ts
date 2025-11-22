@@ -33,7 +33,7 @@ export class PrismaPropertyRepository implements IPropertyRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return properties.map(p => ({
+    return properties.map((p: any) => ({
       ...p,
       address2: p.address2 ?? undefined,
       nickname: p.nickname ?? undefined,

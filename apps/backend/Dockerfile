@@ -17,6 +17,14 @@ RUN npm ci
 COPY apps/backend ./apps/backend
 COPY libs ./libs
 COPY tsconfig.json ./
+COPY tsconfig.backend.json ./
+COPY tsconfig.base.json ./
+
+# Build shared libraries first
+WORKDIR /app
+RUN npm run build --workspace=libs/domain
+RUN npm run build --workspace=libs/validators
+RUN npm run build --workspace=libs/auth
 
 # Generate Prisma Client
 WORKDIR /app/apps/backend
@@ -26,7 +34,10 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine
+FROM node:18-slim
+
+# Install OpenSSL for Prisma (Debian-based)
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -43,14 +54,20 @@ RUN npm ci --production --workspace=apps/backend
 # Copy built application and Prisma
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
-COPY --from=builder /app/apps/backend/node_modules/.prisma ./apps/backend/node_modules/.prisma
-COPY --from=builder /app/apps/backend/node_modules/@prisma ./apps/backend/node_modules/@prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy shared libraries
 COPY --from=builder /app/libs ./libs
+
+# Copy TypeScript config files for tsconfig-paths
+COPY --from=builder /app/apps/backend/tsconfig.json ./apps/backend/
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/tsconfig.backend.json ./
+COPY --from=builder /app/tsconfig.base.json ./
 
 WORKDIR /app/apps/backend
 
 EXPOSE 3000
 
-CMD ["node", "dist/server.js"]
+CMD ["npm", "start"]

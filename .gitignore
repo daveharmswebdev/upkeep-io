@@ -24,6 +24,7 @@ libs/*/src/**/*.d.ts
 .env.local
 .env.*.local
 .secrets
+flyway.conf
 
 # Logs
 logs/

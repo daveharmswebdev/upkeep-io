@@ -107,7 +107,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return leases.map((lease) => this.toLeaseWithDetails(lease));
+    return leases.map((lease: any) => this.toLeaseWithDetails(lease));
   }
 
   async findByPropertyId(propertyId: string): Promise<LeaseWithDetails[]> {
@@ -128,7 +128,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return leases.map((lease) => this.toLeaseWithDetails(lease));
+    return leases.map((lease: any) => this.toLeaseWithDetails(lease));
   }
 
   async findActiveByPropertyId(propertyId: string): Promise<LeaseWithDetails | null> {

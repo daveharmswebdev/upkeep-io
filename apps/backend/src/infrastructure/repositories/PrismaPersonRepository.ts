@@ -34,7 +34,7 @@ export class PrismaPersonRepository implements IPersonRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return persons.map(p => ({
+    return persons.map((p: any) => ({
       ...p,
       personType: p.personType as PersonType,
       middleName: p.middleName ?? undefined,

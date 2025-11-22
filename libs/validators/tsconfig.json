@@ -6,8 +6,8 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "module": "ESNext",
-    "target": "ESNext"
+    "module": "CommonJS",
+    "target": "ES2020"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]

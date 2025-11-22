@@ -3,8 +3,8 @@ CREATE TYPE "PersonType" AS ENUM ('OWNER', 'FAMILY_MEMBER', 'VENDOR');
 
 -- CreateTable
 CREATE TABLE "persons" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "user_id" UUID NOT NULL,
     "person_type" "PersonType" NOT NULL,
     "first_name" VARCHAR(100) NOT NULL,
     "last_name" VARCHAR(100) NOT NULL,
@@ -20,10 +20,10 @@ CREATE TABLE "persons" (
 
 -- CreateTable
 CREATE TABLE "tenants" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "person_id" TEXT NOT NULL,
-    "property_id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "user_id" UUID NOT NULL,
+    "person_id" UUID NOT NULL,
+    "property_id" UUID NOT NULL,
     "lease_start_date" TIMESTAMP(3) NOT NULL,
     "lease_end_date" TIMESTAMP(3),
     "monthly_rent" DECIMAL(10,2),
@@ -38,8 +38,8 @@ CREATE TABLE "tenants" (
 
 -- CreateTable
 CREATE TABLE "pets" (
-    "id" TEXT NOT NULL,
-    "tenant_id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "tenant_id" UUID NOT NULL,
     "name" VARCHAR(100) NOT NULL,
     "type" VARCHAR(50) NOT NULL,
     "breed" VARCHAR(100),
