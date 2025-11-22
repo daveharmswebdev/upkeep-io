@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.backend.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "../../",
+    "rootDir": "./src",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*", "../../libs/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
