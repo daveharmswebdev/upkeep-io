@@ -75,16 +75,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Flyway
-        uses: joshuaavalon/flyway-action@v3.0.0
-        with:
-          url: ${{ secrets.RENDER_DATABASE_URL }}
-          user: ${{ secrets.RENDER_DATABASE_USER }}
-          password: ${{ secrets.RENDER_DATABASE_PASSWORD }}
-          locations: filesystem:./apps/backend/migrations
+      - name: Debug - Check if secrets are available
+        run: |
+          echo "Checking environment variables..."
+          echo "URL length: ${#RENDER_DATABASE_URL}"
+          echo "USER length: ${#RENDER_DATABASE_USER}"
+          echo "PASSWORD length: ${#RENDER_DATABASE_PASSWORD}"
+          echo "URL starts with: ${RENDER_DATABASE_URL:0:10}"
+        env:
+          RENDER_DATABASE_URL: ${{ secrets.RENDER_DATABASE_URL }}
+          RENDER_DATABASE_USER: ${{ secrets.RENDER_DATABASE_USER }}
+          RENDER_DATABASE_PASSWORD: ${{ secrets.RENDER_DATABASE_PASSWORD }}
+
+      - name: Debug - List migration files
+        run: |
+          echo "Listing migration files:"
+          ls -la apps/backend/migrations/ || echo "Migration directory not found"
+
+      - name: Install Flyway CLI
+        run: |
+          wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz | tar xvz
+          sudo ln -s $(pwd)/flyway-9.22.3/flyway /usr/local/bin/flyway
 
       - name: Run Flyway migrations
-        run: flyway migrate
+        run: |
+          flyway migrate \
+            -url="${{ secrets.RENDER_DATABASE_URL }}" \
+            -user="${{ secrets.RENDER_DATABASE_USER }}" \
+            -password="${{ secrets.RENDER_DATABASE_PASSWORD }}" \
+            -locations="filesystem:./apps/backend/migrations"
 
   # Note: Render auto-deploys backend and frontend when code is pushed to main
   # No manual deployment steps needed - Render detects the push and deploys automatically
