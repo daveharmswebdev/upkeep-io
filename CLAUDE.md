@@ -238,6 +238,8 @@ const useCase = new CreateMaintenanceWorkUseCase(mockRepo);
 
 ## Deployment (Render)
 
+**⚠️ IMPORTANT:** See [docs/render-deployment.md](docs/render-deployment.md) for detailed setup instructions, troubleshooting, and common errors. This document contains critical lessons about database URL formats and GitHub secrets configuration.
+
 GitHub Actions workflow on push to main:
 
 1. **Run backend tests** - Must pass before proceeding
@@ -264,9 +266,10 @@ GitHub Actions workflow on push to main:
    - Enable "Required reviewers"
    - Add yourself (and any other approvers)
 4. Under "Environment secrets", add:
-   - `RENDER_DATABASE_URL` = External database URL from Render
+   - `RENDER_DATABASE_URL` = **CRITICAL:** Must use JDBC format: `jdbc:postgresql://host:5432/database` (NOT the PostgreSQL URL from Render dashboard)
    - `RENDER_DATABASE_USER` = Database username
    - `RENDER_DATABASE_PASSWORD` = Database password
+   - See [docs/render-deployment.md](docs/render-deployment.md) for exact format and troubleshooting
 5. Save the environment
 
 Now when migrations run, GitHub will pause and wait for your approval before applying them to production.
