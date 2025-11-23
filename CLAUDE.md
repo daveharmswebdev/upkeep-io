@@ -117,17 +117,27 @@ The monorepo uses a layered TypeScript configuration for different module system
 - Run `npm run migrate:dev` to generate and apply migrations locally
 - Prisma auto-generates TypeScript client with full type safety
 
-**Production (Railway):**
-- Flyway runs migrations BEFORE app deployment via GitHub Actions
-- Copy Prisma-generated SQL from `prisma/migrations/` to `migrations/` folder in Flyway format (`V1__init.sql`, `V2__add_vendors.sql`)
+**🚨 CRITICAL: NEVER use `prisma db push`**
+- `prisma db push` syncs the database without creating migration files
+- This creates schema drift between local and production
+- **ALWAYS use `prisma migrate dev`** to create proper migration files
+- If you accidentally used `prisma db push`, you must retroactively create the migration using `prisma migrate diff`
+
+**Production (Render):**
+- Flyway runs migrations via GitHub Actions (requires manual approval)
+- Copy Prisma-generated SQL from `prisma/migrations/` to `apps/backend/migrations/` folder in Flyway format (`V1__init.sql`, `V2__add_vendors.sql`)
 - Flyway provides atomic, transactional migrations with rollback capability
+- Render auto-deploys backend and frontend when code is pushed to main
 
 **Migration Workflow:**
 1. Update `prisma/schema.prisma`
 2. Run `prisma migrate dev --name "descriptive_name"`
-3. Copy generated SQL to `migrations/VXXX__descriptive_name.sql` for Flyway
+3. Copy generated SQL to `apps/backend/migrations/VXXX__descriptive_name.sql` for Flyway
 4. Commit both prisma schema and migration files
-5. Push to GitHub - CI/CD runs Flyway, then deploys app
+5. Push to GitHub - Tests run automatically
+6. Approve migrations in GitHub Actions UI
+7. Migrations run on production database
+8. Render auto-deploys backend and frontend
 
 ## Domain Model
 
@@ -226,17 +236,40 @@ const mockRepo = { findById: jest.fn(), save: jest.fn() };
 const useCase = new CreateMaintenanceWorkUseCase(mockRepo);
 ```
 
-## Deployment (Railway)
+## Deployment (Render)
 
 GitHub Actions workflow on push to main:
 
-1. Run Flyway migrations against Railway PostgreSQL
-2. Build backend Docker image
-3. Build frontend Docker image
-4. Deploy to Railway (zero-downtime)
-5. Instant rollback capability if deployment fails
+1. **Run backend tests** - Must pass before proceeding
+2. **Manual migration approval** - You review and approve migrations before they run
+3. **Run Flyway migrations** - Applies migrations to Render PostgreSQL (after approval)
+4. **Render auto-deploys** - Backend and frontend deploy automatically when Render detects the push
 
-Environment variables managed through Railway dashboard.
+**Key Features:**
+- Tests run automatically on every push
+- Migrations require manual approval (via GitHub environment protection)
+- Render auto-deploys both services when code is pushed to main
+- Zero-downtime deployments with instant rollback capability
+
+**Environment Configuration:**
+- Backend/frontend environment variables managed through Render dashboard
+- GitHub Secrets store database credentials for CI/CD migrations
+- Backend uses internal database URL for optimal performance
+
+**GitHub Environment Protection Setup** (one-time setup):
+
+1. Go to your GitHub repository → Settings → Environments
+2. Click "New environment" and name it `production`
+3. Under "Environment protection rules":
+   - Enable "Required reviewers"
+   - Add yourself (and any other approvers)
+4. Under "Environment secrets", add:
+   - `RENDER_DATABASE_URL` = External database URL from Render
+   - `RENDER_DATABASE_USER` = Database username
+   - `RENDER_DATABASE_PASSWORD` = Database password
+5. Save the environment
+
+Now when migrations run, GitHub will pause and wait for your approval before applying them to production.
 
 ## Key Dependencies
 
@@ -265,7 +298,7 @@ Environment variables managed through Railway dashboard.
 ## Cost Budget
 
 $100/month total budget:
-- Railway services: ~$35-45/month (Express, Vue, PostgreSQL, Redis)
+- Render services: ~$35-45/month (Backend, Frontend, PostgreSQL)
 - Leaves $55-65/month for experimentation and scaling
 
 ## Property Management Implementation
@@ -402,6 +435,7 @@ If you find yourself writing similar logic that exists elsewhere:
 ## Important Notes
 
 - **ALWAYS check existing utilities before writing new code** - See "Frontend Utilities" section above. Use what's in the pantry before buying groceries!
+- **NEVER use `prisma db push` for schema changes** - ALWAYS use `prisma migrate dev` to create proper migration files. Using `db push` causes schema drift and production errors.
 - **Backend leads frontend** - API contract is source of truth, frontend adapts to backend
 - MaintenanceWork is the central aggregate root - most features revolve around tracking work and costs
 - All material expenses, mileage, and labor must be tracked for tax deduction reporting
