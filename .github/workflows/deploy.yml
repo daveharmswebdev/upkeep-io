@@ -103,7 +103,8 @@ jobs:
             -url="${{ secrets.RENDER_DATABASE_URL }}" \
             -user="${{ secrets.RENDER_DATABASE_USER }}" \
             -password="${{ secrets.RENDER_DATABASE_PASSWORD }}" \
-            -locations="filesystem:./apps/backend/migrations"
+            -locations="filesystem:./apps/backend/migrations" \
+            -baselineOnMigrate=true
 
   # Note: Render auto-deploys backend and frontend when code is pushed to main
   # No manual deployment steps needed - Render detects the push and deploys automatically
