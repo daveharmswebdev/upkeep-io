@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-8">
     <div class="max-w-4xl mx-auto px-2 sm:px-4">
-      <div class="bg-white p-4 md:p-6 lg:p-8 rounded-lg shadow-lg">
+      <div class="bg-white dark:bg-gray-800 p-4 md:p-6 lg:p-8 rounded-lg shadow-lg dark:border dark:border-gray-700">
         <!-- Back Button -->
         <button
           type="button"
           @click="handleCancel"
-          class="text-gray-600 hover:text-gray-800 flex items-center gap-2 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+          class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center gap-2 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:ring-offset-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -14,17 +14,17 @@
           Back to Property
         </button>
 
-        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800">Add Lease</h1>
+        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800 dark:text-gray-100">Add Lease</h1>
 
         <form @submit="onSubmit">
           <!-- Two-column layout: Lessee (left) and Lease Details (right) -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 mb-6">
             <!-- LEFT COLUMN: Lessee Section -->
             <div>
-              <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">
-                Lessee <span class="text-primary-400">*</span>
+              <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                Lessee <span class="text-primary-400 dark:text-primary-300">*</span>
               </h2>
-              <p class="text-sm text-gray-600 mb-4">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Enter contact information for the primary lessee.
               </p>
 
@@ -75,8 +75,8 @@
 
             <!-- RIGHT COLUMN: Lease Details Section -->
             <div>
-              <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700">Lease Details</h2>
-              <p class="text-sm text-gray-600 mb-4">
+              <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700 dark:text-gray-300">Lease Details</h2>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Enter the lease term and financial information. Leave end date blank for month-to-month leases.
               </p>
 

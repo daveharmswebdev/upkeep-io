@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-primary-500 text-white shadow-md">
+  <header class="bg-primary-500 dark:bg-gray-800 text-white shadow-md dark:border-b dark:border-gray-700">
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <!-- Logo/Brand -->
@@ -64,6 +64,7 @@
 
           <!-- User menu -->
           <div class="flex items-center gap-4 ml-4 pl-4 border-l border-primary-300">
+            <ThemeToggle />
             <span class="text-sm">{{ user?.name }}</span>
             <button
               @click="handleLogout"
@@ -108,7 +109,10 @@
 
         <!-- Mobile User menu -->
         <div class="pt-2 mt-2 border-t border-primary-300">
-          <div class="text-sm mb-2 px-3">{{ user?.name }}</div>
+          <div class="flex items-center gap-3 mb-3 px-3">
+            <ThemeToggle />
+            <div class="text-sm">{{ user?.name }}</div>
+          </div>
           <button
             @click="handleLogout"
             class="w-full py-3 px-3 bg-primary-400 hover:bg-primary-600 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2 focus:ring-offset-primary-500 flex items-center gap-2"
@@ -128,6 +132,7 @@
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 
 const { isAuthenticated, user, logout } = useAuth();
 const mobileMenuOpen = ref(false);

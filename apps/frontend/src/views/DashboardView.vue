@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
 
     <main class="p-8 max-w-7xl mx-auto">
-      <section class="bg-white p-8 rounded-lg shadow">
-        <h2 class="text-xl font-heading font-semibold text-gray-800 mt-0 mb-4">Your Properties</h2>
-        <p class="text-gray-600 mb-6">Manage your rental properties, track maintenance, and monitor expenses.</p>
+      <section class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow dark:border dark:border-gray-700">
+        <h2 class="text-xl font-heading font-semibold text-gray-800 dark:text-gray-100 mt-0 mb-4">Your Properties</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Manage your rental properties, track maintenance, and monitor expenses.</p>
         <div class="flex flex-wrap gap-4">
           <button
             @click="router.push('/properties')"

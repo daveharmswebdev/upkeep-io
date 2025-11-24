@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-8">
     <div class="max-w-4xl mx-auto px-2 sm:px-4">
-      <div class="bg-white p-4 md:p-6 lg:p-8 rounded-lg shadow-lg">
+      <div class="bg-white dark:bg-gray-800 p-4 md:p-6 lg:p-8 rounded-lg shadow-lg dark:border dark:border-gray-700">
         <!-- Back Button -->
         <button
           type="button"
           @click="handleCancel"
-          class="text-gray-600 hover:text-gray-800 flex items-center gap-2 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+          class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center gap-2 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:ring-offset-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -14,17 +14,17 @@
           Back to Properties
         </button>
 
-        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800">
+        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800 dark:text-gray-100">
           {{ isEditMode ? 'Edit Property' : 'Add Property' }}
         </h1>
 
         <!-- Loading State -->
         <div v-if="fetchLoading" class="flex justify-center items-center py-12">
-          <div class="text-gray-600">Loading property data...</div>
+          <div class="text-gray-600 dark:text-gray-400">Loading property data...</div>
         </div>
 
         <!-- Fetch Error State -->
-        <div v-else-if="fetchError" class="mb-6 p-4 bg-primary-100 text-primary-500 rounded">
+        <div v-else-if="fetchError" class="mb-6 p-4 bg-primary-100 dark:bg-primary-900/30 text-primary-500 dark:text-primary-300 rounded dark:border dark:border-primary-700">
           {{ fetchError }}
         </div>
 
@@ -90,11 +90,11 @@
 
             <!-- Right Column - Money input -->
             <div class="mb-4">
-            <label for="purchasePrice" class="block mb-2 text-gray-700 font-medium">
+            <label for="purchasePrice" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
               Purchase Price (Optional)
             </label>
             <div class="relative">
-              <span class="absolute left-3 top-2 text-gray-500">$</span>
+              <span class="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
               <input
                 id="purchasePrice"
                 name="purchasePrice"
@@ -103,19 +103,19 @@
                 :value="values.purchasePrice"
                 @input="handlePriceInput"
                 placeholder="0.00"
-                class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
+                class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 :class="{
-                  'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.purchasePrice,
-                  'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.purchasePrice,
+                  'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors.purchasePrice,
+                  'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors.purchasePrice,
                 }"
               />
             </div>
-            <p v-if="errors.purchasePrice" class="text-primary-400 text-sm mt-1">{{ errors.purchasePrice }}</p>
+            <p v-if="errors.purchasePrice" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.purchasePrice }}</p>
             </div>
           </div>
 
           <!-- Error Message and Buttons - Full width below grid -->
-          <div v-if="submitError" class="mt-4 mb-4 p-3 bg-primary-100 text-primary-500 rounded">
+          <div v-if="submitError" class="mt-4 mb-4 p-3 bg-primary-100 dark:bg-primary-900/30 text-primary-500 dark:text-primary-300 rounded dark:border dark:border-primary-700">
             {{ submitError }}
           </div>
 
