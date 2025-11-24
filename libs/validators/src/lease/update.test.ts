@@ -430,14 +430,25 @@ describe('updateLeaseSchema', () => {
       expect(() => updateLeaseSchema.parse(invalidData)).toThrow(ZodError);
     });
 
-    it('should reject null startDate', () => {
-      const invalidData = {
+    it('should accept null startDate', () => {
+      const validData = {
         startDate: null, // null is coerced to Invalid Date
       };
 
       // z.coerce.date().optional() actually treats null as valid undefined/optional
       // This is expected Zod behavior - null is coerced before optional check
-      expect(() => updateLeaseSchema.parse(invalidData)).not.toThrow();
+      expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
+    });
+
+    it('should accept null endDate for MONTH_TO_MONTH conversion', () => {
+      const validData = {
+        status: 'MONTH_TO_MONTH' as const,
+        endDate: null, // Explicitly clear endDate when converting to month-to-month
+      };
+
+      const result = updateLeaseSchema.parse(validData);
+      expect(result.status).toBe('MONTH_TO_MONTH');
+      expect(result.endDate).toBeNull();
     });
 
     it('should reject array instead of object', () => {

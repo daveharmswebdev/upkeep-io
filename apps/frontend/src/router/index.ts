@@ -63,6 +63,12 @@ const router = createRouter({
       component: LeaseFormView,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/properties/:propertyId/leases/:leaseId/edit',
+      name: 'lease-edit',
+      component: LeaseFormView,
+      meta: { requiresAuth: true },
+    },
   ],
 });
 
