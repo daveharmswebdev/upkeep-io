@@ -26,10 +26,26 @@ describe('ConfirmModal', () => {
       expect(buttons[0].text()).toBe('Cancel');
     });
 
-    it('should render Delete button', () => {
+    it('should render default Confirm button', () => {
       const wrapper = mount(ConfirmModal, { props: defaultProps });
       const buttons = wrapper.findAll('button');
+      expect(buttons[1].text()).toBe('Confirm');
+    });
+
+    it('should render custom confirmLabel', () => {
+      const wrapper = mount(ConfirmModal, {
+        props: { ...defaultProps, confirmLabel: 'Delete' }
+      });
+      const buttons = wrapper.findAll('button');
       expect(buttons[1].text()).toBe('Delete');
+    });
+
+    it('should render custom cancelLabel', () => {
+      const wrapper = mount(ConfirmModal, {
+        props: { ...defaultProps, cancelLabel: 'No Thanks' }
+      });
+      const buttons = wrapper.findAll('button');
+      expect(buttons[0].text()).toBe('No Thanks');
     });
 
     it('should have aria-modal attribute', () => {
@@ -56,11 +72,11 @@ describe('ConfirmModal', () => {
       expect(wrapper.emitted().cancel).toHaveLength(1);
     });
 
-    it('should emit confirm when Delete button is clicked', async () => {
+    it('should emit confirm when Confirm button is clicked', async () => {
       const wrapper = mount(ConfirmModal, { props: defaultProps });
-      const deleteButton = wrapper.findAll('button')[1];
+      const confirmButton = wrapper.findAll('button')[1];
 
-      await deleteButton.trigger('click');
+      await confirmButton.trigger('click');
 
       expect(wrapper.emitted()).toHaveProperty('confirm');
       expect(wrapper.emitted().confirm).toHaveLength(1);
@@ -114,17 +130,17 @@ describe('ConfirmModal', () => {
 
       const buttons = wrapper.findAll('button');
       const cancelButton = buttons[0].element as HTMLButtonElement;
-      const deleteButton = buttons[1].element as HTMLButtonElement;
+      const confirmButton = buttons[1].element as HTMLButtonElement;
 
       // Initially Cancel button should be focused
       expect(document.activeElement).toBe(cancelButton);
 
-      // Tab to Delete button
+      // Tab to Confirm button
       await wrapper.trigger('keydown', { key: 'Tab' });
-      deleteButton.focus(); // Simulate natural tab behavior
-      expect(document.activeElement).toBe(deleteButton);
+      confirmButton.focus(); // Simulate natural tab behavior
+      expect(document.activeElement).toBe(confirmButton);
 
-      // Tab from Delete should wrap to Cancel (test the handler)
+      // Tab from Confirm should wrap to Cancel (test the handler)
       const tabEvent = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true });
       document.dispatchEvent(tabEvent);
       await nextTick();
@@ -158,10 +174,10 @@ describe('ConfirmModal', () => {
       expect(cancelButton.classes()).toContain('bg-gray-200');
     });
 
-    it('should have red Delete button', () => {
+    it('should have red Confirm button', () => {
       const wrapper = mount(ConfirmModal, { props: defaultProps });
-      const deleteButton = wrapper.findAll('button')[1];
-      expect(deleteButton.classes()).toContain('bg-primary-300');
+      const confirmButton = wrapper.findAll('button')[1];
+      expect(confirmButton.classes()).toContain('bg-primary-300');
     });
   });
 });

@@ -277,6 +277,7 @@
       v-if="showDeleteModal"
       title="Delete Property"
       :message="`Are you sure you want to delete ${fullAddress}?`"
+      confirm-label="Delete"
       @confirm="confirmDelete"
       @cancel="cancelDelete"
     />
@@ -286,6 +287,7 @@
       v-if="showEndLeaseModal"
       title="End Lease"
       message="Are you sure you want to mark this lease as ended? This action cannot be undone."
+      confirm-label="End Lease"
       @confirm="confirmEndLease"
       @cancel="cancelEndLease"
     />
@@ -295,6 +297,7 @@
       v-if="showConvertModal"
       title="Convert to Month-to-Month"
       message="Are you sure you want to convert this lease to month-to-month? The end date will be removed."
+      confirm-label="Convert"
       @confirm="confirmConvertToMonthToMonth"
       @cancel="cancelConvertToMonthToMonth"
     />
