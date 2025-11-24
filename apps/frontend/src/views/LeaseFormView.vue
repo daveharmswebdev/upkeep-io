@@ -157,6 +157,7 @@
                     name="notes"
                     :value="values.notes"
                     @input="handleTextareaInput"
+                    @blur="handleTextareaBlur"
                     placeholder="Additional lease notes..."
                     rows="3"
                     class="w-full px-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -232,8 +233,9 @@ const { createMoneyInputHandler } = useMoneyInput();
 const handleMonthlyRentInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'monthlyRent');
 const handleSecurityDepositInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'securityDeposit');
 
-const { createTextareaHandler } = useTextareaInput();
+const { createTextareaHandler, createTextareaBlurHandler } = useTextareaInput();
 const handleTextareaInput = createTextareaHandler(setFieldValue as (field: string, value: any) => void, 'notes');
+const handleTextareaBlur = createTextareaBlurHandler(setFieldValue as (field: string, value: any) => void, 'notes');
 
 const handleMoneyInput = (fieldName: 'monthlyRent' | 'securityDeposit', event: Event) => {
   if (fieldName === 'monthlyRent') {
