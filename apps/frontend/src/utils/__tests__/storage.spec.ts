@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { authStorage, createMockStorage, type User } from '../storage';
+import { authStorage, createMockStorage, themeStorage, type User } from '../storage';
 
 describe('storage', () => {
   describe('authStorage', () => {
@@ -186,6 +186,46 @@ describe('storage', () => {
 
       mockStorage.setUser(testUser);
       expect(mockStorage.getUser()).toEqual(testUser);
+    });
+  });
+
+  describe('themeStorage', () => {
+    beforeEach(() => {
+      // Clear localStorage before each test
+      localStorage.clear();
+    });
+
+    describe('theme operations', () => {
+      it('should save and retrieve theme', () => {
+        themeStorage.setTheme('dark');
+        expect(themeStorage.getTheme()).toBe('dark');
+      });
+
+      it('should return null when no theme exists', () => {
+        expect(themeStorage.getTheme()).toBeNull();
+      });
+
+      it('should remove theme', () => {
+        themeStorage.setTheme('dark');
+        themeStorage.removeTheme();
+        expect(themeStorage.getTheme()).toBeNull();
+      });
+
+      it('should overwrite existing theme', () => {
+        themeStorage.setTheme('dark');
+        themeStorage.setTheme('light');
+        expect(themeStorage.getTheme()).toBe('light');
+      });
+
+      it('should handle light theme', () => {
+        themeStorage.setTheme('light');
+        expect(themeStorage.getTheme()).toBe('light');
+      });
+
+      it('should handle dark theme', () => {
+        themeStorage.setTheme('dark');
+        expect(themeStorage.getTheme()).toBe('dark');
+      });
     });
   });
 });

@@ -78,6 +78,44 @@ export const authStorage = {
 };
 
 /**
+ * Theme type for dark mode functionality
+ */
+export type Theme = 'light' | 'dark';
+
+/**
+ * Theme storage abstraction
+ * Provides testable interface for theme preference persistence
+ */
+export const themeStorage = {
+  /**
+   * Get theme preference from storage
+   * @returns Theme preference or null if not found
+   */
+  getTheme: (): Theme | null => {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'light' || theme === 'dark') {
+      return theme;
+    }
+    return null;
+  },
+
+  /**
+   * Save theme preference to storage
+   * @param theme - Theme preference to store
+   */
+  setTheme: (theme: Theme): void => {
+    localStorage.setItem('theme', theme);
+  },
+
+  /**
+   * Remove theme preference from storage
+   */
+  removeTheme: (): void => {
+    localStorage.removeItem('theme');
+  },
+};
+
+/**
  * Create mock storage for testing
  * Returns storage interface backed by in-memory object instead of localStorage
  * @returns Mock storage with same interface as authStorage
