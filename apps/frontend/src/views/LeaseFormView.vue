@@ -95,11 +95,11 @@
                 />
 
                 <div>
-                  <label for="monthlyRent" class="block mb-2 text-gray-700 font-medium">
+                  <label for="monthlyRent" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
                     Monthly Rent (Optional)
                   </label>
                   <div class="relative">
-                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                    <span class="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
                     <input
                       id="monthlyRent"
                       name="monthlyRent"
@@ -108,22 +108,22 @@
                       :value="values.monthlyRent"
                       @input="handleMoneyInput('monthlyRent', $event)"
                       placeholder="0.00"
-                      class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
+                      class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       :class="{
-                        'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.monthlyRent,
-                        'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.monthlyRent,
+                        'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors.monthlyRent,
+                        'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors.monthlyRent,
                       }"
                     />
                   </div>
-                  <p v-if="errors.monthlyRent" class="text-primary-400 text-sm mt-1">{{ errors.monthlyRent }}</p>
+                  <p v-if="errors.monthlyRent" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.monthlyRent }}</p>
                 </div>
 
                 <div>
-                  <label for="securityDeposit" class="block mb-2 text-gray-700 font-medium">
+                  <label for="securityDeposit" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
                     Security Deposit (Optional)
                   </label>
                   <div class="relative">
-                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                    <span class="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
                     <input
                       id="securityDeposit"
                       name="securityDeposit"
@@ -132,14 +132,14 @@
                       :value="values.securityDeposit"
                       @input="handleMoneyInput('securityDeposit', $event)"
                       placeholder="0.00"
-                      class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors"
+                      class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       :class="{
-                        'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.securityDeposit,
-                        'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.securityDeposit,
+                        'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors.securityDeposit,
+                        'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors.securityDeposit,
                       }"
                     />
                   </div>
-                  <p v-if="errors.securityDeposit" class="text-primary-400 text-sm mt-1">{{ errors.securityDeposit }}</p>
+                  <p v-if="errors.securityDeposit" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.securityDeposit }}</p>
                 </div>
 
                 <FormInput
@@ -149,7 +149,7 @@
                 />
 
                 <div>
-                  <label for="notes" class="block mb-2 text-gray-700 font-medium">
+                  <label for="notes" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
                     Notes (Optional)
                   </label>
                   <textarea
@@ -157,15 +157,16 @@
                     name="notes"
                     :value="values.notes"
                     @input="handleTextareaInput"
+                    @blur="handleTextareaBlur"
                     placeholder="Additional lease notes..."
                     rows="3"
-                    class="w-full px-3 py-2 border rounded focus:outline-none transition-colors"
+                    class="w-full px-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     :class="{
-                      'border-gray-300 focus:border-complement-300 focus:ring-2 focus:ring-complement-200': !errors.notes,
-                      'border-primary-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-200': errors.notes,
+                      'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors.notes,
+                      'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors.notes,
                     }"
                   ></textarea>
-                  <p v-if="errors.notes" class="text-primary-400 text-sm mt-1">{{ errors.notes }}</p>
+                  <p v-if="errors.notes" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.notes }}</p>
                 </div>
               </div>
             </div>
@@ -232,8 +233,9 @@ const { createMoneyInputHandler } = useMoneyInput();
 const handleMonthlyRentInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'monthlyRent');
 const handleSecurityDepositInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'securityDeposit');
 
-const { createTextareaHandler } = useTextareaInput();
+const { createTextareaHandler, createTextareaBlurHandler } = useTextareaInput();
 const handleTextareaInput = createTextareaHandler(setFieldValue as (field: string, value: any) => void, 'notes');
+const handleTextareaBlur = createTextareaBlurHandler(setFieldValue as (field: string, value: any) => void, 'notes');
 
 const handleMoneyInput = (fieldName: 'monthlyRent' | 'securityDeposit', event: Event) => {
   if (fieldName === 'monthlyRent') {
