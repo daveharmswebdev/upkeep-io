@@ -86,5 +86,34 @@ describe('useTextareaInput', () => {
 
       expect(setFieldValue).toHaveBeenCalledWith('notes', 'Line 1\nLine 2\n  Line 3');
     });
+
+    it('should preserve multiple internal spaces between words', () => {
+      const { createTextareaHandler } = useTextareaInput();
+      const setFieldValue = vi.fn();
+
+      const handler = createTextareaHandler(setFieldValue, 'notes');
+      const event = {
+        target: { value: '  This  has   multiple    spaces   between   words  ' }
+      } as unknown as Event;
+
+      handler(event);
+
+      // Should trim leading/trailing spaces but preserve internal spaces
+      expect(setFieldValue).toHaveBeenCalledWith('notes', 'This  has   multiple    spaces   between   words');
+    });
+
+    it('should preserve internal spaces in typical note text', () => {
+      const { createTextareaHandler } = useTextareaInput();
+      const setFieldValue = vi.fn();
+
+      const handler = createTextareaHandler(setFieldValue, 'notes');
+      const event = {
+        target: { value: '  Tenant is responsible for lawn care and utilities.  ' }
+      } as unknown as Event;
+
+      handler(event);
+
+      expect(setFieldValue).toHaveBeenCalledWith('notes', 'Tenant is responsible for lawn care and utilities.');
+    });
   });
 });
