@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const updateLeaseSchema = z.object({
   startDate: z.coerce.date().optional(),
-  endDate: z.coerce.date().optional(),
+  endDate: z.coerce.date().nullable().optional(),
   monthlyRent: z.number().positive('Monthly rent must be positive').optional(),
   securityDeposit: z.number().nonnegative('Security deposit must be non-negative').optional(),
   depositPaidDate: z.coerce.date().optional(),

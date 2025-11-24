@@ -23,15 +23,15 @@
           class="px-6 py-2 bg-gray-200 text-gray-800 rounded font-medium hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
           @click="handleCancel"
         >
-          Cancel
+          {{ cancelLabel }}
         </button>
         <button
-          ref="deleteButtonRef"
+          ref="confirmButtonRef"
           type="button"
           class="px-6 py-2 bg-primary-300 text-white rounded font-medium hover:bg-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
           @click="handleConfirm"
         >
-          Delete
+          {{ confirmLabel }}
         </button>
       </div>
     </div>
@@ -41,10 +41,18 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-defineProps<{
-  title: string;
-  message: string;
-}>();
+withDefaults(
+  defineProps<{
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+  }>(),
+  {
+    confirmLabel: 'Confirm',
+    cancelLabel: 'Cancel',
+  }
+);
 
 const emit = defineEmits<{
   confirm: [];
@@ -53,7 +61,7 @@ const emit = defineEmits<{
 
 const modalRef = ref<HTMLElement | null>(null);
 const cancelButtonRef = ref<HTMLButtonElement | null>(null);
-const deleteButtonRef = ref<HTMLButtonElement | null>(null);
+const confirmButtonRef = ref<HTMLButtonElement | null>(null);
 
 const handleConfirm = () => {
   emit('confirm');
@@ -66,7 +74,7 @@ const handleCancel = () => {
 const handleTabKey = (event: KeyboardEvent) => {
   if (event.key !== 'Tab') return;
 
-  const focusableElements = [cancelButtonRef.value, deleteButtonRef.value].filter(Boolean);
+  const focusableElements = [cancelButtonRef.value, confirmButtonRef.value].filter(Boolean);
   const firstElement = focusableElements[0];
   const lastElement = focusableElements[focusableElements.length - 1];
 

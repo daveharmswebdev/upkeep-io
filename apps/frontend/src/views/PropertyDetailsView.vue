@@ -124,8 +124,65 @@
             Loading lease information...
           </div>
 
+          <!-- Lease History Section (Collapsible) -->
+          <div v-else-if="historicalLeases.length > 0" class="mb-6 border-b dark:border-gray-700 pb-6">
+            <button
+              @click="showHistory = !showHistory"
+              class="flex items-center justify-between w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded transition-colors"
+            >
+              <div class="flex items-center gap-2">
+                <h4 class="text-md font-semibold text-gray-700 dark:text-gray-300">Lease History</h4>
+                <span class="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-full font-medium">
+                  {{ historicalLeases.length }}
+                </span>
+              </div>
+              <svg
+                class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform"
+                :class="{ 'rotate-180': showHistory }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Historical Leases List -->
+            <div v-if="showHistory" class="mt-4 space-y-3">
+              <div
+                v-for="lease in historicalLeases"
+                :key="lease.id"
+                class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4"
+              >
+                <div class="flex items-start justify-between mb-2">
+                  <div>
+                    <p class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                      {{ formatDate(lease.startDate) }}
+                      <span v-if="lease.endDate"> - {{ formatDate(lease.endDate) }}</span>
+                      <span v-else class="text-xs text-gray-600 dark:text-gray-400"> (Month-to-Month)</span>
+                    </p>
+                    <p v-if="lease.lessees && lease.lessees.length > 0" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      {{ lease.lessees.map(l => `${l.person.firstName} ${l.person.lastName}`).join(', ') }}
+                    </p>
+                  </div>
+                  <span
+                    class="px-2 py-1 text-xs font-medium rounded"
+                    :class="{
+                      'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300': lease.status === 'ENDED' || lease.status === 'VOIDED'
+                    }"
+                  >
+                    {{ lease.status === 'ENDED' ? 'Ended' : lease.status === 'VOIDED' ? 'Voided' : lease.status }}
+                  </span>
+                </div>
+                <p v-if="lease.voidedReason" class="text-xs text-gray-600 dark:text-gray-400 italic mt-2">
+                  Void reason: {{ lease.voidedReason }}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <!-- No Active Lease -->
-          <div v-else-if="!activeLease" class="text-center py-6">
+          <div v-if="!activeLease" class="text-center py-6">
             <p class="text-gray-600 dark:text-gray-400 mb-4">No active lease for this property</p>
             <button
               @click="handleAddLease"
@@ -137,6 +194,35 @@
 
           <!-- Active Lease Display -->
           <div v-else class="space-y-4">
+            <!-- Lease Action Buttons -->
+            <div class="flex flex-wrap gap-3 pb-4 border-b dark:border-gray-700">
+              <button
+                @click="handleEditLease"
+                class="px-4 py-2 bg-secondary-1-300 text-white rounded font-medium hover:bg-secondary-1-400 transition-colors text-sm"
+              >
+                Edit Lease
+              </button>
+              <button
+                @click="handleEndLease"
+                class="px-4 py-2 bg-gray-500 text-white rounded font-medium hover:bg-gray-600 transition-colors text-sm"
+              >
+                End Lease
+              </button>
+              <button
+                v-if="activeLease.status === 'ACTIVE'"
+                @click="handleConvertToMonthToMonth"
+                class="px-4 py-2 bg-secondary-2-300 text-white rounded font-medium hover:bg-secondary-2-400 transition-colors text-sm"
+              >
+                Convert to Month-to-Month
+              </button>
+              <button
+                @click="handleVoidLease"
+                class="px-4 py-2 bg-primary-300 text-white rounded font-medium hover:bg-primary-400 transition-colors text-sm"
+              >
+                Void Lease
+              </button>
+            </div>
+
             <div class="grid md:grid-cols-2 gap-4">
               <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Lease Term</p>
@@ -191,8 +277,36 @@
       v-if="showDeleteModal"
       title="Delete Property"
       :message="`Are you sure you want to delete ${fullAddress}?`"
+      confirm-label="Delete"
       @confirm="confirmDelete"
       @cancel="cancelDelete"
+    />
+
+    <!-- End Lease Confirmation Modal -->
+    <ConfirmModal
+      v-if="showEndLeaseModal"
+      title="End Lease"
+      message="Are you sure you want to mark this lease as ended? This action cannot be undone."
+      confirm-label="End Lease"
+      @confirm="confirmEndLease"
+      @cancel="cancelEndLease"
+    />
+
+    <!-- Convert to Month-to-Month Confirmation Modal -->
+    <ConfirmModal
+      v-if="showConvertModal"
+      title="Convert to Month-to-Month"
+      message="Are you sure you want to convert this lease to month-to-month? The end date will be removed."
+      confirm-label="Convert"
+      @confirm="confirmConvertToMonthToMonth"
+      @cancel="cancelConvertToMonthToMonth"
+    />
+
+    <!-- Void Lease Modal -->
+    <VoidLeaseModal
+      v-if="showVoidModal"
+      @confirm="confirmVoidLease"
+      @cancel="cancelVoidLease"
     />
   </div>
 </template>
@@ -201,11 +315,14 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import { LeaseStatus } from '@domain/entities';
 import { formatPrice, formatDate, formatDateTime } from '@/utils/formatters';
 import { extractErrorMessage } from '@/utils/errorHandlers';
 import { usePropertyDetails } from '@/composables/usePropertyDetails';
 import { usePropertyStore } from '@/stores/property';
+import { useLeaseStore } from '@/stores/lease';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import VoidLeaseModal from '@/components/VoidLeaseModal.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -213,13 +330,20 @@ const toast = useToast();
 
 // Use property details composable
 const propertyId = computed(() => route.params.id as string);
-const { property, activeLease, loading, error, fetchData } = usePropertyDetails(propertyId);
+const { property, activeLease, historicalLeases, loading, error, fetchData } = usePropertyDetails(propertyId);
 
 // Use property store for delete operation
 const propertyStore = usePropertyStore();
+const leaseStore = useLeaseStore();
 
 // Modal state
 const showDeleteModal = ref(false);
+const showEndLeaseModal = ref(false);
+const showConvertModal = ref(false);
+const showVoidModal = ref(false);
+
+// Lease history state
+const showHistory = ref(false);
 
 // Compute full address from street and address2
 const fullAddress = computed(() => {
@@ -266,5 +390,81 @@ const cancelDelete = () => {
 
 const handleAddLease = () => {
   router.push(`/properties/${route.params.id}/leases/add`);
+};
+
+// Lease action handlers
+const handleEditLease = () => {
+  if (activeLease.value) {
+    router.push(`/properties/${route.params.id}/leases/${activeLease.value.id}/edit`);
+  }
+};
+
+const handleEndLease = () => {
+  showEndLeaseModal.value = true;
+};
+
+const confirmEndLease = async () => {
+  if (!activeLease.value) return;
+
+  try {
+    await leaseStore.updateLeaseStatus(activeLease.value.id, LeaseStatus.ENDED);
+    toast.success('Lease ended successfully');
+    await fetchData(); // Refresh data
+  } catch (err: any) {
+    error.value = extractErrorMessage(err, 'Failed to end lease');
+    toast.error(error.value);
+  } finally {
+    showEndLeaseModal.value = false;
+  }
+};
+
+const cancelEndLease = () => {
+  showEndLeaseModal.value = false;
+};
+
+const handleConvertToMonthToMonth = () => {
+  showConvertModal.value = true;
+};
+
+const confirmConvertToMonthToMonth = async () => {
+  if (!activeLease.value) return;
+
+  try {
+    await leaseStore.updateLeaseStatus(activeLease.value.id, LeaseStatus.MONTH_TO_MONTH);
+    toast.success('Lease converted to month-to-month successfully');
+    await fetchData(); // Refresh data
+  } catch (err: any) {
+    error.value = extractErrorMessage(err, 'Failed to convert lease');
+    toast.error(error.value);
+  } finally {
+    showConvertModal.value = false;
+  }
+};
+
+const cancelConvertToMonthToMonth = () => {
+  showConvertModal.value = false;
+};
+
+const handleVoidLease = () => {
+  showVoidModal.value = true;
+};
+
+const confirmVoidLease = async (reason?: string) => {
+  if (!activeLease.value) return;
+
+  try {
+    await leaseStore.updateLeaseStatus(activeLease.value.id, LeaseStatus.VOIDED, reason);
+    toast.success('Lease voided successfully');
+    await fetchData(); // Refresh data
+  } catch (err: any) {
+    error.value = extractErrorMessage(err, 'Failed to void lease');
+    toast.error(error.value);
+  } finally {
+    showVoidModal.value = false;
+  }
+};
+
+const cancelVoidLease = () => {
+  showVoidModal.value = false;
 };
 </script>

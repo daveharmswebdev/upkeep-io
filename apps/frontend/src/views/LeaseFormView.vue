@@ -14,13 +14,34 @@
           Back to Property
         </button>
 
-        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800 dark:text-gray-100">Add Lease</h1>
+        <h1 class="text-3xl font-heading font-bold mb-6 text-gray-800 dark:text-gray-100">
+          {{ isEditMode ? 'Edit Lease' : 'Add Lease' }}
+        </h1>
 
-        <form @submit="onSubmit">
+        <!-- Loading State -->
+        <div v-if="fetchLoading" class="flex justify-center items-center py-12">
+          <div class="text-gray-600 dark:text-gray-400">Loading lease data...</div>
+        </div>
+
+        <!-- Fetch Error State -->
+        <div v-else-if="fetchError" class="mb-6 p-4 bg-primary-100 dark:bg-primary-900/30 text-primary-500 dark:text-primary-300 rounded dark:border dark:border-primary-700">
+          {{ fetchError }}
+        </div>
+
+        <!-- Property Info Card (Edit Mode Only) -->
+        <div v-else-if="isEditMode && property" class="mb-6 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Property</h3>
+          <p class="text-lg font-medium text-gray-800 dark:text-gray-100">
+            {{ property.nickname || fullAddress }}
+          </p>
+          <p v-if="property.nickname" class="text-sm text-gray-600 dark:text-gray-400">{{ fullAddress }}</p>
+        </div>
+
+        <form v-if="!fetchLoading && !fetchError" @submit="onSubmit">
           <!-- Two-column layout: Lessee (left) and Lease Details (right) -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 mb-6">
-            <!-- LEFT COLUMN: Lessee Section -->
-            <div>
+            <!-- LEFT COLUMN: Lessee Section (Create Mode) / Existing Lessees (Edit Mode) -->
+            <div v-if="!isEditMode">
               <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700 dark:text-gray-300">
                 Lessee <span class="text-primary-400 dark:text-primary-300">*</span>
               </h2>
@@ -73,6 +94,28 @@
               </div>
             </div>
 
+            <!-- LEFT COLUMN: Existing Lessees (Edit Mode Only) -->
+            <div v-else-if="currentLease && currentLease.lessees && currentLease.lessees.length > 0">
+              <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                Lessees
+              </h2>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Existing lessees on this lease (read-only).
+              </p>
+              <div class="space-y-3">
+                <div v-for="lessee in currentLease.lessees" :key="lessee.id" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <p class="font-medium text-gray-800 dark:text-gray-100">
+                    {{ lessee.person.firstName }} {{ lessee.person.lastName }}
+                  </p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ lessee.person.email }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ lessee.person.phone }}</p>
+                  <p v-if="lessee.signedDate" class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    Signed: {{ formatDate(lessee.signedDate) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <!-- RIGHT COLUMN: Lease Details Section -->
             <div>
               <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700 dark:text-gray-300">Lease Details</h2>
@@ -89,6 +132,7 @@
                 />
 
                 <FormInput
+                  v-if="!isMonthToMonth"
                   name="endDate"
                   label="End Date (Optional)"
                   type="date"
@@ -172,7 +216,7 @@
             </div>
           </div>
 
-          <div v-if="submitError" class="mb-4 p-3 bg-primary-100 text-primary-500 rounded">
+          <div v-if="submitError" class="mb-4 p-3 bg-primary-100 dark:bg-primary-900/30 text-primary-500 dark:text-primary-300 rounded dark:border dark:border-primary-700">
             {{ submitError }}
           </div>
 
@@ -183,9 +227,14 @@
               class="w-full sm:flex-1 px-6 py-3 bg-complement-300 text-white rounded font-medium hover:bg-complement-400 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-complement-300 focus:ring-offset-2"
             >
               <svg v-if="!isSubmitting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                <path v-if="isEditMode" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
-              {{ isSubmitting ? 'Creating...' : 'Create Lease' }}
+              {{
+                isSubmitting
+                  ? (isEditMode ? 'Updating...' : 'Creating...')
+                  : (isEditMode ? 'Update Lease' : 'Create Lease')
+              }}
             </button>
             <button
               type="button"
@@ -202,32 +251,65 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import { createLeaseSchema } from '@validators/lease';
+import { createLeaseSchema, updateLeaseSchema } from '@validators/lease';
+import { LeaseStatus } from '@domain/entities';
 import { useLeaseStore } from '@/stores/lease';
+import { usePropertyStore } from '@/stores/property';
 import FormInput from '@/components/FormInput.vue';
-import { convertFormDates, convertNestedDates } from '@/utils/dateHelpers';
-import { useFormSubmission } from '@/composables/useFormSubmission';
+import { convertFormDates, convertNestedDates, formatDateForInput } from '@/utils/dateHelpers';
+import { formatDate } from '@/utils/formatters';
+import { extractErrorMessage } from '@/utils/errorHandlers';
 import { useMoneyInput } from '@/composables/useMoneyInput';
 import { useTextareaInput } from '@/composables/useTextareaInput';
 
 const router = useRouter();
 const route = useRoute();
 const leaseStore = useLeaseStore();
+const propertyStore = usePropertyStore();
 
-// Get propertyId from route params
-const propertyId = route.params.id as string;
+// Detect edit mode
+const isEditMode = computed(() => !!route.params.leaseId);
+const leaseId = computed(() => route.params.leaseId as string);
+const propertyId = computed(() => (route.params.propertyId || route.params.id) as string);
 
-const { handleSubmit, errors, values, meta, setFieldValue } = useForm({
-  validationSchema: toTypedSchema(createLeaseSchema),
+// Separate error state for fetching existing lease/property
+const fetchLoading = ref(false);
+const fetchError = ref('');
+
+// Use different schema based on mode
+const validationSchema = computed(() =>
+  isEditMode.value ? updateLeaseSchema : createLeaseSchema
+);
+
+const { handleSubmit, errors, values, meta, setFieldValue, setValues } = useForm({
+  validationSchema: toTypedSchema(validationSchema.value),
   validateOnMount: false,
-  initialValues: {
-    propertyId: propertyId,
+  initialValues: isEditMode.value ? {} : {
+    propertyId: propertyId.value,
     lessees: [{}], // Initialize with one empty lessee
   },
 });
+
+// Property and lease data
+const property = computed(() => propertyStore.currentProperty);
+const currentLease = computed(() => leaseStore.currentLease);
+
+// Computed property for full address
+const fullAddress = computed(() => {
+  if (!property.value) return '';
+  const parts = [property.value.street];
+  if (property.value.address2) {
+    parts.push(property.value.address2);
+  }
+  return parts.join(' ');
+});
+
+// Check if lease is month-to-month (for hiding endDate)
+const isMonthToMonth = computed(() => currentLease.value?.status === LeaseStatus.MONTH_TO_MONTH);
 
 const { createMoneyInputHandler } = useMoneyInput();
 const handleMonthlyRentInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'monthlyRent');
@@ -245,24 +327,91 @@ const handleMoneyInput = (fieldName: 'monthlyRent' | 'securityDeposit', event: E
   }
 };
 
-const { submitError, isSubmitting, submit } = useFormSubmission(
-  async (formValues: any) => {
-    const data = {
-      ...convertFormDates(formValues, ['startDate', 'endDate', 'depositPaidDate']),
-      lessees: convertNestedDates(formValues.lessees, ['signedDate']),
-    };
-    await leaseStore.createLease(data);
-  },
-  {
-    successMessage: 'Lease created successfully',
-    successRoute: `/properties/${propertyId}`,
-    errorMessage: 'Failed to create lease. Please try again.'
+// Submission logic with mode detection
+const submitError = ref('');
+const isSubmitting = ref(false);
+
+const submit = async (formValues: any) => {
+  submitError.value = '';
+  isSubmitting.value = true;
+
+  try {
+    if (isEditMode.value) {
+      const data = convertFormDates(formValues, ['startDate', 'endDate', 'depositPaidDate']);
+      await leaseStore.updateLease(leaseId.value, data);
+      router.push(`/properties/${propertyId.value}`);
+    } else {
+      const data = {
+        ...convertFormDates(formValues, ['startDate', 'endDate', 'depositPaidDate']),
+        lessees: convertNestedDates(formValues.lessees, ['signedDate']),
+      };
+      await leaseStore.createLease(data);
+      router.push(`/properties/${propertyId.value}`);
+    }
+  } catch (err: any) {
+    const errorMsg = extractErrorMessage(
+      err,
+      isEditMode.value ? 'Failed to update lease. Please try again.' : 'Failed to create lease. Please try again.'
+    );
+    submitError.value = errorMsg;
+    throw err;
+  } finally {
+    isSubmitting.value = false;
   }
-);
+};
 
 const onSubmit = handleSubmit(submit);
 
 const handleCancel = () => {
-  router.push(`/properties/${propertyId}`);
+  router.push(`/properties/${propertyId.value}`);
 };
+
+// Auto-populate end date when start date is entered (1 year later)
+watch(() => values.startDate, (newStartDate) => {
+  if (newStartDate && !isEditMode.value) {
+    const startDate = typeof newStartDate === 'string' ? new Date(newStartDate) : newStartDate;
+    const endDate = new Date(startDate);
+    endDate.setFullYear(endDate.getFullYear() + 1);
+    const formattedEndDate = formatDateForInput(endDate);
+    if (formattedEndDate) {
+      setFieldValue('endDate', formattedEndDate as any);
+    }
+  }
+});
+
+// Fetch existing lease and property data in edit mode
+onMounted(async () => {
+  if (isEditMode.value) {
+    fetchLoading.value = true;
+    fetchError.value = '';
+
+    try {
+      // Fetch both lease and property in parallel
+      await Promise.all([
+        leaseStore.fetchLeaseById(leaseId.value),
+        propertyStore.fetchPropertyById(propertyId.value)
+      ]);
+
+      const lease = leaseStore.currentLease;
+      if (!lease) {
+        fetchError.value = 'Lease not found';
+        return;
+      }
+
+      // Pre-populate form with existing data
+      setValues({
+        startDate: formatDateForInput(lease.startDate) as any,
+        endDate: formatDateForInput(lease.endDate) as any,
+        monthlyRent: lease.monthlyRent,
+        securityDeposit: lease.securityDeposit,
+        depositPaidDate: formatDateForInput(lease.depositPaidDate) as any,
+        notes: lease.notes || '',
+      });
+    } catch (err: any) {
+      fetchError.value = extractErrorMessage(err, 'Failed to load lease. Please try again.');
+    } finally {
+      fetchLoading.value = false;
+    }
+  }
+});
 </script>

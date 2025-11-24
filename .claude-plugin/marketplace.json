@@ -1,0 +1,13 @@
+{
+  "name": "upkeep-io-marketplace",
+  "owner": {
+    "name": "Dave Harms"
+  },
+  "plugins": [
+    {
+      "name": "upkeep-io-plugin",
+      "source": "./upkeep-io-plugin",
+      "description": "Upkeep io plugin for standard upkeep io developlent"
+    }
+  ]
+}

@@ -214,6 +214,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
 
     const updateData: any = {};
     if (data.startDate !== undefined) updateData.startDate = data.startDate;
+    // Allow explicit null to clear endDate (for MONTH_TO_MONTH leases)
     if (data.endDate !== undefined) updateData.endDate = data.endDate;
     if (data.monthlyRent !== undefined) updateData.monthlyRent = data.monthlyRent;
     if (data.securityDeposit !== undefined) updateData.securityDeposit = data.securityDeposit;
