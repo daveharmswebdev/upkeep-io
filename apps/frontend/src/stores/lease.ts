@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { LeaseWithDetails, LeaseStatus } from '@domain/entities';
-import type { CreateLeaseInput, UpdateLeaseInput } from '@validators/lease';
+import type { CreateLeaseInput, UpdateLeaseInput, AddLesseeInput } from '@validators/lease';
 import api from '@/api/client';
 import { extractErrorMessage } from '@/utils/errorHandlers';
 
@@ -124,6 +124,54 @@ export const useLeaseStore = defineStore('lease', () => {
     }
   }
 
+  async function addLesseeToLease(leaseId: string, input: AddLesseeInput): Promise<{ newLeaseId: string }> {
+    loading.value = true;
+    error.value = '';
+    try {
+      const response = await api.post<{ newLeaseId: string }>(`/leases/${leaseId}/lessees`, input);
+
+      // Remove old lease from array if present
+      const oldIndex = leases.value.findIndex(lease => lease.id === leaseId);
+      if (oldIndex !== -1) {
+        leases.value.splice(oldIndex, 1);
+      }
+
+      return response.data;
+    } catch (err: any) {
+      error.value = extractErrorMessage(err, 'Failed to add lessee');
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function removeLesseeFromLease(
+    leaseId: string,
+    personId: string,
+    input: { voidedReason: string; newLeaseData: any }
+  ): Promise<{ newLeaseId: string }> {
+    loading.value = true;
+    error.value = '';
+    try {
+      const response = await api.delete<{ newLeaseId: string }>(`/leases/${leaseId}/lessees/${personId}`, {
+        data: input
+      });
+
+      // Remove old lease from array if present
+      const oldIndex = leases.value.findIndex(lease => lease.id === leaseId);
+      if (oldIndex !== -1) {
+        leases.value.splice(oldIndex, 1);
+      }
+
+      return response.data;
+    } catch (err: any) {
+      error.value = extractErrorMessage(err, 'Failed to remove lessee');
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     leases,
     currentLease,
@@ -134,5 +182,7 @@ export const useLeaseStore = defineStore('lease', () => {
     fetchLeaseById,
     updateLease,
     updateLeaseStatus,
+    addLesseeToLease,
+    removeLesseeFromLease,
   };
 });

@@ -43,55 +43,30 @@
             <!-- LEFT COLUMN: Lessee Section (Create Mode) / Existing Lessees (Edit Mode) -->
             <div v-if="!isEditMode">
               <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700 dark:text-gray-300">
-                Lessee <span class="text-primary-400 dark:text-primary-300">*</span>
+                Lessees <span class="text-primary-400 dark:text-primary-300">*</span>
               </h2>
               <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Enter contact information for the primary lessee.
+                Add one or more lessees to the lease.
               </p>
 
-              <div class="space-y-4">
-                <FormInput
-                  name="lessees[0].firstName"
-                  label="First Name"
-                  placeholder="John"
-                  :required="true"
-                />
-
-                <FormInput
-                  name="lessees[0].lastName"
-                  label="Last Name"
-                  placeholder="Doe"
-                  :required="true"
-                />
-
-                <FormInput
-                  name="lessees[0].middleName"
-                  label="Middle Name (Optional)"
-                  placeholder="M"
-                />
-
-                <FormInput
-                  name="lessees[0].phone"
-                  label="Phone"
-                  type="tel"
-                  placeholder="555-123-4567"
-                  :required="true"
-                />
-
-                <FormInput
-                  name="lessees[0].email"
-                  label="Email"
-                  type="email"
-                  placeholder="john.doe@example.com"
-                  :required="true"
-                />
-
-                <FormInput
-                  name="lessees[0].signedDate"
-                  label="Signed Date (Optional)"
-                  type="date"
+              <div v-for="(field, index) in lesseeFields" :key="field.key">
+                <LesseeFormGroup
+                  :index="index"
+                  :show-remove="lesseeFields.length > 1"
+                  @remove="handleRemoveLessee"
                 />
               </div>
+
+              <button
+                type="button"
+                @click="handleAddLessee"
+                class="mt-2 text-secondary-2-500 hover:text-secondary-2-700 dark:text-secondary-2-400 dark:hover:text-secondary-2-300 font-medium flex items-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-2-300 rounded p-1"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Add Lessee
+              </button>
             </div>
 
             <!-- LEFT COLUMN: Existing Lessees (Edit Mode Only) -->
@@ -100,20 +75,54 @@
                 Lessees
               </h2>
               <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Existing lessees on this lease (read-only).
+                Existing lessees on this lease (read-only). Adding or removing lessees will void this lease and create a new one.
               </p>
               <div class="space-y-3">
-                <div v-for="lessee in currentLease.lessees" :key="lessee.id" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <p class="font-medium text-gray-800 dark:text-gray-100">
-                    {{ lessee.person.firstName }} {{ lessee.person.lastName }}
-                  </p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ lessee.person.email }}</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ lessee.person.phone }}</p>
-                  <p v-if="lessee.signedDate" class="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    Signed: {{ formatDate(lessee.signedDate) }}
-                  </p>
+                <div v-for="lessee in currentLease.lessees" :key="lessee.id" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 relative">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <p class="font-medium text-gray-800 dark:text-gray-100">
+                        {{ lessee.person.firstName }} {{ lessee.person.lastName }}
+                      </p>
+                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ lessee.person.email }}</p>
+                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ lessee.person.phone }}</p>
+                      <p v-if="lessee.signedDate" class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Signed: {{ formatDate(lessee.signedDate) }}
+                      </p>
+                    </div>
+                    <button
+                      v-if="currentLease.lessees.length > 1"
+                      type="button"
+                      @click="openRemoveLesseeModal(lessee.person.id, `${lessee.person.firstName} ${lessee.person.lastName}`)"
+                      class="text-primary-400 hover:text-primary-500 dark:text-primary-300 dark:hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300 rounded p-1"
+                      :aria-label="`Remove ${lessee.person.firstName} ${lessee.person.lastName}`"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                    <span
+                      v-else
+                      class="text-gray-400 dark:text-gray-500 text-xs italic"
+                      title="Cannot remove the only lessee"
+                    >
+                      Only lessee
+                    </span>
+                  </div>
                 </div>
               </div>
+
+              <!-- Add Lessee Button -->
+              <button
+                type="button"
+                @click="openAddLesseeModal"
+                class="mt-4 text-secondary-2-500 hover:text-secondary-2-700 dark:text-secondary-2-400 dark:hover:text-secondary-2-300 font-medium flex items-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-2-300 rounded p-1"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Add Lessee
+              </button>
             </div>
 
             <!-- RIGHT COLUMN: Lease Details Section -->
@@ -246,30 +255,51 @@
           </div>
         </form>
       </div>
+
+      <!-- Modals for Edit Mode -->
+      <AddLesseeModal
+        v-if="showAddLesseeModal && currentLease"
+        :current-lease="currentLease"
+        @confirm="confirmAddLessee"
+        @cancel="cancelAddLessee"
+      />
+
+      <RemoveLesseeModal
+        v-if="showRemoveLesseeModal && currentLease && lesseeToRemove"
+        :current-lease="currentLease"
+        :lessee-name="lesseeToRemove.name"
+        @confirm="confirmRemoveLessee"
+        @cancel="cancelRemoveLessee"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useForm } from 'vee-validate';
+import { useForm, useFieldArray } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import { createLeaseSchema, updateLeaseSchema } from '@validators/lease';
+import { createLeaseSchema, updateLeaseSchema, type AddLesseeInput } from '@validators/lease';
 import { LeaseStatus } from '@domain/entities';
 import { useLeaseStore } from '@/stores/lease';
 import { usePropertyStore } from '@/stores/property';
 import FormInput from '@/components/FormInput.vue';
+import LesseeFormGroup from '@/components/LesseeFormGroup.vue';
+import AddLesseeModal from '@/components/AddLesseeModal.vue';
+import RemoveLesseeModal from '@/components/RemoveLesseeModal.vue';
 import { convertFormDates, convertNestedDates, formatDateForInput } from '@/utils/dateHelpers';
 import { formatDate } from '@/utils/formatters';
 import { extractErrorMessage } from '@/utils/errorHandlers';
 import { useMoneyInput } from '@/composables/useMoneyInput';
 import { useTextareaInput } from '@/composables/useTextareaInput';
+import { useToast } from 'vue-toastification';
 
 const router = useRouter();
 const route = useRoute();
 const leaseStore = useLeaseStore();
 const propertyStore = usePropertyStore();
+const toast = useToast();
 
 // Detect edit mode
 const isEditMode = computed(() => !!route.params.leaseId);
@@ -293,6 +323,9 @@ const { handleSubmit, errors, values, meta, setFieldValue, setValues } = useForm
     lessees: [{}], // Initialize with one empty lessee
   },
 });
+
+// Setup useFieldArray for dynamic lessee management (create mode only)
+const { fields: lesseeFields, push: pushLessee, remove: removeLesseeField } = useFieldArray('lessees');
 
 // Property and lease data
 const property = computed(() => propertyStore.currentProperty);
@@ -364,6 +397,74 @@ const onSubmit = handleSubmit(submit);
 
 const handleCancel = () => {
   router.push(`/properties/${propertyId.value}`);
+};
+
+// CREATE MODE: Lessee management handlers
+const handleAddLessee = () => {
+  pushLessee({});
+  nextTick(() => {
+    const newIndex = lesseeFields.value.length - 1;
+    const firstInput = document.querySelector(`[name="lessees[${newIndex}].firstName"]`) as HTMLInputElement;
+    firstInput?.focus();
+  });
+};
+
+const handleRemoveLessee = (index: number) => {
+  removeLesseeField(index);
+};
+
+// EDIT MODE: Modal state and handlers
+const showAddLesseeModal = ref(false);
+const showRemoveLesseeModal = ref(false);
+const lesseeToRemove = ref<{ personId: string; name: string } | null>(null);
+
+const openAddLesseeModal = () => {
+  showAddLesseeModal.value = true;
+};
+
+const openRemoveLesseeModal = (personId: string, name: string) => {
+  lesseeToRemove.value = { personId, name };
+  showRemoveLesseeModal.value = true;
+};
+
+const confirmAddLessee = async (input: AddLesseeInput) => {
+  try {
+    await leaseStore.addLesseeToLease(leaseId.value, input);
+    showAddLesseeModal.value = false;
+    toast.success('Lessee added. A new lease was created.');
+    router.push(`/properties/${propertyId.value}`);
+  } catch (error) {
+    const errorMsg = extractErrorMessage(error, 'Failed to add lessee');
+    toast.error(errorMsg);
+  }
+};
+
+const confirmRemoveLessee = async (input: { voidedReason: string; newLeaseData: any }) => {
+  if (!lesseeToRemove.value) return;
+
+  try {
+    await leaseStore.removeLesseeFromLease(
+      leaseId.value,
+      lesseeToRemove.value.personId,
+      input
+    );
+    showRemoveLesseeModal.value = false;
+    lesseeToRemove.value = null;
+    toast.success('Lessee removed. A new lease was created.');
+    router.push(`/properties/${propertyId.value}`);
+  } catch (error) {
+    const errorMsg = extractErrorMessage(error, 'Failed to remove lessee');
+    toast.error(errorMsg);
+  }
+};
+
+const cancelAddLessee = () => {
+  showAddLesseeModal.value = false;
+};
+
+const cancelRemoveLessee = () => {
+  showRemoveLesseeModal.value = false;
+  lesseeToRemove.value = null;
 };
 
 // Auto-populate end date when start date is entered (1 year later)

@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { createLeaseSchema, updateLeaseSchema } from '@upkeep-io/validators';
+import { createLeaseSchema, updateLeaseSchema, addLesseeSchema } from '@upkeep-io/validators';
 import { CreateLeaseUseCase } from '../../application/lease/CreateLeaseUseCase';
 import { GetLeaseByIdUseCase } from '../../application/lease/GetLeaseByIdUseCase';
 import { UpdateLeaseUseCase } from '../../application/lease/UpdateLeaseUseCase';
@@ -152,14 +152,16 @@ export class LeaseController {
   async addLessee(req: AuthRequest, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { personId, signedDate } = req.body;
       const userId = req.user!.userId;
+      const validatedData = addLesseeSchema.parse(req.body);
 
-      await this.addLesseeToLeaseUseCase.execute(id, personId, userId, signedDate);
+      const newLeaseId = await this.addLesseeToLeaseUseCase.execute(id, userId, validatedData);
 
-      res.status(204).send();
+      res.json({ newLeaseId });
     } catch (error: any) {
-      if (error.name === 'NotFoundError') {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ error: 'Validation error', details: error.errors });
+      } else if (error.name === 'NotFoundError') {
         res.status(404).json({ error: error.message });
       } else if (error.name === 'ValidationError') {
         res.status(403).json({ error: error.message });
