@@ -9,7 +9,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { createContainer } from './container';
-import { createAuthRoutes, createPropertyRoutes } from './presentation/routes';
+import { createAuthRoutes, createPropertyRoutes, createProfileRoutes } from './presentation/routes';
 import { createLeaseRoutes } from './presentation/routes/leaseRoutes';
 import { createErrorMiddleware } from './presentation/middleware';
 import { ILogger } from './domain/services';
@@ -45,6 +45,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 app.use('/api/auth', createAuthRoutes(container));
 app.use('/api/properties', createPropertyRoutes(container));
 app.use('/api/leases', createLeaseRoutes(container));
+app.use('/api/profile', createProfileRoutes(container));
 
 // Error handling middleware (must be last)
 app.use(createErrorMiddleware(logger));
