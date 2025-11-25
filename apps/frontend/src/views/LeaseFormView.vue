@@ -429,10 +429,10 @@ const openRemoveLesseeModal = (personId: string, name: string) => {
 
 const confirmAddLessee = async (input: AddLesseeInput) => {
   try {
-    const result = await leaseStore.addLesseeToLease(leaseId.value, input);
+    await leaseStore.addLesseeToLease(leaseId.value, input);
     showAddLesseeModal.value = false;
     toast.success('Lessee added. A new lease was created.');
-    router.push(`/leases/${result.newLeaseId}/edit`);
+    router.push(`/properties/${propertyId.value}`);
   } catch (error) {
     const errorMsg = extractErrorMessage(error, 'Failed to add lessee');
     toast.error(errorMsg);
@@ -443,7 +443,7 @@ const confirmRemoveLessee = async (input: { voidedReason: string; newLeaseData: 
   if (!lesseeToRemove.value) return;
 
   try {
-    const result = await leaseStore.removeLesseeFromLease(
+    await leaseStore.removeLesseeFromLease(
       leaseId.value,
       lesseeToRemove.value.personId,
       input
@@ -451,7 +451,7 @@ const confirmRemoveLessee = async (input: { voidedReason: string; newLeaseData: 
     showRemoveLesseeModal.value = false;
     lesseeToRemove.value = null;
     toast.success('Lessee removed. A new lease was created.');
-    router.push(`/leases/${result.newLeaseId}/edit`);
+    router.push(`/properties/${propertyId.value}`);
   } catch (error) {
     const errorMsg = extractErrorMessage(error, 'Failed to remove lessee');
     toast.error(errorMsg);
