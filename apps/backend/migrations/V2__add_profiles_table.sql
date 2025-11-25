@@ -1,24 +1,36 @@
 -- Create profiles table
-CREATE TABLE profiles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL UNIQUE,
-    first_name VARCHAR(100) NOT NULL DEFAULT '',
-    last_name VARCHAR(100) NOT NULL DEFAULT '',
-    phone VARCHAR(20) NOT NULL DEFAULT '',
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE "profiles" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "first_name" VARCHAR(100) NOT NULL DEFAULT '',
+    "last_name" VARCHAR(100) NOT NULL DEFAULT '',
+    "phone" VARCHAR(20) NOT NULL DEFAULT '',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT fk_profile_user FOREIGN KEY (user_id)
-        REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT "profiles_pkey" PRIMARY KEY ("id")
 );
 
+-- Create unique index on user_id (1:1 relationship)
+CREATE UNIQUE INDEX "profiles_user_id_key" ON "profiles"("user_id");
+
 -- Create index on user_id for faster lookups
-CREATE INDEX idx_profiles_user_id ON profiles(user_id);
+CREATE INDEX "profiles_user_id_idx" ON "profiles"("user_id");
+
+-- AddForeignKey
+ALTER TABLE "profiles" ADD CONSTRAINT "profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- Backfill existing users with empty profiles
-INSERT INTO profiles (user_id, first_name, last_name, phone)
-SELECT id, '', '', ''
-FROM users
+INSERT INTO "profiles" ("id", "user_id", "first_name", "last_name", "phone", "created_at", "updated_at")
+SELECT
+    gen_random_uuid()::text,
+    "id",
+    '',
+    '',
+    '',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+FROM "users"
 WHERE NOT EXISTS (
-    SELECT 1 FROM profiles WHERE profiles.user_id = users.id
+    SELECT 1 FROM "profiles" WHERE "profiles"."user_id" = "users"."id"
 );
