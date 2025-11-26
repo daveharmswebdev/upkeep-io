@@ -135,10 +135,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import { addOccupantSchema, type AddOccupantInput } from '@validators/lease/addOccupant';
+import { z } from 'zod';
+import type { AddOccupantInput } from '@validators/lease/addOccupant';
 import FormInput from './FormInput.vue';
 
 const emit = defineEmits<{
@@ -146,9 +147,33 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
+// Track isAdult locally for reactive schema
+const isAdultValue = ref(false);
+
+// Create a dynamic schema based on isAdult value
+const createOccupantSchema = (isAdult: boolean) => {
+  return z.object({
+    isAdult: z.boolean(),
+    firstName: z.string().min(1, 'First name is required').max(100),
+    lastName: z.string().min(1, 'Last name is required').max(100),
+    middleName: z.string().max(100).optional().or(z.literal('')),
+    email: isAdult
+      ? z.string().email('Valid email is required for adults').min(1, 'Email is required for adults')
+      : z.string().email().optional().or(z.literal('')),
+    phone: isAdult
+      ? z.string().min(10, 'Phone must be at least 10 characters').min(1, 'Phone is required for adults')
+      : z.string().min(10).optional().or(z.literal('')),
+    moveInDate: z.coerce.date().optional(),
+    notes: z.string().optional().or(z.literal('')),
+  });
+};
+
+// Computed schema that reacts to isAdult changes
+const validationSchema = computed(() => toTypedSchema(createOccupantSchema(isAdultValue.value)));
+
 // Initialize form with default values
-const { handleSubmit, errors, values, meta, setFieldValue } = useForm({
-  validationSchema: toTypedSchema(addOccupantSchema),
+const { handleSubmit, errors, values, meta, setFieldValue, validate } = useForm({
+  validationSchema,
   initialValues: {
     isAdult: false,
     firstName: '',
@@ -168,9 +193,18 @@ const modalRef = ref<HTMLElement | null>(null);
 const cancelButtonRef = ref<HTMLButtonElement | null>(null);
 const confirmButtonRef = ref<HTMLButtonElement | null>(null);
 
-const handleIsAdultChange = (event: Event) => {
+const handleIsAdultChange = async (event: Event) => {
   const target = event.target as HTMLInputElement;
-  setFieldValue('isAdult', target.checked);
+  const checked = target.checked;
+
+  // Update local ref first (triggers schema recomputation)
+  isAdultValue.value = checked;
+
+  // Then update form value
+  setFieldValue('isAdult', checked);
+
+  // Re-validate the form with the new schema
+  await validate();
 };
 
 const handleNotesInput = (event: Event) => {
