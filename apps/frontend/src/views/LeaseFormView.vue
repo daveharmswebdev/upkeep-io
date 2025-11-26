@@ -67,6 +67,35 @@
                 </svg>
                 Add Lessee
               </button>
+
+              <!-- OCCUPANTS SECTION (CREATE MODE) -->
+              <div class="mt-8">
+                <h2 class="text-xl font-heading font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                  Occupants (Optional)
+                </h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Add occupants living at the property (adults or children).
+                </p>
+
+                <div v-for="(field, index) in occupantFields" :key="field.key">
+                  <OccupantFormGroup
+                    :index="index"
+                    :show-remove="true"
+                    @remove="handleRemoveOccupant"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  @click="handleAddOccupant"
+                  class="mt-2 text-secondary-2-500 hover:text-secondary-2-700 dark:text-secondary-2-400 dark:hover:text-secondary-2-300 font-medium flex items-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-2-300 rounded p-1"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Add Occupant
+                </button>
+              </div>
             </div>
 
             <!-- LEFT COLUMN: Existing Lessees (Edit Mode Only) -->
@@ -123,6 +152,15 @@
                 </svg>
                 Add Lessee
               </button>
+
+              <!-- EDIT MODE: Existing Occupants -->
+              <div class="mt-8">
+                <OccupantList
+                  :occupants="currentLease.occupants || []"
+                  @add="openAddOccupantModal"
+                  @remove="openRemoveOccupantModal"
+                />
+              </div>
             </div>
 
             <!-- RIGHT COLUMN: Lease Details Section -->
@@ -271,6 +309,22 @@
         @confirm="confirmRemoveLessee"
         @cancel="cancelRemoveLessee"
       />
+
+      <AddOccupantModal
+        v-if="showAddOccupantModal"
+        @confirm="confirmAddOccupant"
+        @cancel="cancelAddOccupant"
+      />
+
+      <ConfirmModal
+        v-if="showRemoveOccupantModal && occupantToRemove"
+        title="Remove Occupant"
+        :message="`Are you sure you want to remove ${occupantToRemove.name} from this lease?`"
+        confirm-label="Remove"
+        cancel-label="Cancel"
+        @confirm="confirmRemoveOccupant"
+        @cancel="cancelRemoveOccupant"
+      />
     </div>
   </div>
 </template>
@@ -280,14 +334,18 @@ import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useForm, useFieldArray } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import { createLeaseSchema, updateLeaseSchema, type AddLesseeInput } from '@validators/lease';
+import { createLeaseSchema, updateLeaseSchema, type AddLesseeInput, type AddOccupantInput } from '@validators/lease';
 import { LeaseStatus } from '@domain/entities';
 import { useLeaseStore } from '@/stores/lease';
 import { usePropertyStore } from '@/stores/property';
 import FormInput from '@/components/FormInput.vue';
 import LesseeFormGroup from '@/components/LesseeFormGroup.vue';
+import OccupantFormGroup from '@/components/OccupantFormGroup.vue';
+import OccupantList from '@/components/OccupantList.vue';
 import AddLesseeModal from '@/components/AddLesseeModal.vue';
+import AddOccupantModal from '@/components/AddOccupantModal.vue';
 import RemoveLesseeModal from '@/components/RemoveLesseeModal.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import { convertFormDates, convertNestedDates, formatDateForInput } from '@/utils/dateHelpers';
 import { formatDate } from '@/utils/formatters';
 import { extractErrorMessage } from '@/utils/errorHandlers';
@@ -321,11 +379,13 @@ const { handleSubmit, errors, values, meta, setFieldValue, setValues } = useForm
   initialValues: isEditMode.value ? {} : {
     propertyId: propertyId.value,
     lessees: [{}], // Initialize with one empty lessee
+    occupants: [], // Initialize with empty occupants array
   },
 });
 
-// Setup useFieldArray for dynamic lessee management (create mode only)
+// Setup useFieldArray for dynamic lessee and occupant management (create mode only)
 const { fields: lesseeFields, push: pushLessee, remove: removeLesseeField } = useFieldArray('lessees');
+const { fields: occupantFields, push: pushOccupant, remove: removeOccupantField } = useFieldArray('occupants');
 
 // Property and lease data
 const property = computed(() => propertyStore.currentProperty);
@@ -377,6 +437,7 @@ const submit = async (formValues: any) => {
       const data = {
         ...convertFormDates(formValues, ['startDate', 'endDate', 'depositPaidDate']),
         lessees: convertNestedDates(formValues.lessees, ['signedDate']),
+        occupants: formValues.occupants ? convertNestedDates(formValues.occupants, ['moveInDate']) : [],
       };
       await leaseStore.createLease(data);
       router.push(`/properties/${propertyId.value}`);
@@ -465,6 +526,74 @@ const cancelAddLessee = () => {
 const cancelRemoveLessee = () => {
   showRemoveLesseeModal.value = false;
   lesseeToRemove.value = null;
+};
+
+// CREATE MODE: Occupant management handlers
+const handleAddOccupant = () => {
+  pushOccupant({ isAdult: false });
+  nextTick(() => {
+    const newIndex = occupantFields.value.length - 1;
+    const firstInput = document.querySelector(`[name="occupants[${newIndex}].firstName"]`) as HTMLInputElement;
+    firstInput?.focus();
+  });
+};
+
+const handleRemoveOccupant = (index: number) => {
+  removeOccupantField(index);
+};
+
+// EDIT MODE: Occupant modal state and handlers
+const showAddOccupantModal = ref(false);
+const showRemoveOccupantModal = ref(false);
+const occupantToRemove = ref<{ occupantId: string; name: string } | null>(null);
+
+const openAddOccupantModal = () => {
+  showAddOccupantModal.value = true;
+};
+
+const openRemoveOccupantModal = (occupantId: string) => {
+  const occupant = currentLease.value?.occupants.find(o => o.id === occupantId);
+  if (occupant) {
+    occupantToRemove.value = {
+      occupantId,
+      name: `${occupant.person.firstName} ${occupant.person.lastName}`,
+    };
+    showRemoveOccupantModal.value = true;
+  }
+};
+
+const confirmAddOccupant = async (input: AddOccupantInput) => {
+  try {
+    await leaseStore.addOccupantToLease(leaseId.value, input);
+    showAddOccupantModal.value = false;
+    toast.success('Occupant added successfully');
+  } catch (error) {
+    const errorMsg = extractErrorMessage(error, 'Failed to add occupant');
+    toast.error(errorMsg);
+  }
+};
+
+const confirmRemoveOccupant = async () => {
+  if (!occupantToRemove.value) return;
+
+  try {
+    await leaseStore.removeOccupantFromLease(leaseId.value, occupantToRemove.value.occupantId);
+    showRemoveOccupantModal.value = false;
+    occupantToRemove.value = null;
+    toast.success('Occupant removed successfully');
+  } catch (error) {
+    const errorMsg = extractErrorMessage(error, 'Failed to remove occupant');
+    toast.error(errorMsg);
+  }
+};
+
+const cancelAddOccupant = () => {
+  showAddOccupantModal.value = false;
+};
+
+const cancelRemoveOccupant = () => {
+  showRemoveOccupantModal.value = false;
+  occupantToRemove.value = null;
 };
 
 // Auto-populate end date when start date is entered (1 year later)
