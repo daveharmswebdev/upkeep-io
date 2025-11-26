@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
 import { IPersonRepository } from '../../domain/repositories/IPersonRepository';
-import { NotFoundError, ValidationError } from '@upkeep-io/domain';
+import { NotFoundError, ValidationError } from '@domain/errors';
 
 export interface AddLesseeInput {
   voidedReason: string;

@@ -6,13 +6,9 @@
  */
 
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import {
-  signupSchema,
-  loginSchema,
-  createPropertySchema,
-  createLeaseSchema,
-  updateLeaseSchema,
-} from '@upkeep-io/validators';
+import { signupSchema, loginSchema } from '@validators/auth';
+import { createPropertySchema } from '@validators/property';
+import { createLeaseSchema, updateLeaseSchema } from '@validators/lease';
 
 /**
  * Convert Zod schema to OpenAPI 3.0 JSON Schema

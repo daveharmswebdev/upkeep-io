@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { createLeaseSchema, updateLeaseSchema, addLesseeSchema, addOccupantSchema } from '@upkeep-io/validators';
+import { createLeaseSchema, updateLeaseSchema, addLesseeSchema, addOccupantSchema, addPetSchema } from '@validators/lease';
 import { CreateLeaseUseCase } from '../../application/lease/CreateLeaseUseCase';
 import { GetLeaseByIdUseCase } from '../../application/lease/GetLeaseByIdUseCase';
 import { UpdateLeaseUseCase } from '../../application/lease/UpdateLeaseUseCase';
@@ -11,6 +11,8 @@ import { AddLesseeToLeaseUseCase } from '../../application/lease/AddLesseeToLeas
 import { RemoveLesseeFromLeaseUseCase } from '../../application/lease/RemoveLesseeFromLeaseUseCase';
 import { AddOccupantToLeaseUseCase } from '../../application/lease/AddOccupantToLeaseUseCase';
 import { RemoveOccupantFromLeaseUseCase } from '../../application/lease/RemoveOccupantFromLeaseUseCase';
+import { AddPetToLeaseUseCase } from '../../application/lease/AddPetToLeaseUseCase';
+import { RemovePetFromLeaseUseCase } from '../../application/lease/RemovePetFromLeaseUseCase';
 import { AuthRequest } from '../middleware';
 
 @injectable()
@@ -25,7 +27,9 @@ export class LeaseController {
     @inject(AddLesseeToLeaseUseCase) private addLesseeToLeaseUseCase: AddLesseeToLeaseUseCase,
     @inject(RemoveLesseeFromLeaseUseCase) private removeLesseeFromLeaseUseCase: RemoveLesseeFromLeaseUseCase,
     @inject(AddOccupantToLeaseUseCase) private addOccupantToLeaseUseCase: AddOccupantToLeaseUseCase,
-    @inject(RemoveOccupantFromLeaseUseCase) private removeOccupantFromLeaseUseCase: RemoveOccupantFromLeaseUseCase
+    @inject(RemoveOccupantFromLeaseUseCase) private removeOccupantFromLeaseUseCase: RemoveOccupantFromLeaseUseCase,
+    @inject(AddPetToLeaseUseCase) private addPetToLeaseUseCase: AddPetToLeaseUseCase,
+    @inject(RemovePetFromLeaseUseCase) private removePetFromLeaseUseCase: RemovePetFromLeaseUseCase
   ) {}
 
   async create(req: AuthRequest, res: Response): Promise<void> {
@@ -234,6 +238,49 @@ export class LeaseController {
         res.status(403).json({ error: error.message });
       } else {
         console.error('Error removing occupant:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    }
+  }
+
+  async addPet(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.userId;
+      const validatedData = addPetSchema.parse(req.body);
+
+      const updatedLease = await this.addPetToLeaseUseCase.execute(id, userId, validatedData);
+
+      res.status(201).json(updatedLease);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ error: 'Validation error', details: error.errors });
+      } else if (error.name === 'NotFoundError') {
+        res.status(404).json({ error: error.message });
+      } else if (error.name === 'ValidationError') {
+        res.status(403).json({ error: error.message });
+      } else {
+        console.error('Error adding pet:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    }
+  }
+
+  async removePet(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id, petId } = req.params;
+      const userId = req.user!.userId;
+
+      await this.removePetFromLeaseUseCase.execute(id, userId, petId);
+
+      res.status(204).send();
+    } catch (error: any) {
+      if (error.name === 'NotFoundError') {
+        res.status(404).json({ error: error.message });
+      } else if (error.name === 'ValidationError') {
+        res.status(403).json({ error: error.message });
+      } else {
+        console.error('Error removing pet:', error);
         res.status(500).json({ error: 'Internal server error' });
       }
     }

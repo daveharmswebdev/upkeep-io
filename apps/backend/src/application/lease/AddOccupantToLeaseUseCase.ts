@@ -1,7 +1,8 @@
 import { inject, injectable } from 'inversify';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
 import { IPersonRepository } from '../../domain/repositories/IPersonRepository';
-import { NotFoundError, ValidationError, type LeaseWithDetails } from '@upkeep-io/domain';
+import { NotFoundError, ValidationError } from '@domain/errors';
+import type { LeaseWithDetails } from '@domain/entities';
 
 export interface AddOccupantInput {
   personId?: string;

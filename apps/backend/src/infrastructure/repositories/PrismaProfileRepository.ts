@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { PrismaClient } from '@prisma/client';
 import { IProfileRepository } from '../../domain/repositories/IProfileRepository';
-import { Profile, CreateProfileData } from '@upkeep-io/domain';
+import { Profile, CreateProfileData } from '@domain/entities';
 
 @injectable()
 export class PrismaProfileRepository implements IProfileRepository {

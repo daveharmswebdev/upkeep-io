@@ -32,6 +32,8 @@ import { AddLesseeToLeaseUseCase } from './application/lease/AddLesseeToLeaseUse
 import { RemoveLesseeFromLeaseUseCase } from './application/lease/RemoveLesseeFromLeaseUseCase';
 import { AddOccupantToLeaseUseCase } from './application/lease/AddOccupantToLeaseUseCase';
 import { RemoveOccupantFromLeaseUseCase } from './application/lease/RemoveOccupantFromLeaseUseCase';
+import { AddPetToLeaseUseCase } from './application/lease/AddPetToLeaseUseCase';
+import { RemovePetFromLeaseUseCase } from './application/lease/RemovePetFromLeaseUseCase';
 
 // Controllers
 import { AuthController, PropertyController, ProfileController } from './presentation/controllers';
@@ -101,6 +103,8 @@ export function createContainer(): Container {
   container.bind(RemoveLesseeFromLeaseUseCase).toSelf().inTransientScope();
   container.bind(AddOccupantToLeaseUseCase).toSelf().inTransientScope();
   container.bind(RemoveOccupantFromLeaseUseCase).toSelf().inTransientScope();
+  container.bind(AddPetToLeaseUseCase).toSelf().inTransientScope();
+  container.bind(RemovePetFromLeaseUseCase).toSelf().inTransientScope();
 
   container.bind(GetProfileUseCase).toSelf().inTransientScope();
   container.bind(UpdateProfileUseCase).toSelf().inTransientScope();

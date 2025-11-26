@@ -5,4 +5,5 @@ export type { Lease, LeaseWithDetails } from './Lease';
 export { LeaseStatus } from './Lease';
 export type { LeaseLessee } from './LeaseLessee';
 export type { LeaseOccupant } from './LeaseOccupant';
+export type { LeasePet, PetSpecies } from './LeasePet';
 export type { Profile, CreateProfileData } from './Profile';

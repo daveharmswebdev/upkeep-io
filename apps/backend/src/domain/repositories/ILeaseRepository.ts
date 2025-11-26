@@ -1,4 +1,4 @@
-import { LeaseWithDetails } from '@upkeep-io/domain';
+import { LeaseWithDetails } from '@domain/entities';
 
 export interface CreateLeaseData {
   userId: string;
@@ -8,6 +8,7 @@ export interface CreateLeaseData {
   monthlyRent?: number;
   securityDeposit?: number;
   depositPaidDate?: Date;
+  petDeposit?: number;
   notes?: string;
   lessees: Array<{
     personId: string;
@@ -33,6 +34,13 @@ export interface AddOccupantData {
   moveInDate?: Date;
 }
 
+export interface AddPetData {
+  leaseId: string;
+  name: string;
+  species: 'cat' | 'dog';
+  notes?: string;
+}
+
 export interface ILeaseRepository {
   findById(id: string): Promise<LeaseWithDetails | null>;
   findByUserId(userId: string): Promise<LeaseWithDetails[]>;
@@ -45,5 +53,7 @@ export interface ILeaseRepository {
   removeLessee(leaseId: string, personId: string): Promise<void>;
   addOccupant(data: AddOccupantData): Promise<void>;
   removeOccupant(leaseId: string, occupantId: string): Promise<void>;
+  addPet(data: AddPetData): Promise<void>;
+  removePet(leaseId: string, petId: string): Promise<void>;
   voidLease(id: string, voidedReason: string): Promise<void>;
 }

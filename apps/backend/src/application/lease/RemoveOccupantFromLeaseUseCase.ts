@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
-import { NotFoundError, ValidationError } from '@upkeep-io/domain';
+import { NotFoundError, ValidationError } from '@domain/errors';
 
 @injectable()
 export class RemoveOccupantFromLeaseUseCase {

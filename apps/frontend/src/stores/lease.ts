@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { LeaseWithDetails, LeaseStatus } from '@domain/entities';
-import type { CreateLeaseInput, UpdateLeaseInput, AddLesseeInput, AddOccupantInput } from '@validators/lease';
+import type { CreateLeaseInput, UpdateLeaseInput, AddLesseeInput, AddOccupantInput, AddPetInput } from '@validators/lease';
 import api from '@/api/client';
 import { extractErrorMessage } from '@/utils/errorHandlers';
 
@@ -224,6 +224,58 @@ export const useLeaseStore = defineStore('lease', () => {
     }
   }
 
+  async function addPetToLease(leaseId: string, data: AddPetInput): Promise<LeaseWithDetails> {
+    loading.value = true;
+    error.value = '';
+    try {
+      const response = await api.post<LeaseWithDetails>(`/leases/${leaseId}/pets`, data);
+
+      // Update currentLease if it matches
+      if (currentLease.value?.id === leaseId) {
+        currentLease.value = response.data;
+      }
+
+      // Update lease in leases array if found
+      const index = leases.value.findIndex(lease => lease.id === leaseId);
+      if (index !== -1) {
+        leases.value[index] = response.data;
+      }
+
+      return response.data;
+    } catch (err: any) {
+      error.value = extractErrorMessage(err, 'Failed to add pet');
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function removePetFromLease(leaseId: string, petId: string): Promise<LeaseWithDetails> {
+    loading.value = true;
+    error.value = '';
+    try {
+      const response = await api.delete<LeaseWithDetails>(`/leases/${leaseId}/pets/${petId}`);
+
+      // Update currentLease if it matches
+      if (currentLease.value?.id === leaseId) {
+        currentLease.value = response.data;
+      }
+
+      // Update lease in leases array if found
+      const index = leases.value.findIndex(lease => lease.id === leaseId);
+      if (index !== -1) {
+        leases.value[index] = response.data;
+      }
+
+      return response.data;
+    } catch (err: any) {
+      error.value = extractErrorMessage(err, 'Failed to remove pet');
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     leases,
     currentLease,
@@ -238,5 +290,7 @@ export const useLeaseStore = defineStore('lease', () => {
     removeLesseeFromLease,
     addOccupantToLease,
     removeOccupantFromLease,
+    addPetToLease,
+    removePetFromLease,
   };
 });

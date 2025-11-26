@@ -76,6 +76,7 @@ export const createLeaseSchema = z.object({
   monthlyRent: z.number().positive('Monthly rent must be positive').optional(),
   securityDeposit: z.number().nonnegative('Security deposit must be non-negative').optional(),
   depositPaidDate: z.coerce.date().optional(),
+  petDeposit: z.number().nonnegative('Pet deposit must be non-negative').optional(),
   notes: z.string().optional(),
   lessees: z.array(lesseeSchema).min(1, 'At least one lessee is required'),
   occupants: z.array(occupantSchema).optional(),

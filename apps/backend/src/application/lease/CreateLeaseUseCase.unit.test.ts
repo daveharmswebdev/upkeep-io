@@ -25,6 +25,8 @@ describe('CreateLeaseUseCase', () => {
       addOccupant: jest.fn(),
       removeOccupant: jest.fn(),
       voidLease: jest.fn(),
+      addPet: jest.fn(),
+      removePet: jest.fn(),
     };
 
     mockPropertyRepository = {
@@ -122,6 +124,7 @@ describe('CreateLeaseUseCase', () => {
           },
         ],
         occupants: [],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);
@@ -226,6 +229,7 @@ describe('CreateLeaseUseCase', () => {
           },
         ],
         occupants: [],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);
@@ -262,6 +266,7 @@ describe('CreateLeaseUseCase', () => {
             isAdult: false,
           },
         ],
+      pets: [],
       };
 
       const mockLessee: Person = {
@@ -320,6 +325,7 @@ describe('CreateLeaseUseCase', () => {
             },
           },
         ],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);
@@ -425,6 +431,7 @@ describe('CreateLeaseUseCase', () => {
             // Missing email and phone for adult
           },
         ],
+      pets: [],
       };
 
       const mockLessee: Person = {
@@ -469,6 +476,7 @@ describe('CreateLeaseUseCase', () => {
             // No email/phone - should be allowed for children
           },
         ],
+      pets: [],
       };
 
       const mockLessee: Person = {
@@ -526,6 +534,7 @@ describe('CreateLeaseUseCase', () => {
             },
           },
         ],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);
@@ -588,6 +597,7 @@ describe('CreateLeaseUseCase', () => {
           },
         ],
         occupants: [],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);
@@ -639,6 +649,7 @@ describe('CreateLeaseUseCase', () => {
           },
         ],
         occupants: [],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);
@@ -703,6 +714,7 @@ describe('CreateLeaseUseCase', () => {
           },
         ],
         occupants: [],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);
@@ -767,6 +779,7 @@ describe('CreateLeaseUseCase', () => {
           },
         ],
         occupants: [],
+      pets: [],
       };
 
       mockPropertyRepository.findById.mockResolvedValue(mockProperty);

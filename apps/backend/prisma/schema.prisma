@@ -97,6 +97,7 @@ model Lease {
   monthlyRent     Decimal?     @map("monthly_rent") @db.Decimal(10, 2)
   securityDeposit Decimal?     @map("security_deposit") @db.Decimal(10, 2)
   depositPaidDate DateTime?    @map("deposit_paid_date")
+  petDeposit      Decimal?     @map("pet_deposit") @db.Decimal(10, 2)
   notes           String?      @db.Text
   status          LeaseStatus  @default(ACTIVE)
   voidedReason    String?      @map("voided_reason") @db.Text
@@ -109,6 +110,7 @@ model Lease {
   property        Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   lessees         LeaseLessee[]
   occupants       LeaseOccupant[]
+  pets            LeasePet[]
 
   @@index([userId])
   @@index([propertyId])
@@ -154,6 +156,22 @@ model LeaseOccupant {
   @@index([leaseId])
   @@index([personId])
   @@map("lease_occupants")
+}
+
+model LeasePet {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  leaseId   String   @map("lease_id") @db.Uuid
+  name      String   @db.VarChar(100)
+  species   String   @db.VarChar(20)
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  lease     Lease    @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+
+  @@index([leaseId])
+  @@map("lease_pets")
 }
 
 model Profile {

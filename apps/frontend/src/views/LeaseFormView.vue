@@ -161,6 +161,15 @@
                   @remove="openRemoveOccupantModal"
                 />
               </div>
+
+              <!-- EDIT MODE: Pets -->
+              <div class="mt-8">
+                <PetList
+                  :pets="currentLease.pets || []"
+                  @add="openAddPetModal"
+                  @remove="openRemovePetModal"
+                />
+              </div>
             </div>
 
             <!-- RIGHT COLUMN: Lease Details Section -->
@@ -231,6 +240,30 @@
                     />
                   </div>
                   <p v-if="errors.securityDeposit" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.securityDeposit }}</p>
+                </div>
+
+                <div>
+                  <label for="petDeposit" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
+                    Pet Deposit (Optional)
+                  </label>
+                  <div class="relative">
+                    <span class="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
+                    <input
+                      id="petDeposit"
+                      name="petDeposit"
+                      type="number"
+                      step="0.01"
+                      :value="values.petDeposit"
+                      @input="handleMoneyInput('petDeposit', $event)"
+                      placeholder="0.00"
+                      class="w-full pl-7 pr-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      :class="{
+                        'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors.petDeposit,
+                        'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors.petDeposit,
+                      }"
+                    />
+                  </div>
+                  <p v-if="errors.petDeposit" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.petDeposit }}</p>
                 </div>
 
                 <FormInput
@@ -325,6 +358,22 @@
         @confirm="confirmRemoveOccupant"
         @cancel="cancelRemoveOccupant"
       />
+
+      <AddPetModal
+        v-if="showAddPetModal"
+        @confirm="confirmAddPet"
+        @cancel="cancelAddPet"
+      />
+
+      <ConfirmModal
+        v-if="showRemovePetModal && petToRemove"
+        title="Remove Pet"
+        :message="`Are you sure you want to remove ${petToRemove.name} from this lease?`"
+        confirm-label="Remove"
+        cancel-label="Cancel"
+        @confirm="confirmRemovePet"
+        @cancel="cancelRemovePet"
+      />
     </div>
   </div>
 </template>
@@ -334,7 +383,7 @@ import { computed, onMounted, ref, watch, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useForm, useFieldArray } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import { createLeaseSchema, updateLeaseSchema, type AddLesseeInput, type AddOccupantInput } from '@validators/lease';
+import { createLeaseSchema, updateLeaseSchema, type AddLesseeInput, type AddOccupantInput, type AddPetInput } from '@validators/lease';
 import { LeaseStatus } from '@domain/entities';
 import { useLeaseStore } from '@/stores/lease';
 import { usePropertyStore } from '@/stores/property';
@@ -342,8 +391,10 @@ import FormInput from '@/components/FormInput.vue';
 import LesseeFormGroup from '@/components/LesseeFormGroup.vue';
 import OccupantFormGroup from '@/components/OccupantFormGroup.vue';
 import OccupantList from '@/components/OccupantList.vue';
+import PetList from '@/components/PetList.vue';
 import AddLesseeModal from '@/components/AddLesseeModal.vue';
 import AddOccupantModal from '@/components/AddOccupantModal.vue';
+import AddPetModal from '@/components/AddPetModal.vue';
 import RemoveLesseeModal from '@/components/RemoveLesseeModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { convertFormDates, convertNestedDates, formatDateForInput } from '@/utils/dateHelpers';
@@ -407,16 +458,19 @@ const isMonthToMonth = computed(() => currentLease.value?.status === LeaseStatus
 const { createMoneyInputHandler } = useMoneyInput();
 const handleMonthlyRentInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'monthlyRent');
 const handleSecurityDepositInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'securityDeposit');
+const handlePetDepositInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'petDeposit');
 
 const { createTextareaHandler, createTextareaBlurHandler } = useTextareaInput();
 const handleTextareaInput = createTextareaHandler(setFieldValue as (field: string, value: any) => void, 'notes');
 const handleTextareaBlur = createTextareaBlurHandler(setFieldValue as (field: string, value: any) => void, 'notes');
 
-const handleMoneyInput = (fieldName: 'monthlyRent' | 'securityDeposit', event: Event) => {
+const handleMoneyInput = (fieldName: 'monthlyRent' | 'securityDeposit' | 'petDeposit', event: Event) => {
   if (fieldName === 'monthlyRent') {
     handleMonthlyRentInput(event);
-  } else {
+  } else if (fieldName === 'securityDeposit') {
     handleSecurityDepositInput(event);
+  } else {
+    handlePetDepositInput(event);
   }
 };
 
@@ -596,6 +650,60 @@ const cancelRemoveOccupant = () => {
   occupantToRemove.value = null;
 };
 
+// EDIT MODE: Pet modal state and handlers
+const showAddPetModal = ref(false);
+const showRemovePetModal = ref(false);
+const petToRemove = ref<{ petId: string; name: string } | null>(null);
+
+const openAddPetModal = () => {
+  showAddPetModal.value = true;
+};
+
+const openRemovePetModal = (petId: string) => {
+  const pet = currentLease.value?.pets.find(p => p.id === petId);
+  if (pet) {
+    petToRemove.value = {
+      petId,
+      name: pet.name,
+    };
+    showRemovePetModal.value = true;
+  }
+};
+
+const confirmAddPet = async (input: AddPetInput) => {
+  try {
+    await leaseStore.addPetToLease(leaseId.value, input);
+    showAddPetModal.value = false;
+    toast.success('Pet added successfully');
+  } catch (error) {
+    const errorMsg = extractErrorMessage(error, 'Failed to add pet');
+    toast.error(errorMsg);
+  }
+};
+
+const confirmRemovePet = async () => {
+  if (!petToRemove.value) return;
+
+  try {
+    await leaseStore.removePetFromLease(leaseId.value, petToRemove.value.petId);
+    showRemovePetModal.value = false;
+    petToRemove.value = null;
+    toast.success('Pet removed successfully');
+  } catch (error) {
+    const errorMsg = extractErrorMessage(error, 'Failed to remove pet');
+    toast.error(errorMsg);
+  }
+};
+
+const cancelAddPet = () => {
+  showAddPetModal.value = false;
+};
+
+const cancelRemovePet = () => {
+  showRemovePetModal.value = false;
+  petToRemove.value = null;
+};
+
 // Auto-populate end date when start date is entered (1 year later)
 watch(() => values.startDate, (newStartDate) => {
   if (newStartDate && !isEditMode.value) {
@@ -634,6 +742,7 @@ onMounted(async () => {
         endDate: formatDateForInput(lease.endDate) as any,
         monthlyRent: lease.monthlyRent,
         securityDeposit: lease.securityDeposit,
+        petDeposit: lease.petDeposit,
         depositPaidDate: formatDateForInput(lease.depositPaidDate) as any,
         notes: lease.notes || '',
       });
