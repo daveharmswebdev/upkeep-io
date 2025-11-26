@@ -10,13 +10,13 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="noteStore.loading && !sortedNotes.length" class="text-center py-6 text-gray-600 dark:text-gray-400">
+    <div v-if="isLoading && !sortedNotes.length" class="text-center py-6 text-gray-600 dark:text-gray-400">
       Loading notes...
     </div>
 
     <!-- Error State -->
-    <div v-else-if="noteStore.error" class="bg-primary-100 dark:bg-primary-900/30 text-primary-500 dark:text-primary-300 p-4 rounded dark:border dark:border-primary-700">
-      {{ noteStore.error }}
+    <div v-else-if="errorMsg" class="bg-primary-100 dark:bg-primary-900/30 text-primary-500 dark:text-primary-300 p-4 rounded dark:border dark:border-primary-700">
+      {{ errorMsg }}
     </div>
 
     <!-- Empty State -->
@@ -78,9 +78,14 @@ const toast = useToast();
 const showDeleteModal = ref(false);
 const noteToDelete = ref<string | null>(null);
 
+// Get entity-specific notes, loading, and error state
+const notesForEntity = computed(() => noteStore.getNotesForEntity(props.entityType, props.entityId));
+const isLoading = computed(() => noteStore.isLoadingForEntity(props.entityType, props.entityId));
+const errorMsg = computed(() => noteStore.getErrorForEntity(props.entityType, props.entityId));
+
 // Sort notes by creation date (newest first)
 const sortedNotes = computed(() => {
-  return [...noteStore.notes].sort((a, b) => {
+  return [...notesForEntity.value].sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 });
@@ -90,8 +95,8 @@ onMounted(async () => {
   try {
     await noteStore.fetchNotesForEntity(props.entityType, props.entityId);
   } catch (err: any) {
-    const errorMsg = extractErrorMessage(err, 'Failed to load notes');
-    toast.error(errorMsg);
+    const errorMessage = extractErrorMessage(err, 'Failed to load notes');
+    toast.error(errorMessage);
   }
 });
 
@@ -105,19 +110,19 @@ const handleCreate = async (content: string) => {
     });
     toast.success('Note added successfully');
   } catch (err: any) {
-    const errorMsg = extractErrorMessage(err, 'Failed to add note');
-    toast.error(errorMsg);
+    const errorMessage = extractErrorMessage(err, 'Failed to add note');
+    toast.error(errorMessage);
   }
 };
 
 // Handle edit note
 const handleEdit = async (id: string, content: string) => {
   try {
-    await noteStore.updateNote(id, { content });
+    await noteStore.updateNote(props.entityType, props.entityId, id, { content });
     toast.success('Note updated successfully');
   } catch (err: any) {
-    const errorMsg = extractErrorMessage(err, 'Failed to update note');
-    toast.error(errorMsg);
+    const errorMessage = extractErrorMessage(err, 'Failed to update note');
+    toast.error(errorMessage);
   }
 };
 
@@ -131,11 +136,11 @@ const confirmDelete = async () => {
   if (!noteToDelete.value) return;
 
   try {
-    await noteStore.deleteNote(noteToDelete.value);
+    await noteStore.deleteNote(props.entityType, props.entityId, noteToDelete.value);
     toast.success('Note deleted successfully');
   } catch (err: any) {
-    const errorMsg = extractErrorMessage(err, 'Failed to delete note');
-    toast.error(errorMsg);
+    const errorMessage = extractErrorMessage(err, 'Failed to delete note');
+    toast.error(errorMessage);
   } finally {
     showDeleteModal.value = false;
     noteToDelete.value = null;
