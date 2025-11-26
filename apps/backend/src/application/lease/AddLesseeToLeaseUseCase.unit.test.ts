@@ -23,6 +23,8 @@ describe('AddLesseeToLeaseUseCase', () => {
       addOccupant: jest.fn(),
       removeOccupant: jest.fn(),
       voidLease: jest.fn(),
+      addPet: jest.fn(),
+      removePet: jest.fn(),
     };
 
     mockPersonRepository = {
@@ -81,6 +83,7 @@ describe('AddLesseeToLeaseUseCase', () => {
           },
         },
       ],
+    pets: [],
     };
 
     it('should successfully add lessee with existing personId (void + recreate pattern)', async () => {
@@ -138,6 +141,7 @@ describe('AddLesseeToLeaseUseCase', () => {
           },
         ],
         occupants: mockExistingLease.occupants,
+        pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockExistingLease);
@@ -233,6 +237,7 @@ describe('AddLesseeToLeaseUseCase', () => {
           },
         ],
         occupants: mockExistingLease.occupants,
+        pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockExistingLease);
@@ -445,6 +450,7 @@ describe('AddLesseeToLeaseUseCase', () => {
         updatedAt: new Date(),
         lessees: [mockExistingLease.lessees[0]],
         occupants: [],
+      pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockExistingLease);

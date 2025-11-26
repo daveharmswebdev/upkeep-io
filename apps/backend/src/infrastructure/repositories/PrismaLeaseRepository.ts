@@ -1,11 +1,12 @@
 import { injectable } from 'inversify';
 import { PrismaClient } from '@prisma/client';
-import { LeaseWithDetails, LeaseStatus } from '@upkeep-io/domain';
+import { LeaseWithDetails, LeaseStatus } from '@domain/entities';
 import {
   ILeaseRepository,
   CreateLeaseData,
   AddLesseeData,
   AddOccupantData,
+  AddPetData,
 } from '../../domain/repositories/ILeaseRepository';
 
 @injectable()
@@ -28,6 +29,9 @@ export class PrismaLeaseRepository implements ILeaseRepository {
         ? parseFloat(prismaLease.securityDeposit.toString())
         : undefined,
       depositPaidDate: prismaLease.depositPaidDate,
+      petDeposit: prismaLease.petDeposit
+        ? parseFloat(prismaLease.petDeposit.toString())
+        : undefined,
       notes: prismaLease.notes,
       status: prismaLease.status as LeaseStatus,
       voidedReason: prismaLease.voidedReason,
@@ -66,6 +70,16 @@ export class PrismaLeaseRepository implements ILeaseRepository {
             phone: occupant.person.phone,
           },
         })) || [],
+      pets: prismaLease.pets
+        ?.map((pet: any) => ({
+          id: pet.id,
+          leaseId: pet.leaseId,
+          name: pet.name,
+          species: pet.species,
+          notes: pet.notes,
+          createdAt: pet.createdAt,
+          updatedAt: pet.updatedAt,
+        })) || [],
     };
   }
 
@@ -83,6 +97,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
             person: true,
           },
         },
+        pets: true,
       },
     });
 
@@ -103,6 +118,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
             person: true,
           },
         },
+        pets: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -124,6 +140,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
             person: true,
           },
         },
+        pets: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -151,6 +168,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
             person: true,
           },
         },
+        pets: true,
       },
     });
 
@@ -167,6 +185,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
         monthlyRent: data.monthlyRent,
         securityDeposit: data.securityDeposit,
         depositPaidDate: data.depositPaidDate,
+        petDeposit: data.petDeposit,
         notes: data.notes,
         status: 'ACTIVE',
         lessees: {
@@ -196,6 +215,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
             person: true,
           },
         },
+        pets: true,
       },
     });
 
@@ -219,6 +239,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
     if (data.monthlyRent !== undefined) updateData.monthlyRent = data.monthlyRent;
     if (data.securityDeposit !== undefined) updateData.securityDeposit = data.securityDeposit;
     if (data.depositPaidDate !== undefined) updateData.depositPaidDate = data.depositPaidDate;
+    if (data.petDeposit !== undefined) updateData.petDeposit = data.petDeposit;
     if (data.notes !== undefined) updateData.notes = data.notes;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.voidedReason !== undefined) updateData.voidedReason = data.voidedReason;
@@ -237,6 +258,7 @@ export class PrismaLeaseRepository implements ILeaseRepository {
             person: true,
           },
         },
+        pets: true,
       },
     });
 
@@ -313,6 +335,23 @@ export class PrismaLeaseRepository implements ILeaseRepository {
         status: 'VOIDED',
         voidedReason,
       },
+    });
+  }
+
+  async addPet(data: AddPetData): Promise<void> {
+    await this.prisma.leasePet.create({
+      data: {
+        leaseId: data.leaseId,
+        name: data.name,
+        species: data.species,
+        notes: data.notes,
+      },
+    });
+  }
+
+  async removePet(_leaseId: string, petId: string): Promise<void> {
+    await this.prisma.leasePet.delete({
+      where: { id: petId },
     });
   }
 }

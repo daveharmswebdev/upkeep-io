@@ -2,12 +2,11 @@
   "extends": "../../tsconfig.backend.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "@domain/*": ["../../libs/domain/dist/*"],
-      "@validators/*": ["../../libs/validators/dist/*"],
-      "@auth/*": ["../../libs/auth/dist/*"]
+      "@domain/*": ["../../libs/domain/src/*"],
+      "@validators/*": ["../../libs/validators/src/*"],
+      "@auth/*": ["../../libs/auth/src/*"]
     },
     "types": ["node", "jest"]
   },

@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
-import { LeaseWithDetails } from '@upkeep-io/domain';
-import { NotFoundError, ValidationError } from '@upkeep-io/domain';
-import { UpdateLeaseInput } from '@upkeep-io/validators';
+import { LeaseWithDetails } from '@domain/entities';
+import { NotFoundError, ValidationError } from '@domain/errors';
+import { UpdateLeaseInput } from '@validators/lease';
 
 @injectable()
 export class UpdateLeaseUseCase {

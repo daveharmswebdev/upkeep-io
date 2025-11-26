@@ -14,6 +14,7 @@ export interface Lease {
   monthlyRent?: number;
   securityDeposit?: number;
   depositPaidDate?: Date;
+  petDeposit?: number;
   notes?: string;
   status: LeaseStatus;
   voidedReason?: string;
@@ -50,5 +51,14 @@ export interface LeaseWithDetails extends Lease {
       email?: string;
       phone?: string;
     };
+  }>;
+  pets: Array<{
+    id: string;
+    leaseId: string;
+    name: string;
+    species: 'cat' | 'dog';
+    notes?: string;
+    createdAt: Date;
+    updatedAt: Date;
   }>;
 }

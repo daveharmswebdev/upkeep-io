@@ -28,5 +28,9 @@ export const createLeaseRoutes = (container: Container): Router => {
   router.post('/:id/occupants', (req, res) => leaseController.addOccupant(req, res));
   router.delete('/:id/occupants/:occupantId', (req, res) => leaseController.removeOccupant(req, res));
 
+  // Pet management
+  router.post('/:id/pets', (req, res) => leaseController.addPet(req, res));
+  router.delete('/:id/pets/:petId', (req, res) => leaseController.removePet(req, res));
+
   return router;
 };

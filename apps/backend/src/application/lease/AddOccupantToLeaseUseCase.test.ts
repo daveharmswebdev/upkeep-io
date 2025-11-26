@@ -1,8 +1,10 @@
 import { AddOccupantToLeaseUseCase } from './AddOccupantToLeaseUseCase';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
 import { IPersonRepository } from '../../domain/repositories/IPersonRepository';
-import { NotFoundError, ValidationError, type Person, LeaseStatus } from '@upkeep-io/domain';
-import type { LeaseWithDetails } from '@upkeep-io/domain';
+import { NotFoundError, ValidationError } from '@domain/errors';
+import type { Person } from '@domain/entities';
+import { LeaseStatus } from '@domain/entities';
+import type { LeaseWithDetails } from '@domain/entities';
 
 describe('AddOccupantToLeaseUseCase', () => {
   let useCase: AddOccupantToLeaseUseCase;

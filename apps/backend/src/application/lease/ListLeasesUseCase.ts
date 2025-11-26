@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ILeaseRepository } from '../../domain/repositories/ILeaseRepository';
-import { LeaseWithDetails } from '@upkeep-io/domain';
+import { LeaseWithDetails } from '@domain/entities';
 
 @injectable()
 export class ListLeasesUseCase {
