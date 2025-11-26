@@ -10,7 +10,6 @@ export interface RemoveLesseeInput {
     monthlyRent?: number;
     securityDeposit?: number;
     depositPaidDate?: Date;
-    notes?: string;
   };
 }
 
@@ -53,7 +52,6 @@ export class RemoveLesseeFromLeaseUseCase {
       monthlyRent: input.newLeaseData.monthlyRent,
       securityDeposit: input.newLeaseData.securityDeposit,
       depositPaidDate: input.newLeaseData.depositPaidDate,
-      notes: input.newLeaseData.notes,
       lessees: remainingLessees.map((lessee) => ({
         personId: lessee.personId,
         signedDate: lessee.signedDate,

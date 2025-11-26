@@ -12,7 +12,6 @@ export interface AddLesseeInput {
     middleName?: string;
     email?: string;
     phone?: string;
-    notes?: string;
     signedDate?: Date;
   };
   newLeaseData: {
@@ -21,7 +20,6 @@ export interface AddLesseeInput {
     monthlyRent?: number;
     securityDeposit?: number;
     depositPaidDate?: Date;
-    notes?: string;
   };
 }
 
@@ -74,7 +72,6 @@ export class AddLesseeToLeaseUseCase {
         middleName: input.newLessee.middleName,
         email: input.newLessee.email,
         phone: input.newLessee.phone,
-        notes: input.newLessee.notes,
       });
       newLesseePersonId = person.id;
     }
@@ -97,7 +94,6 @@ export class AddLesseeToLeaseUseCase {
       monthlyRent: input.newLeaseData.monthlyRent,
       securityDeposit: input.newLeaseData.securityDeposit,
       depositPaidDate: input.newLeaseData.depositPaidDate,
-      notes: input.newLeaseData.notes,
       lessees: [
         ...lease.lessees.map((lessee) => ({
           personId: lessee.personId,

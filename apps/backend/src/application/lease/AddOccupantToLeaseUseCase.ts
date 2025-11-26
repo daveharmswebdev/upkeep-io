@@ -14,7 +14,6 @@ export interface AddOccupantInput {
   middleName?: string;
   email?: string;
   phone?: string;
-  notes?: string;
 }
 
 @injectable()
@@ -82,7 +81,6 @@ export class AddOccupantToLeaseUseCase {
         middleName: input.middleName,
         email: input.email,
         phone: input.phone,
-        notes: input.notes,
       });
       occupantPersonId = person.id;
     }

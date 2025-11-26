@@ -5,7 +5,6 @@ export interface LeasePet {
   leaseId: string;
   name: string;
   species: PetSpecies;
-  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }

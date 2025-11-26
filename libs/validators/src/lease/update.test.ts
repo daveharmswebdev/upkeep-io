@@ -10,7 +10,6 @@ describe('updateLeaseSchema', () => {
         monthlyRent: 2500,
         securityDeposit: 5000,
         depositPaidDate: new Date('2024-01-01'),
-        notes: 'Updated lease terms',
         status: 'ACTIVE' as const,
         voidedReason: undefined,
       };
@@ -55,14 +54,6 @@ describe('updateLeaseSchema', () => {
     it('should accept partial update with only status', () => {
       const validData = {
         status: 'MONTH_TO_MONTH' as const,
-      };
-
-      expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
-    });
-
-    it('should accept partial update with only notes', () => {
-      const validData = {
-        notes: 'Tenant requested extension',
       };
 
       expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
@@ -294,7 +285,7 @@ describe('updateLeaseSchema', () => {
     it('should allow undefined monthlyRent', () => {
       const validData = {
         monthlyRent: undefined,
-        notes: 'Some notes',
+        status: 'ACTIVE' as const,
       };
 
       expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
@@ -303,7 +294,7 @@ describe('updateLeaseSchema', () => {
     it('should allow undefined securityDeposit', () => {
       const validData = {
         securityDeposit: undefined,
-        notes: 'Some notes',
+        status: 'ACTIVE' as const,
       };
 
       expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
@@ -312,16 +303,7 @@ describe('updateLeaseSchema', () => {
     it('should allow undefined depositPaidDate', () => {
       const validData = {
         depositPaidDate: undefined,
-        notes: 'Some notes',
-      };
-
-      expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
-    });
-
-    it('should allow undefined notes', () => {
-      const validData = {
-        notes: undefined,
-        monthlyRent: 2000,
+        status: 'ACTIVE' as const,
       };
 
       expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
@@ -340,14 +322,6 @@ describe('updateLeaseSchema', () => {
       const validData = {
         voidedReason: undefined,
         status: 'ACTIVE' as const,
-      };
-
-      expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
-    });
-
-    it('should allow empty string notes', () => {
-      const validData = {
-        notes: '',
       };
 
       expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
@@ -404,14 +378,6 @@ describe('updateLeaseSchema', () => {
 
       // z.coerce.date() accepts numbers (timestamps)
       expect(() => updateLeaseSchema.parse(invalidData)).not.toThrow();
-    });
-
-    it('should reject non-string notes', () => {
-      const invalidData = {
-        notes: 123,
-      };
-
-      expect(() => updateLeaseSchema.parse(invalidData)).toThrow(ZodError);
     });
 
     it('should reject non-string status', () => {
@@ -476,17 +442,8 @@ describe('updateLeaseSchema', () => {
         monthlyRent: undefined,
         securityDeposit: undefined,
         depositPaidDate: undefined,
-        notes: undefined,
         status: undefined,
         voidedReason: undefined,
-      };
-
-      expect(() => updateLeaseSchema.parse(validData)).not.toThrow();
-    });
-
-    it('should handle long notes string', () => {
-      const validData = {
-        notes: 'A'.repeat(10000),
       };
 
       expect(() => updateLeaseSchema.parse(validData)).not.toThrow();

@@ -11,6 +11,7 @@ import swaggerUi from 'swagger-ui-express';
 import { createContainer } from './container';
 import { createAuthRoutes, createPropertyRoutes, createProfileRoutes } from './presentation/routes';
 import { createLeaseRoutes } from './presentation/routes/leaseRoutes';
+import { createNoteRoutes } from './presentation/routes/noteRoutes';
 import { createErrorMiddleware } from './presentation/middleware';
 import { ILogger } from './domain/services';
 import { swaggerSpec } from './presentation/swagger/openapi.config';
@@ -46,6 +47,7 @@ app.use('/api/auth', createAuthRoutes(container));
 app.use('/api/properties', createPropertyRoutes(container));
 app.use('/api/leases', createLeaseRoutes(container));
 app.use('/api/profile', createProfileRoutes(container));
+app.use('/api/notes', createNoteRoutes(container));
 
 // Error handling middleware (must be last)
 app.use(createErrorMiddleware(logger));

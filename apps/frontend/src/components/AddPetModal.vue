@@ -47,27 +47,6 @@
               </select>
               <p v-if="errors.species" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.species }}</p>
             </div>
-
-            <div>
-              <label for="notes" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
-                Notes (Optional)
-              </label>
-              <textarea
-                id="notes"
-                name="notes"
-                :value="values.notes"
-                @input="handleNotesInput"
-                @blur="handleBlur"
-                placeholder="Breed, color, any special notes..."
-                rows="3"
-                class="w-full px-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                :class="{
-                  'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors.notes,
-                  'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors.notes,
-                }"
-              ></textarea>
-              <p v-if="errors.notes" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.notes }}</p>
-            </div>
           </div>
         </div>
 
@@ -117,7 +96,6 @@ const { handleSubmit, errors, values, meta, setFieldValue } = useForm({
   initialValues: {
     name: '',
     species: undefined as 'cat' | 'dog' | undefined,
-    notes: '',
   },
 });
 
@@ -131,15 +109,6 @@ const confirmButtonRef = ref<HTMLButtonElement | null>(null);
 const handleSpeciesChange = (event: Event) => {
   const target = event.target as HTMLSelectElement;
   setFieldValue('species', target.value as 'cat' | 'dog');
-};
-
-const handleNotesInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  setFieldValue('notes', target.value);
-};
-
-const handleBlur = () => {
-  // Trigger validation on blur
 };
 
 const submit = async (formValues: any) => {

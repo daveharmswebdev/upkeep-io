@@ -271,27 +271,6 @@
                   label="Deposit Paid Date (Optional)"
                   type="date"
                 />
-
-                <div>
-                  <label for="notes" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
-                    Notes (Optional)
-                  </label>
-                  <textarea
-                    id="notes"
-                    name="notes"
-                    :value="values.notes"
-                    @input="handleTextareaInput"
-                    @blur="handleTextareaBlur"
-                    placeholder="Additional lease notes..."
-                    rows="3"
-                    class="w-full px-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                    :class="{
-                      'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors.notes,
-                      'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors.notes,
-                    }"
-                  ></textarea>
-                  <p v-if="errors.notes" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors.notes }}</p>
-                </div>
               </div>
             </div>
           </div>
@@ -401,7 +380,6 @@ import { convertFormDates, convertNestedDates, formatDateForInput } from '@/util
 import { formatDate } from '@/utils/formatters';
 import { extractErrorMessage } from '@/utils/errorHandlers';
 import { useMoneyInput } from '@/composables/useMoneyInput';
-import { useTextareaInput } from '@/composables/useTextareaInput';
 import { useToast } from 'vue-toastification';
 
 const router = useRouter();
@@ -459,10 +437,6 @@ const { createMoneyInputHandler } = useMoneyInput();
 const handleMonthlyRentInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'monthlyRent');
 const handleSecurityDepositInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'securityDeposit');
 const handlePetDepositInput = createMoneyInputHandler(setFieldValue as (field: string, value: any) => void, 'petDeposit');
-
-const { createTextareaHandler, createTextareaBlurHandler } = useTextareaInput();
-const handleTextareaInput = createTextareaHandler(setFieldValue as (field: string, value: any) => void, 'notes');
-const handleTextareaBlur = createTextareaBlurHandler(setFieldValue as (field: string, value: any) => void, 'notes');
 
 const handleMoneyInput = (fieldName: 'monthlyRent' | 'securityDeposit' | 'petDeposit', event: Event) => {
   if (fieldName === 'monthlyRent') {
@@ -744,7 +718,6 @@ onMounted(async () => {
         securityDeposit: lease.securityDeposit,
         petDeposit: lease.petDeposit,
         depositPaidDate: formatDateForInput(lease.depositPaidDate) as any,
-        notes: lease.notes || '',
       });
     } catch (err: any) {
       fetchError.value = extractErrorMessage(err, 'Failed to load lease. Please try again.');

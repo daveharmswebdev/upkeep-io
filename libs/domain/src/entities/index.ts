@@ -7,3 +7,4 @@ export type { LeaseLessee } from './LeaseLessee';
 export type { LeaseOccupant } from './LeaseOccupant';
 export type { LeasePet, PetSpecies } from './LeasePet';
 export type { Profile, CreateProfileData } from './Profile';
+export type { Note, CreateNoteData, UpdateNoteData, NoteEntityType } from './Note';

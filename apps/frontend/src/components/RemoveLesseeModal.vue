@@ -129,27 +129,6 @@
               label="Deposit Paid Date (Optional)"
               type="date"
             />
-
-            <div>
-              <label for="notes" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
-                Notes (Optional)
-              </label>
-              <textarea
-                id="notes"
-                name="notes"
-                :value="values.newLeaseData?.notes"
-                @input="handleNotesInput"
-                @blur="handleBlur"
-                placeholder="Additional lease notes..."
-                rows="3"
-                class="w-full px-3 py-2 border rounded focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                :class="{
-                  'border-gray-300 dark:border-gray-600 focus:border-complement-300 dark:focus:border-complement-400 focus:ring-2 focus:ring-complement-200 dark:focus:ring-complement-500': !errors['newLeaseData.notes'],
-                  'border-primary-400 dark:border-primary-300 focus:border-primary-400 dark:focus:border-primary-300 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-400': errors['newLeaseData.notes'],
-                }"
-              ></textarea>
-              <p v-if="errors['newLeaseData.notes']" class="text-primary-400 dark:text-primary-300 text-sm mt-1">{{ errors['newLeaseData.notes'] }}</p>
-            </div>
           </div>
         </div>
 
@@ -200,7 +179,6 @@ const removeLesseeSchema = z.object({
     monthlyRent: z.number().positive('Monthly rent must be positive').optional(),
     securityDeposit: z.number().nonnegative('Security deposit must be non-negative').optional(),
     depositPaidDate: z.coerce.date().optional(),
-    notes: z.string().optional(),
   }),
 }).refine(
   (data) => {
@@ -240,7 +218,6 @@ const { handleSubmit, errors, values, meta, setFieldValue } = useForm({
       monthlyRent: props.currentLease.monthlyRent,
       securityDeposit: props.currentLease.securityDeposit,
       depositPaidDate: formatDateForInput(props.currentLease.depositPaidDate) as any,
-      notes: props.currentLease.notes || '',
     },
   },
 });
@@ -267,11 +244,6 @@ const handleSecurityDepositInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const value = target.value ? parseFloat(target.value) : undefined;
   setFieldValue('newLeaseData.securityDeposit', value);
-};
-
-const handleNotesInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  setFieldValue('newLeaseData.notes', target.value);
 };
 
 const handleBlur = () => {

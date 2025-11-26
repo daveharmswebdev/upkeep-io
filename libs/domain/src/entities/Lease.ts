@@ -15,7 +15,6 @@ export interface Lease {
   securityDeposit?: number;
   depositPaidDate?: Date;
   petDeposit?: number;
-  notes?: string;
   status: LeaseStatus;
   voidedReason?: string;
   deletedAt?: Date;
@@ -57,7 +56,6 @@ export interface LeaseWithDetails extends Lease {
     leaseId: string;
     name: string;
     species: 'cat' | 'dog';
-    notes?: string;
     createdAt: Date;
     updatedAt: Date;
   }>;

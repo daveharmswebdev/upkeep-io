@@ -24,7 +24,6 @@ export class PrismaPersonRepository implements IPersonRepository {
       middleName: person.middleName ?? undefined,
       email: person.email ?? undefined,
       phone: person.phone ?? undefined,
-      notes: person.notes ?? undefined,
     };
   }
 
@@ -40,7 +39,6 @@ export class PrismaPersonRepository implements IPersonRepository {
       middleName: p.middleName ?? undefined,
       email: p.email ?? undefined,
       phone: p.phone ?? undefined,
-      notes: p.notes ?? undefined,
     }));
   }
 
@@ -54,7 +52,6 @@ export class PrismaPersonRepository implements IPersonRepository {
         middleName: data.middleName,
         email: data.email,
         phone: data.phone,
-        notes: data.notes,
       },
     });
 
@@ -64,7 +61,6 @@ export class PrismaPersonRepository implements IPersonRepository {
       middleName: person.middleName ?? undefined,
       email: person.email ?? undefined,
       phone: person.phone ?? undefined,
-      notes: person.notes ?? undefined,
     };
   }
 
@@ -80,7 +76,6 @@ export class PrismaPersonRepository implements IPersonRepository {
       middleName: person.middleName ?? undefined,
       email: person.email ?? undefined,
       phone: person.phone ?? undefined,
-      notes: person.notes ?? undefined,
     };
   }
 

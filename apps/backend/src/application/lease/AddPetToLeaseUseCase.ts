@@ -6,7 +6,6 @@ import type { LeaseWithDetails } from '@domain/entities';
 export interface AddPetInput {
   name: string;
   species: 'cat' | 'dog';
-  notes?: string;
 }
 
 @injectable()
@@ -36,7 +35,6 @@ export class AddPetToLeaseUseCase {
       leaseId,
       name: input.name,
       species: input.species,
-      notes: input.notes,
     });
 
     // 3. Return updated lease with details
