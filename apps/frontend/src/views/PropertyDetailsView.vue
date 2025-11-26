@@ -262,6 +262,34 @@
               </div>
             </div>
 
+            <!-- Occupants -->
+            <div v-if="activeLease.occupants && activeLease.occupants.length > 0" class="border-t dark:border-gray-700 pt-4">
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Occupants</p>
+              <div class="space-y-2">
+                <div v-for="occupant in activeLease.occupants" :key="occupant.id" class="bg-gray-50 dark:bg-gray-700 rounded p-3">
+                  <div class="flex items-center gap-2">
+                    <p class="font-medium text-gray-800 dark:text-gray-100">
+                      {{ occupant.person.firstName }} {{ occupant.person.lastName }}
+                    </p>
+                    <span
+                      :class="occupant.isAdult
+                        ? 'bg-complement-200 dark:bg-complement-600 text-complement-800 dark:text-complement-100'
+                        : 'bg-secondary-2-200 dark:bg-secondary-2-600 text-secondary-2-800 dark:text-secondary-2-100'"
+                      class="px-2 py-0.5 text-xs font-semibold rounded"
+                    >
+                      {{ occupant.isAdult ? 'Adult' : 'Child' }}
+                    </span>
+                  </div>
+                  <p v-if="occupant.person.email || occupant.person.phone" class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ [occupant.person.email, occupant.person.phone].filter(Boolean).join(' • ') }}
+                  </p>
+                  <p v-if="occupant.moveInDate" class="text-xs text-gray-500 dark:text-gray-500">
+                    Move-in: {{ formatDate(occupant.moveInDate) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <!-- Notes -->
             <div v-if="activeLease.notes" class="border-t dark:border-gray-700 pt-4">
               <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Notes</p>
