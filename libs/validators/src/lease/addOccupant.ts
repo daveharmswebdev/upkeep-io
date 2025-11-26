@@ -8,10 +8,11 @@ const occupantSchema = z.object({
   // Inline person creation fields
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
-  middleName: z.string().max(100).optional(),
-  email: z.string().email().optional(),
-  phone: z.string().min(10).optional(),
-  notes: z.string().optional(),
+  middleName: z.string().max(100).optional().or(z.literal('')),
+  // Allow empty string or valid email/phone (child occupants may not have these)
+  email: z.string().email().optional().or(z.literal('')),
+  phone: z.string().min(10).optional().or(z.literal('')),
+  notes: z.string().optional().or(z.literal('')),
 }).refine(
   (data) => {
     // Either personId OR inline creation fields must be provided
@@ -25,8 +26,11 @@ const occupantSchema = z.object({
 ).refine(
   (data) => {
     // If inline creation for adult occupants, email and phone are required
+    // Empty strings don't count as having email/phone
     if (!data.personId && data.isAdult && data.firstName && data.lastName) {
-      return !!data.email && !!data.phone;
+      const hasEmail = !!data.email && data.email.length > 0;
+      const hasPhone = !!data.phone && data.phone.length > 0;
+      return hasEmail && hasPhone;
     }
     return true;
   },
