@@ -90,7 +90,7 @@ container
 
 ### TypeScript Configuration
 
-The monorepo uses a layered TypeScript configuration for different module systems. See [docs/typescript-configuration.md](docs/typescript-configuration.md) for complete details.
+The monorepo uses a layered TypeScript configuration for different module systems.
 
 **Key Points:**
 - `tsconfig.base.json` - Shared compiler options for all packages
@@ -98,6 +98,37 @@ The monorepo uses a layered TypeScript configuration for different module system
 - `tsconfig.frontend.json` - ES Modules for Vite/Vue (extends base)
 - Shared libraries (`libs/*`) extend base config with `module: "ESNext"`
 - **Critical:** Shared library package.json files do NOT declare `"type": "module"` to avoid ES Module errors in backend
+
+**🚨 PROTECTED CONFIGURATION - DO NOT MODIFY:**
+
+The following settings in `apps/backend/tsconfig.json` are critical for production deployment:
+
+```json
+{
+  "compilerOptions": {
+    "rootDir": "./src",           // ⚠️ DO NOT REMOVE - Required for flat dist/ output
+    "paths": {
+      "@domain/*": ["../../libs/domain/dist/*"],      // ⚠️ Must point to dist/*, NOT src/*
+      "@validators/*": ["../../libs/validators/dist/*"],
+      "@auth/*": ["../../libs/auth/dist/*"]
+    }
+  }
+}
+```
+
+**Why these settings matter:**
+- `rootDir: "./src"` ensures `dist/server.js` output (not `dist/apps/backend/src/server.js`)
+- Path aliases MUST point to `dist/*` because production runs compiled JavaScript, not TypeScript
+- Removing `rootDir` or changing paths to `src/*` will break Render deployment
+
+**Dev vs Production Difference:**
+- **Development (ts-node-dev):** Compiles TypeScript on-the-fly, resolves paths at runtime via tsconfig-paths
+- **Production (tsc build):** Compiles to JavaScript, libs must be pre-built to `dist/` folders, path aliases resolve to compiled JS
+
+**If you encounter TypeScript import errors during development:**
+1. Run `npm run build` to ensure libs are compiled to their `dist/` folders
+2. Check for stale `.js` files: `find libs -path "*/src/*.js" -delete`
+3. Do NOT change `rootDir` or path aliases in `apps/backend/tsconfig.json`
 
 **Common Issues:**
 - **ES Module errors in backend:** Remove `"type": "module"` from `libs/*/package.json`
