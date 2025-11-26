@@ -50,9 +50,16 @@ Create Issue using the following structure:
 - **Be Realistic**: Break large tasks into manageable pieces
 - **Prioritize Security**: Always include relevant security considerations
 
-### Process
+### Process (MANDATORY ORDER)
 
 1. Ask clarifying questions to gather necessary details
-2. Structure information into the template sections
-3. Ensure all required fields are completed
-4. Format the final ticket for readability with proper markdown
+2. **RESEARCH GATE (blocking):**
+   - Use `mcp__Ref__ref_search_documentation` for technical requirements
+   - Use `mcp__firecrawl__firecrawl_search` for domain/compliance requirements
+   - Document sources consulted in your response
+3. Structure information into the template sections
+4. Cite sources in issue body where relevant
+5. Ensure all required fields are completed
+6. Format the final ticket for readability with proper markdown
+
+**You cannot proceed to step 3 without completing step 2. Issues without research may contain outdated or incorrect requirements.**

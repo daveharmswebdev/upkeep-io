@@ -5,6 +5,21 @@ description: Helps build and extend TypeScript Express APIs using Clean Architec
 
 # TypeScript Development
 
+## Research Protocol
+
+**MANDATORY:** Follow the research protocol in `@shared/research-protocol.md` before implementing backend features.
+
+### When to Research
+
+You MUST use `mcp__Ref__ref_search_documentation` before:
+- Using Prisma features you haven't verified this session
+- Implementing inversify patterns
+- Using Express middleware patterns
+- Making Zod validation decisions
+- Advising on JWT or authentication patterns
+
+**Never assume training data reflects current library versions. When in doubt, verify.**
+
 ## Project Context
 
 This is a **monorepo** property management system with shared libraries:

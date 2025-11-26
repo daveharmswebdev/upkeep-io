@@ -5,6 +5,20 @@ description: Use when planning or implementing Vue 3 projects - helps architect 
 
 # Vue Development
 
+## Research Protocol
+
+**MANDATORY:** Follow the research protocol in `@shared/research-protocol.md` before implementing Vue patterns.
+
+### When to Research
+
+You MUST use `mcp__Ref__ref_search_documentation` before:
+- Using Vue APIs you haven't verified this session (defineModel, defineProps, defineEmits)
+- Writing tests with Testing Library or Vitest
+- Implementing routing patterns with Vue Router 4
+- Using version-specific features (Vue 3.4+, Vue 3.5+)
+
+**If official documentation differs from this skill, documentation takes precedence.**
+
 ## Overview
 
 Modern Vue 3 development with TypeScript, Composition API, and user-behavior testing. **Core principle:** Use TypeScript generics (not runtime validation), modern APIs (defineModel not manual props), and test user behavior (not implementation details).
