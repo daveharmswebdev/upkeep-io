@@ -11,7 +11,6 @@ describe('createLeaseSchema', () => {
         monthlyRent: 2000,
         securityDeposit: 4000,
         depositPaidDate: new Date('2024-01-01'),
-        notes: 'Standard lease agreement',
         lessees: [
           {
             personId: '123e4567-e89b-12d3-a456-426614174001',
@@ -172,7 +171,6 @@ describe('createLeaseSchema', () => {
             middleName: 'Michael',
             email: 'john@example.com',
             phone: '1234567890',
-            notes: 'Primary lessee',
           },
         ],
       };

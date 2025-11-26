@@ -9,7 +9,6 @@ export interface CreateLeaseData {
   securityDeposit?: number;
   depositPaidDate?: Date;
   petDeposit?: number;
-  notes?: string;
   lessees: Array<{
     personId: string;
     signedDate?: Date;
@@ -38,7 +37,6 @@ export interface AddPetData {
   leaseId: string;
   name: string;
   species: 'cat' | 'dog';
-  notes?: string;
 }
 
 export interface ILeaseRepository {

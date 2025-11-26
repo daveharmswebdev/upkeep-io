@@ -12,7 +12,6 @@ const occupantSchema = z.object({
   // Allow empty string or valid email/phone (child occupants may not have these)
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().min(10).optional().or(z.literal('')),
-  notes: z.string().optional().or(z.literal('')),
 }).refine(
   (data) => {
     // Either personId OR inline creation fields must be provided

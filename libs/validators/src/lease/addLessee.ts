@@ -10,7 +10,6 @@ const lesseeSchema = z.object({
   middleName: z.string().max(100).optional(),
   email: z.string().email().optional(),
   phone: z.string().min(10).optional(),
-  notes: z.string().optional(),
 }).refine(
   (data) => {
     // Either personId OR inline creation fields must be provided
@@ -43,7 +42,6 @@ export const addLesseeSchema = z.object({
     monthlyRent: z.number().positive('Monthly rent must be positive').optional(),
     securityDeposit: z.number().nonnegative('Security deposit must be non-negative').optional(),
     depositPaidDate: z.coerce.date().optional(),
-    notes: z.string().optional(),
   }),
 }).refine(
   (data) => {

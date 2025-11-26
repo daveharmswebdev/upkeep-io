@@ -162,7 +162,6 @@ describe('AddLesseeToLeaseUseCase', () => {
         monthlyRent: input.newLeaseData.monthlyRent,
         securityDeposit: input.newLeaseData.securityDeposit,
         depositPaidDate: undefined,
-        notes: undefined,
         lessees: [
           {
             personId: 'person-1',

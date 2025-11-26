@@ -9,7 +9,6 @@ export interface Person {
   middleName?: string;
   email?: string;
   phone?: string;
-  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,5 +21,4 @@ export interface CreatePersonData {
   middleName?: string;
   email?: string;
   phone?: string;
-  notes?: string;
 }

@@ -21,7 +21,6 @@ describe('AddPetToLeaseUseCase', () => {
     securityDeposit: 4000,
     depositPaidDate: new Date('2024-01-01'),
     petDeposit: 500,
-    notes: 'Test lease',
     status: LeaseStatus.ACTIVE,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -66,7 +65,6 @@ describe('AddPetToLeaseUseCase', () => {
     const petData = {
       name: 'Whiskers',
       species: 'cat' as const,
-      notes: 'Gray tabby',
     };
 
     const updatedLease: LeaseWithDetails = {
@@ -77,7 +75,6 @@ describe('AddPetToLeaseUseCase', () => {
           leaseId,
           name: 'Whiskers',
           species: 'cat',
-          notes: 'Gray tabby',
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -96,7 +93,6 @@ describe('AddPetToLeaseUseCase', () => {
       leaseId,
       name: 'Whiskers',
       species: 'cat',
-      notes: 'Gray tabby',
     });
     expect(result.pets).toHaveLength(1);
     expect(result.pets[0].name).toBe('Whiskers');
@@ -133,7 +129,6 @@ describe('AddPetToLeaseUseCase', () => {
       leaseId,
       name: 'Buddy',
       species: 'dog',
-      notes: undefined,
     });
     expect(result.pets).toHaveLength(1);
     expect(result.pets[0].name).toBe('Buddy');

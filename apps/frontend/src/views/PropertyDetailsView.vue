@@ -290,12 +290,6 @@
               </div>
             </div>
 
-            <!-- Notes -->
-            <div v-if="activeLease.notes" class="border-t dark:border-gray-700 pt-4">
-              <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Notes</p>
-              <p class="text-gray-700 dark:text-gray-300">{{ activeLease.notes }}</p>
-            </div>
-
             <!-- Lease Notes Section -->
             <div class="border-t dark:border-gray-700 pt-4">
               <NoteList entityType="lease" :entityId="activeLease.id" />

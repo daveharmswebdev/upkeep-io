@@ -9,7 +9,6 @@ export const createPersonSchema = z.object({
   middleName: z.string().max(50, 'Middle name too long').optional(),
   email: z.string().email('Invalid email format').max(255, 'Email too long'),
   phone: z.string().min(10, 'Phone number must be at least 10 digits').max(20, 'Phone number too long'),
-  notes: z.string().max(1000, 'Notes too long').optional(),
 });
 
 export type CreatePersonInput = z.infer<typeof createPersonSchema>;

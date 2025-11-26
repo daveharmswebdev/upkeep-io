@@ -84,7 +84,7 @@ describe('addOccupantSchema', () => {
       expect(result.isAdult).toBe(true);
     });
 
-    it('should validate with optional middleName and notes', () => {
+    it('should validate with optional middleName', () => {
       const data = {
         isAdult: true,
         firstName: 'Jane',
@@ -92,13 +92,11 @@ describe('addOccupantSchema', () => {
         middleName: 'Marie',
         email: 'jane.smith@example.com',
         phone: '555-987-6543',
-        notes: 'Primary contact',
       };
 
       const result = addOccupantSchema.parse(data);
 
       expect(result.middleName).toBe('Marie');
-      expect(result.notes).toBe('Primary contact');
     });
 
     it('should reject adult without email', () => {

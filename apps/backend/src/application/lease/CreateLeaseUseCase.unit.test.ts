@@ -143,7 +143,6 @@ describe('CreateLeaseUseCase', () => {
         middleName: undefined,
         email: 'jane@example.com',
         phone: '555-0101',
-        notes: undefined,
       });
       expect(mockLeaseRepository.create).toHaveBeenCalled();
       expect(result).toEqual(mockLease);

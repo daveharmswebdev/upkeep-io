@@ -13,7 +13,6 @@ export interface CreateLeaseInput {
   monthlyRent?: number;
   securityDeposit?: number;
   depositPaidDate?: Date;
-  notes?: string;
   lessees: Array<{
     personId?: string;
     firstName?: string;
@@ -21,7 +20,6 @@ export interface CreateLeaseInput {
     middleName?: string;
     email?: string;
     phone?: string;
-    notes?: string;
     signedDate?: Date;
   }>;
   occupants?: Array<{
@@ -31,7 +29,6 @@ export interface CreateLeaseInput {
     middleName?: string;
     email?: string;
     phone?: string;
-    notes?: string;
     isAdult: boolean;
     moveInDate?: Date;
   }>;
@@ -84,7 +81,6 @@ export class CreateLeaseUseCase {
             middleName: lessee.middleName,
             email: lessee.email,
             phone: lessee.phone,
-            notes: lessee.notes,
           });
           personId = person.id;
         } else {
@@ -132,7 +128,6 @@ export class CreateLeaseUseCase {
                 middleName: occupant.middleName,
                 email: occupant.email,
                 phone: occupant.phone,
-                notes: occupant.notes,
               });
               personId = person.id;
             } else {
@@ -164,7 +159,6 @@ export class CreateLeaseUseCase {
       monthlyRent: input.monthlyRent,
       securityDeposit: input.securityDeposit,
       depositPaidDate: input.depositPaidDate,
-      notes: input.notes,
       lessees: lesseeData,
       occupants: occupantData,
     });

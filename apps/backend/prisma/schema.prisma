@@ -75,7 +75,6 @@ model Person {
   middleName String?    @map("middle_name") @db.VarChar(50)
   email      String?    @db.VarChar(255)
   phone      String?    @db.VarChar(20)
-  notes      String?    @db.Text
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
 
@@ -99,7 +98,6 @@ model Lease {
   securityDeposit Decimal?     @map("security_deposit") @db.Decimal(10, 2)
   depositPaidDate DateTime?    @map("deposit_paid_date")
   petDeposit      Decimal?     @map("pet_deposit") @db.Decimal(10, 2)
-  notes           String?      @db.Text
   status          LeaseStatus  @default(ACTIVE)
   voidedReason    String?      @map("voided_reason") @db.Text
   deletedAt       DateTime?    @map("deleted_at")
@@ -164,7 +162,6 @@ model LeasePet {
   leaseId   String   @map("lease_id") @db.Uuid
   name      String   @db.VarChar(100)
   species   String   @db.VarChar(20)
-  notes     String?  @db.Text
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

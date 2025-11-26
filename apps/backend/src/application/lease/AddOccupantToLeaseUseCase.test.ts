@@ -24,7 +24,6 @@ describe('AddOccupantToLeaseUseCase', () => {
     monthlyRent: 2000,
     securityDeposit: 4000,
     depositPaidDate: new Date('2024-01-01'),
-    notes: 'Test lease',
     status: LeaseStatus.ACTIVE,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -283,7 +282,6 @@ describe('AddOccupantToLeaseUseCase', () => {
         middleName: undefined,
         email: 'jane.smith@example.com',
         phone: '555-9876',
-        notes: undefined,
       });
       expect(mockLeaseRepository.addOccupant).toHaveBeenCalledWith({
         leaseId,
@@ -342,7 +340,6 @@ describe('AddOccupantToLeaseUseCase', () => {
         middleName: undefined,
         email: undefined,
         phone: undefined,
-        notes: undefined,
       });
       expect(mockLeaseRepository.addOccupant).toHaveBeenCalledWith({
         leaseId,
@@ -364,7 +361,6 @@ describe('AddOccupantToLeaseUseCase', () => {
         middleName: 'Marie',
         email: 'jane@example.com',
         phone: '555-1111',
-        notes: 'Guest room',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -402,7 +398,6 @@ describe('AddOccupantToLeaseUseCase', () => {
         middleName: 'Marie',
         email: 'jane@example.com',
         phone: '555-1111',
-        notes: 'Guest room',
         moveInDate: new Date('2024-04-01'),
       });
 
@@ -414,7 +409,6 @@ describe('AddOccupantToLeaseUseCase', () => {
         middleName: 'Marie',
         email: 'jane@example.com',
         phone: '555-1111',
-        notes: 'Guest room',
       });
       expect(result.occupants).toHaveLength(1);
     });

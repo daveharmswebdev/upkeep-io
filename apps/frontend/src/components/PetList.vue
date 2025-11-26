@@ -42,9 +42,6 @@
                 {{ pet.species === 'cat' ? 'Cat' : 'Dog' }}
               </span>
             </div>
-            <p v-if="pet.notes" class="text-sm text-gray-600 dark:text-gray-400">
-              {{ pet.notes }}
-            </p>
           </div>
           <button
             type="button"

@@ -32,7 +32,6 @@ export class PrismaLeaseRepository implements ILeaseRepository {
       petDeposit: prismaLease.petDeposit
         ? parseFloat(prismaLease.petDeposit.toString())
         : undefined,
-      notes: prismaLease.notes,
       status: prismaLease.status as LeaseStatus,
       voidedReason: prismaLease.voidedReason,
       deletedAt: prismaLease.deletedAt,
@@ -76,7 +75,6 @@ export class PrismaLeaseRepository implements ILeaseRepository {
           leaseId: pet.leaseId,
           name: pet.name,
           species: pet.species,
-          notes: pet.notes,
           createdAt: pet.createdAt,
           updatedAt: pet.updatedAt,
         })) || [],
@@ -186,7 +184,6 @@ export class PrismaLeaseRepository implements ILeaseRepository {
         securityDeposit: data.securityDeposit,
         depositPaidDate: data.depositPaidDate,
         petDeposit: data.petDeposit,
-        notes: data.notes,
         status: 'ACTIVE',
         lessees: {
           create: data.lessees.map((lessee) => ({
@@ -240,7 +237,6 @@ export class PrismaLeaseRepository implements ILeaseRepository {
     if (data.securityDeposit !== undefined) updateData.securityDeposit = data.securityDeposit;
     if (data.depositPaidDate !== undefined) updateData.depositPaidDate = data.depositPaidDate;
     if (data.petDeposit !== undefined) updateData.petDeposit = data.petDeposit;
-    if (data.notes !== undefined) updateData.notes = data.notes;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.voidedReason !== undefined) updateData.voidedReason = data.voidedReason;
 
@@ -344,7 +340,6 @@ export class PrismaLeaseRepository implements ILeaseRepository {
         leaseId: data.leaseId,
         name: data.name,
         species: data.species,
-        notes: data.notes,
       },
     });
   }

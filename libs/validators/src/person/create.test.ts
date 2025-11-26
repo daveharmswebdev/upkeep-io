@@ -11,7 +11,6 @@ describe('createPersonSchema', () => {
         middleName: 'Michael',
         email: 'john@example.com',
         phone: '1234567890',
-        notes: 'Property owner',
       };
 
       const result = createPersonSchema.parse(validData);
@@ -122,19 +121,6 @@ describe('createPersonSchema', () => {
         lastName: 'Doe',
         email: 'a'.repeat(243) + '@example.com', // 255 total (243 + 1 + 11 = 255)
         phone: '1234567890',
-      };
-
-      expect(() => createPersonSchema.parse(validData)).not.toThrow();
-    });
-
-    it('should accept maximum length notes (1000 characters)', () => {
-      const validData = {
-        personType: 'OWNER' as const,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'test@example.com',
-        phone: '1234567890',
-        notes: 'D'.repeat(1000),
       };
 
       expect(() => createPersonSchema.parse(validData)).not.toThrow();
@@ -532,59 +518,6 @@ describe('createPersonSchema', () => {
       };
 
       expect(() => createPersonSchema.parse(invalidData)).toThrow(ZodError);
-    });
-  });
-
-  describe('notes validation', () => {
-    it('should allow undefined notes', () => {
-      const validData = {
-        personType: 'OWNER' as const,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'test@example.com',
-        phone: '1234567890',
-        notes: undefined,
-      };
-
-      expect(() => createPersonSchema.parse(validData)).not.toThrow();
-    });
-
-    it('should allow missing notes', () => {
-      const validData = {
-        personType: 'OWNER' as const,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'test@example.com',
-        phone: '1234567890',
-      };
-
-      expect(() => createPersonSchema.parse(validData)).not.toThrow();
-    });
-
-    it('should reject notes longer than 1000 characters', () => {
-      const invalidData = {
-        personType: 'OWNER' as const,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'test@example.com',
-        phone: '1234567890',
-        notes: 'D'.repeat(1001),
-      };
-
-      expect(() => createPersonSchema.parse(invalidData)).toThrow(ZodError);
-    });
-
-    it('should accept empty string notes', () => {
-      const validData = {
-        personType: 'OWNER' as const,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'test@example.com',
-        phone: '1234567890',
-        notes: '',
-      };
-
-      expect(() => createPersonSchema.parse(validData)).not.toThrow();
     });
   });
 
