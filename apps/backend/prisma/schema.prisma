@@ -27,7 +27,7 @@ enum LeaseStatus {
 }
 
 model User {
-  id           String     @id @default(uuid())
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email        String     @unique
   passwordHash String     @map("password_hash")
   name         String
@@ -44,8 +44,8 @@ model User {
 }
 
 model Property {
-  id            String    @id @default(uuid())
-  userId        String    @map("user_id")
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
   street        String
   address2      String?
   city          String
@@ -66,8 +66,8 @@ model Property {
 }
 
 model Person {
-  id         String     @id @default(uuid())
-  userId     String     @map("user_id")
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String     @map("user_id") @db.Uuid
   personType PersonType @map("person_type")
   firstName  String     @map("first_name") @db.VarChar(100)
   lastName   String     @map("last_name") @db.VarChar(100)
@@ -89,9 +89,9 @@ model Person {
 }
 
 model Lease {
-  id              String       @id @default(uuid())
-  userId          String       @map("user_id")
-  propertyId      String       @map("property_id")
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String       @map("user_id") @db.Uuid
+  propertyId      String       @map("property_id") @db.Uuid
   startDate       DateTime     @map("start_date")
   endDate         DateTime?    @map("end_date")
   monthlyRent     Decimal?     @map("monthly_rent") @db.Decimal(10, 2)
@@ -118,9 +118,9 @@ model Lease {
 }
 
 model LeaseLessee {
-  id         String    @id @default(uuid())
-  leaseId    String    @map("lease_id")
-  personId   String    @map("person_id")
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  leaseId    String    @map("lease_id") @db.Uuid
+  personId   String    @map("person_id") @db.Uuid
   signedDate DateTime? @map("signed_date")
   deletedAt  DateTime? @map("deleted_at")
   createdAt  DateTime  @default(now()) @map("created_at")
@@ -137,9 +137,9 @@ model LeaseLessee {
 }
 
 model LeaseOccupant {
-  id          String    @id @default(uuid())
-  leaseId     String    @map("lease_id")
-  personId    String    @map("person_id")
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  leaseId     String    @map("lease_id") @db.Uuid
+  personId    String    @map("person_id") @db.Uuid
   isAdult     Boolean   @map("is_adult") @default(false)
   moveInDate  DateTime? @map("move_in_date")
   moveOutDate DateTime? @map("move_out_date")
@@ -157,8 +157,8 @@ model LeaseOccupant {
 }
 
 model Profile {
-  id        String   @id @default(uuid())
-  userId    String   @unique @map("user_id")
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid
   firstName String   @default("") @map("first_name") @db.VarChar(100)
   lastName  String   @default("") @map("last_name") @db.VarChar(100)
   phone     String   @default("") @db.VarChar(20)

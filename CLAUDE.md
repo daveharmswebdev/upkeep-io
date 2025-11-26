@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Property management system for tracking maintenance activities, expenses, and vendors across a portfolio of rental properties. Built with Clean Architecture principles using Node/Express backend, Vue 3 frontend, PostgreSQL database, and deployed on Railway.
+Property management system for tracking maintenance activities, expenses, and vendors across a portfolio of rental properties. Built with Clean Architecture principles using Node/Express backend, Vue 3 frontend, PostgreSQL database, and deployed on Render.
 
 ## Architecture
 
@@ -110,34 +110,42 @@ The monorepo uses a layered TypeScript configuration for different module system
 - Frontend: Vite bundles TypeScript source via aliases (ES Module output)
 - Both apps import the SAME TypeScript source from `libs/*/src/`, compiled differently
 
-### Database: Prisma (Dev) + Flyway (Production)
+### Database: Flyway Migrations (Unified Local & Production)
+
+**Migration Strategy:**
+- Both local development and production use Flyway migrations
+- Single source of truth: `apps/backend/migrations/`
+- Both environments track `flyway_schema_history` table
+- All ID columns use native PostgreSQL UUID type (not TEXT)
 
 **Local Development:**
-- Prisma schema (`prisma/schema.prisma`) is source of truth
-- Run `npm run migrate:dev` to generate and apply migrations locally
-- Prisma auto-generates TypeScript client with full type safety
-
-**🚨 CRITICAL: NEVER use `prisma db push`**
-- `prisma db push` syncs the database without creating migration files
-- This creates schema drift between local and production
-- **ALWAYS use `prisma migrate dev`** to create proper migration files
-- If you accidentally used `prisma db push`, you must retroactively create the migration using `prisma migrate diff`
+- Run `npm run db:reset` to reset local database and run all migrations
+- Run `npm run migrate:local` to apply new migrations only
+- Flyway runs via docker-compose before backend starts
+- Prisma schema is used ONLY for TypeScript type generation (`prisma generate`)
 
 **Production (Render):**
-- Flyway runs migrations via GitHub Actions (requires manual approval)
-- Copy Prisma-generated SQL from `prisma/migrations/` to `apps/backend/migrations/` folder in Flyway format (`V1__init.sql`, `V2__add_vendors.sql`)
+- GitHub Actions runs Flyway with manual approval gate
+- Migrations apply automatically after tests pass and approval granted
 - Flyway provides atomic, transactional migrations with rollback capability
 - Render auto-deploys backend and frontend when code is pushed to main
 
 **Migration Workflow:**
-1. Update `prisma/schema.prisma`
-2. Run `prisma migrate dev --name "descriptive_name"`
-3. Copy generated SQL to `apps/backend/migrations/VXXX__descriptive_name.sql` for Flyway
-4. Commit both prisma schema and migration files
-5. Push to GitHub - Tests run automatically
-6. Approve migrations in GitHub Actions UI
-7. Migrations run on production database
-8. Render auto-deploys backend and frontend
+1. Write SQL migration file in `apps/backend/migrations/V{version}__{description}.sql`
+2. Update `apps/backend/prisma/schema.prisma` to match (for TypeScript types)
+3. Run `npm run generate --workspace=apps/backend` to regenerate Prisma client
+4. Test locally with `npm run db:reset --workspace=apps/backend`
+5. Commit both migration SQL and Prisma schema
+6. Push to GitHub - Tests run automatically
+7. Approve migrations in GitHub Actions UI
+8. Migrations run on production database
+9. Render auto-deploys backend and frontend
+
+**🚨 CRITICAL: Prisma is for Types Only**
+- NEVER use `prisma migrate` commands - all migrations are Flyway SQL files
+- NEVER use `prisma db push` - it creates schema drift
+- The Prisma schema must stay in sync with Flyway migrations manually
+- Run `npm run generate` after schema changes to update TypeScript types
 
 ## Domain Model
 
@@ -157,13 +165,14 @@ See `property-management-domain-model.md` for detailed entity relationships and 
 
 ## Development Commands
 
-### Backend (Node/Express + Prisma)
+### Backend (Node/Express + Flyway + Prisma)
 
 ```bash
-# Database migrations
-npm run migrate:dev          # Create and apply migration locally
-npm run migrate:deploy       # Apply migrations (production)
-npm run migrate:status       # Check migration status
+# Database migrations (via Flyway in Docker)
+npm run db:reset             # Reset database and run all migrations
+npm run migrate:local        # Run pending migrations only
+npm run migrate:info         # Show migration status
+npm run migrate:validate     # Validate migration files
 npm run generate             # Regenerate Prisma client after schema changes
 
 # Development
@@ -206,12 +215,19 @@ npm run type-check           # TypeScript type checking
 ### Docker (Local Development)
 
 ```bash
-docker-compose up            # Start all services (postgres, redis, backend, frontend)
+docker-compose up            # Start all services (postgres, redis, flyway, backend, frontend)
 docker-compose up -d         # Start in background
 docker-compose down          # Stop all services
+docker-compose down -v       # Stop all services and remove volumes (full reset)
 docker-compose logs -f       # Follow logs from all services
 docker-compose ps            # Check running services
 ```
+
+**Service Startup Order:**
+1. PostgreSQL starts with health check
+2. Flyway runs migrations from `apps/backend/migrations/`
+3. Backend waits for Flyway, then runs `npx prisma generate` and starts server
+4. Frontend starts after backend is ready
 
 ## Authentication
 
@@ -438,7 +454,8 @@ If you find yourself writing similar logic that exists elsewhere:
 ## Important Notes
 
 - **ALWAYS check existing utilities before writing new code** - See "Frontend Utilities" section above. Use what's in the pantry before buying groceries!
-- **NEVER use `prisma db push` for schema changes** - ALWAYS use `prisma migrate dev` to create proper migration files. Using `db push` causes schema drift and production errors.
+- **NEVER use Prisma migration commands** - Write Flyway SQL migrations directly in `apps/backend/migrations/`. Prisma is for TypeScript types only.
+- **NEVER use `prisma db push`** - It creates schema drift between local and production.
 - **Backend leads frontend** - API contract is source of truth, frontend adapts to backend
 - MaintenanceWork is the central aggregate root - most features revolve around tracking work and costs
 - All material expenses, mileage, and labor must be tracked for tax deduction reporting

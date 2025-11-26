@@ -31,6 +31,21 @@ services:
       timeout: 5s
       retries: 5
 
+  flyway:
+    image: flyway/flyway:9.22
+    container_name: upkeep-flyway
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/backend/migrations:/flyway/sql
+    command: migrate
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://postgres:5432/upkeep_dev
+      - FLYWAY_USER=postgres
+      - FLYWAY_PASSWORD=postgres
+      - FLYWAY_BASELINE_ON_MIGRATE=true
+
   backend:
     build:
       context: .
@@ -50,10 +65,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
     volumes:
       - ./apps/backend/src:/app/apps/backend/src
       - ./apps/backend/prisma:/app/apps/backend/prisma
-    command: sh -c "npx prisma migrate deploy && node dist/server.js"
+    command: sh -c "npx prisma generate && node dist/server.js"
 
   frontend:
     build:
