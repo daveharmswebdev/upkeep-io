@@ -43,6 +43,7 @@ describe('AddOccupantToLeaseUseCase', () => {
       },
     ],
     occupants: [],
+    pets: [],
   };
 
   beforeEach(() => {
@@ -102,6 +103,7 @@ describe('AddOccupantToLeaseUseCase', () => {
             },
           },
         ],
+        pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockLease);
@@ -256,6 +258,7 @@ describe('AddOccupantToLeaseUseCase', () => {
             },
           },
         ],
+        pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockLease);
@@ -317,6 +320,7 @@ describe('AddOccupantToLeaseUseCase', () => {
             },
           },
         ],
+        pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockLease);
@@ -383,6 +387,7 @@ describe('AddOccupantToLeaseUseCase', () => {
             },
           },
         ],
+        pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockLease);
@@ -445,6 +450,7 @@ describe('AddOccupantToLeaseUseCase', () => {
             },
           },
         ],
+        pets: [],
       };
 
       mockLeaseRepository.findById.mockResolvedValue(mockLease);

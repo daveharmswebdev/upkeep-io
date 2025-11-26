@@ -39,6 +39,7 @@ model User {
   persons      Person[]
   leases       Lease[]
   profile      Profile?
+  notes        Note[]
 
   @@map("users")
 }
@@ -188,4 +189,23 @@ model Profile {
 
   @@index([userId])
   @@map("profiles")
+}
+
+model Note {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  entityType String    @map("entity_type") @db.VarChar(50)
+  entityId   String    @map("entity_id") @db.Uuid
+  content    String    @db.Text
+  deletedAt  DateTime? @map("deleted_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entityType, entityId], name: "notes_entity_lookup")
+  @@index([deletedAt])
+  @@map("notes")
 }

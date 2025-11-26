@@ -295,7 +295,17 @@
               <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Notes</p>
               <p class="text-gray-700 dark:text-gray-300">{{ activeLease.notes }}</p>
             </div>
+
+            <!-- Lease Notes Section -->
+            <div class="border-t dark:border-gray-700 pt-4">
+              <NoteList entityType="lease" :entityId="activeLease.id" />
+            </div>
           </div>
+        </div>
+
+        <!-- Property Notes Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:border dark:border-gray-700 p-8">
+          <NoteList entityType="property" :entityId="propertyId" />
         </div>
       </div>
     </main>
@@ -351,6 +361,7 @@ import { usePropertyStore } from '@/stores/property';
 import { useLeaseStore } from '@/stores/lease';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import VoidLeaseModal from '@/components/VoidLeaseModal.vue';
+import NoteList from '@/components/notes/NoteList.vue';
 
 const route = useRoute();
 const router = useRouter();

@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
 
 // Domain interfaces
-import { IUserRepository, IPropertyRepository, IProfileRepository } from './domain/repositories';
+import { IUserRepository, IPropertyRepository, IProfileRepository, INoteRepository } from './domain/repositories';
 import { IPersonRepository } from './domain/repositories/IPersonRepository';
 import { ILeaseRepository } from './domain/repositories/ILeaseRepository';
 import { IPasswordHasher, ITokenGenerator, ILogger } from './domain/services';
@@ -10,6 +10,7 @@ import { IPasswordHasher, ITokenGenerator, ILogger } from './domain/services';
 import { PrismaUserRepository, PrismaPropertyRepository, PrismaProfileRepository } from './infrastructure/repositories';
 import { PrismaPersonRepository } from './infrastructure/repositories/PrismaPersonRepository';
 import { PrismaLeaseRepository } from './infrastructure/repositories/PrismaLeaseRepository';
+import { PrismaNoteRepository } from './infrastructure/repositories/PrismaNoteRepository';
 import { BcryptPasswordHasher, JwtTokenGenerator, ConsoleLogger } from './infrastructure/services';
 
 // Use cases
@@ -34,10 +35,12 @@ import { AddOccupantToLeaseUseCase } from './application/lease/AddOccupantToLeas
 import { RemoveOccupantFromLeaseUseCase } from './application/lease/RemoveOccupantFromLeaseUseCase';
 import { AddPetToLeaseUseCase } from './application/lease/AddPetToLeaseUseCase';
 import { RemovePetFromLeaseUseCase } from './application/lease/RemovePetFromLeaseUseCase';
+import { CreateNoteUseCase, UpdateNoteUseCase, DeleteNoteUseCase, ListNotesForEntityUseCase } from './application/note';
 
 // Controllers
 import { AuthController, PropertyController, ProfileController } from './presentation/controllers';
 import { LeaseController } from './presentation/controllers/LeaseController';
+import { NoteController } from './presentation/controllers/NoteController';
 
 export function createContainer(): Container {
   const container = new Container();
@@ -66,6 +69,11 @@ export function createContainer(): Container {
   container
     .bind<IProfileRepository>('IProfileRepository')
     .to(PrismaProfileRepository)
+    .inTransientScope();
+
+  container
+    .bind<INoteRepository>('INoteRepository')
+    .to(PrismaNoteRepository)
     .inTransientScope();
 
   // Bind services
@@ -109,11 +117,17 @@ export function createContainer(): Container {
   container.bind(GetProfileUseCase).toSelf().inTransientScope();
   container.bind(UpdateProfileUseCase).toSelf().inTransientScope();
 
+  container.bind(CreateNoteUseCase).toSelf().inTransientScope();
+  container.bind(UpdateNoteUseCase).toSelf().inTransientScope();
+  container.bind(DeleteNoteUseCase).toSelf().inTransientScope();
+  container.bind(ListNotesForEntityUseCase).toSelf().inTransientScope();
+
   // Bind controllers
   container.bind(AuthController).toSelf().inTransientScope();
   container.bind(PropertyController).toSelf().inTransientScope();
   container.bind(LeaseController).toSelf().inTransientScope();
   container.bind(ProfileController).toSelf().inTransientScope();
+  container.bind(NoteController).toSelf().inTransientScope();
 
   return container;
 }
