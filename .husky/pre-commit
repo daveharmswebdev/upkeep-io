@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Check if apps/backend/tsconfig.json is being committed
+if git diff --cached --name-only | grep -q "apps/backend/tsconfig.json"; then
+    echo ""
+    echo "⚠️  WARNING: You are modifying apps/backend/tsconfig.json"
+    echo ""
+    echo "This file contains PROTECTED CONFIGURATION settings that are critical"
+    echo "for production deployment. Incorrect changes will break Render deploys."
+    echo ""
+    echo "Running validation..."
+    echo ""
+
+    # Run validation script
+    ./scripts/validate-tsconfig.sh
+
+    if [ $? -ne 0 ]; then
+        echo ""
+        echo "❌ COMMIT BLOCKED: tsconfig.json validation failed"
+        echo ""
+        echo "Please review the errors above and fix them before committing."
+        echo "See CLAUDE.md 'PROTECTED CONFIGURATION' section for details."
+        echo ""
+        exit 1
+    fi
+
+    echo ""
+    echo "✅ tsconfig.json validation passed"
+    echo ""
+fi

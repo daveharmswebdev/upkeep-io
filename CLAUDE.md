@@ -130,6 +130,11 @@ The following settings in `apps/backend/tsconfig.json` are critical for producti
 2. Check for stale `.js` files: `find libs -path "*/src/*.js" -delete`
 3. Do NOT change `rootDir` or path aliases in `apps/backend/tsconfig.json`
 
+**Automated Safeguards:**
+- **Pre-commit hook:** Warns and validates when `apps/backend/tsconfig.json` is modified
+- **CI validation:** GitHub Actions runs `scripts/validate-tsconfig.sh` before tests
+- **Validation script:** Run `./scripts/validate-tsconfig.sh` to manually check settings
+
 **Common Issues:**
 - **ES Module errors in backend:** Remove `"type": "module"` from `libs/*/package.json`
 - **Stale .js files:** Run `find libs -path "*/src/*.js" -delete` to clean up

@@ -18,10 +18,12 @@
     "test:unit": "npm run test:unit --workspaces --if-present",
     "test:integration": "npm run test:integration --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "clean": "rm -rf node_modules apps/*/node_modules libs/*/node_modules apps/*/dist libs/*/dist"
+    "clean": "rm -rf node_modules apps/*/node_modules libs/*/node_modules apps/*/dist libs/*/dist",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "husky": "^9.1.7",
     "typescript": "^5.3.3"
   },
   "engines": {
