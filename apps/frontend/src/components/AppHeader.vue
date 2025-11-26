@@ -63,18 +63,9 @@
           </RouterLink>
 
           <!-- User menu -->
-          <div class="flex items-center gap-4 ml-4 pl-4 border-l border-primary-300">
+          <div class="flex items-center gap-4 ml-4 pl-4 border-l border-primary-300 dark:border-gray-600">
             <ThemeToggle />
-            <span class="text-sm">{{ user?.name }}</span>
-            <button
-              @click="handleLogout"
-              class="bg-primary-400 hover:bg-primary-600 px-4 py-2 rounded-md transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2 focus:ring-offset-primary-500 flex items-center gap-2"
-            >
-              <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Logout
-            </button>
+            <UserMenu />
           </div>
         </nav>
       </div>
@@ -108,14 +99,25 @@
         </RouterLink>
 
         <!-- Mobile User menu -->
-        <div class="pt-2 mt-2 border-t border-primary-300">
+        <div class="pt-2 mt-2 border-t border-primary-300 dark:border-gray-600">
           <div class="flex items-center gap-3 mb-3 px-3">
             <ThemeToggle />
-            <div class="text-sm">{{ user?.name }}</div>
           </div>
+          <!-- Profile Link (Mobile) -->
+          <RouterLink
+            to="/profile"
+            @click="mobileMenuOpen = false"
+            class="block py-3 px-3 hover:bg-primary-400 dark:hover:bg-gray-700 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-100 dark:focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-primary-500 dark:focus:ring-offset-gray-800 flex items-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            My Profile
+          </RouterLink>
+          <!-- Logout Button (Mobile) -->
           <button
             @click="handleLogout"
-            class="w-full py-3 px-3 bg-primary-400 hover:bg-primary-600 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2 focus:ring-offset-primary-500 flex items-center gap-2"
+            class="w-full py-3 px-3 bg-primary-400 hover:bg-primary-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-primary-100 dark:focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-primary-500 dark:focus:ring-offset-gray-800 flex items-center gap-2 mt-2"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -133,8 +135,9 @@ import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import ThemeToggle from '@/components/ThemeToggle.vue';
+import UserMenu from '@/components/UserMenu.vue';
 
-const { isAuthenticated, user, logout } = useAuth();
+const { isAuthenticated, logout } = useAuth();
 const mobileMenuOpen = ref(false);
 
 const handleLogout = logout;
