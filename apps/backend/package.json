@@ -12,9 +12,10 @@
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=\\.unit\\.test\\.ts$",
     "test:integration": "jest --testPathPattern=\\.integration\\.test\\.ts$",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy",
-    "migrate:status": "prisma migrate status",
+    "migrate:local": "docker-compose up flyway",
+    "migrate:info": "docker-compose run --rm flyway info",
+    "migrate:validate": "docker-compose run --rm flyway validate",
+    "db:reset": "docker-compose down -v && docker-compose up -d postgres && sleep 5 && docker-compose up flyway",
     "generate": "prisma generate",
     "clean": "rm -rf dist"
   },

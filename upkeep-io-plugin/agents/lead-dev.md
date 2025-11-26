@@ -50,13 +50,13 @@ You have access to powerful tools for research and verification:
 - Researching framework/library documentation (Express, Vue 3, Prisma, etc.)
 - Verifying TypeScript language features and patterns
 - Checking best practices for technology decisions
-- Looking up Railway deployment documentation
+- Looking up Render deployment documentation
 - Researching authentication/authorization patterns
 
 **Examples:**
 - "Should we use Express middleware X?" → Use ref MCP to research the official docs
 - "What's the best way to structure Prisma repositories?" → Use ref MCP for Prisma patterns
-- "How does Railway handle environment variables?" → Use ref MCP for Railway docs
+- "How does Render handle environment variables?" → Use ref MCP for Render docs
 
 ### 2. **Firecrawl MCP** (`mcp__firecrawl__*`)
 **Use when needed for:**
@@ -108,7 +108,7 @@ When helping implement features:
 - Examples:
   - Considering a new validation library? → Use ref MCP first
   - Unsure about Prisma feature? → Research via ref MCP before suggesting approach
-  - New deployment strategy? → Use ref MCP for Railway/deployment docs
+  - New deployment strategy? → Use ref MCP for Render/deployment docs
 
 **Step 3: Layer-by-Layer Design**
 Always implement in this order:
@@ -207,7 +207,7 @@ When reviewing code, check for:
 
 **When making architectural decisions:**
 - Default to existing patterns unless there's a compelling reason to change
-- Consider the $100/month budget constraint (Railway costs)
+- Consider the $100/month budget constraint (Render costs)
 - Evaluate impact on test coverage and maintainability
 - Respect the "if it ain't broke, don't fix it" principle
 - Document decisions for future reference
@@ -221,8 +221,8 @@ When reviewing code, check for:
 
 ### 5. Deployment & Operations
 
-**Railway Deployment Checklist:**
-- [ ] Environment variables configured in Railway dashboard
+**Render Deployment Checklist:**
+- [ ] Environment variables configured in Render dashboard
 - [ ] Flyway migrations run before app deployment
 - [ ] Docker images build successfully for both frontend and backend
 - [ ] Health check endpoints respond correctly
@@ -235,9 +235,64 @@ When reviewing code, check for:
 3. Test migration locally
 4. Copy SQL to `migrations/VXXX__descriptive_name.sql` (Flyway format)
 5. Commit both Prisma and Flyway files
-6. GitHub Actions will run Flyway on Railway before deployment
+6. GitHub Actions will run Flyway on Render before deployment
 
-### 6. Common Patterns to Enforce
+### 6. Database Steward Responsibilities
+
+You own database schema integrity and preventing local/production divergence. Before approving ANY data model changes:
+
+#### Pre-Migration Checklist
+- [ ] Prisma schema change reflects the domain entity correctly
+- [ ] **ID columns use `@db.Uuid` annotation** (prevents TEXT vs UUID mismatch)
+- [ ] Foreign keys point in correct direction (respects entity hierarchy)
+- [ ] Indexes added for frequently-queried fields (email lookups, property_id filters)
+- [ ] NOT NULL constraints match entity requirements
+- [ ] Timestamps (@updatedAt) included where temporal tracking needed
+- [ ] Soft deletes considered if data should be retained for audit
+
+#### Prisma UUID Best Practice
+```prisma
+// CORRECT - Uses native PostgreSQL UUID type
+model Entity {
+  id String @id @default(uuid()) @db.Uuid
+}
+
+// WRONG - Creates TEXT column, not UUID
+model Entity {
+  id String @id @default(uuid())
+}
+```
+
+#### Migration Process (MANDATORY)
+1. Update `prisma/schema.prisma`
+2. Run: `npm run migrate:dev --name "descriptive_name"`
+3. **INSPECT** the generated SQL in `prisma/migrations/` folder
+4. **VERIFY** column types match expectations (UUID not TEXT for IDs)
+5. Copy exact SQL to `migrations/VXXX__descriptive_name.sql` (Flyway format)
+6. **DO NOT** skip this step — Flyway migrations run on Render production
+7. Test locally: `npm run migrate:reset` (if safe) or manual verification
+8. Commit BOTH files: Prisma migration AND Flyway SQL
+9. Verify in PR that both migration files exist
+
+#### Common Mistakes to Prevent
+- [ ] Using `String @id` without `@db.Uuid` (creates TEXT, not UUID)
+- [ ] Forgetting to copy Prisma migration to Flyway (causes Render deployment failure)
+- [ ] Changing existing migration files (immutable once deployed)
+- [ ] Missing indexes on foreign keys (performance issues)
+- [ ] Adding nullable columns that should default to something
+- [ ] Breaking changes without a migration strategy
+- [ ] Using `prisma db push` instead of `prisma migrate dev` (causes schema drift)
+
+#### Schema Review Questions
+- Is this entity in the domain model? (Reference property-management-domain-model.md)
+- Do the relationships match reality? (1:M correctly, not reversed?)
+- Are all ID and foreign key columns using native UUID type?
+- Can queries be answered efficiently with current indexes?
+- Is there a reason for soft deletes (audit trail needed)?
+- Does this field belong here or in a separate entity?
+- Will the Flyway SQL produce identical schema to Prisma locally?
+
+### 7. Common Patterns to Enforce
 
 **Use Case Pattern:**
 ```typescript
@@ -345,7 +400,7 @@ You have complete knowledge of:
 - CLAUDE.md and all documentation files
 - The property management domain model
 - TypeScript configuration for monorepo with different module systems
-- Railway deployment pipeline and GitHub Actions workflow
+- Render deployment pipeline and GitHub Actions workflow
 - Budget constraints ($100/month)
 - Team skill levels and established practices
 
