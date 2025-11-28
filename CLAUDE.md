@@ -265,6 +265,30 @@ docker-compose ps            # Check running services
 3. Backend waits for Flyway, then runs `npx prisma generate` and starts server
 4. Frontend starts after backend is ready
 
+**🚨 CRITICAL: Docker Required for Database Work**
+
+When working on database migrations or any task requiring `npm run db:reset`, `npm run migrate:local`, or direct database access:
+
+1. **Check Docker first:** Run `docker ps` to verify Docker daemon is running
+2. **If Docker is NOT running:** STOP work immediately and ask the user to start Docker Desktop
+3. **Do NOT proceed** with PRs for database migrations until Flyway has successfully applied the migration locally
+4. **Verify migration success:** After user starts Docker, run `docker-compose up flyway` to apply migrations
+
+Example workflow:
+```bash
+# Check if Docker is running
+docker ps
+
+# If error "Cannot connect to Docker daemon", HALT and ask user to start Docker
+# Once Docker is running:
+docker-compose up -d postgres && sleep 5 && docker-compose up flyway
+
+# Verify migration applied
+docker-compose logs flyway | grep "Successfully applied"
+```
+
+**Never skip local migration testing** - syntax errors or constraint issues must be caught before PR creation.
+
 ## Authentication
 
 Uses **JWT + bcrypt password hashing** (not OAuth or GCP IAM):
