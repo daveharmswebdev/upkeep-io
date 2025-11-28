@@ -1,13 +1,13 @@
 import { Container } from 'inversify';
 
 // Domain interfaces
-import { IUserRepository, IPropertyRepository, IProfileRepository, INoteRepository } from './domain/repositories';
+import { IUserRepository, IPropertyRepository, IProfileRepository, INoteRepository, IReceiptRepository } from './domain/repositories';
 import { IPersonRepository } from './domain/repositories/IPersonRepository';
 import { ILeaseRepository } from './domain/repositories/ILeaseRepository';
 import { IPasswordHasher, ITokenGenerator, ILogger } from './domain/services';
 
 // Infrastructure implementations
-import { PrismaUserRepository, PrismaPropertyRepository, PrismaProfileRepository } from './infrastructure/repositories';
+import { PrismaUserRepository, PrismaPropertyRepository, PrismaProfileRepository, PrismaReceiptRepository } from './infrastructure/repositories';
 import { PrismaPersonRepository } from './infrastructure/repositories/PrismaPersonRepository';
 import { PrismaLeaseRepository } from './infrastructure/repositories/PrismaLeaseRepository';
 import { PrismaNoteRepository } from './infrastructure/repositories/PrismaNoteRepository';
@@ -36,6 +36,13 @@ import { RemoveOccupantFromLeaseUseCase } from './application/lease/RemoveOccupa
 import { AddPetToLeaseUseCase } from './application/lease/AddPetToLeaseUseCase';
 import { RemovePetFromLeaseUseCase } from './application/lease/RemovePetFromLeaseUseCase';
 import { CreateNoteUseCase, UpdateNoteUseCase, DeleteNoteUseCase, ListNotesForEntityUseCase } from './application/note';
+import {
+  CreateReceiptUseCase,
+  GetReceiptByIdUseCase,
+  ListReceiptsUseCase,
+  UpdateReceiptUseCase,
+  DeleteReceiptUseCase,
+} from './application/receipt';
 
 // Controllers
 import { AuthController, PropertyController, ProfileController } from './presentation/controllers';
@@ -74,6 +81,11 @@ export function createContainer(): Container {
   container
     .bind<INoteRepository>('INoteRepository')
     .to(PrismaNoteRepository)
+    .inTransientScope();
+
+  container
+    .bind<IReceiptRepository>('IReceiptRepository')
+    .to(PrismaReceiptRepository)
     .inTransientScope();
 
   // Bind services
@@ -121,6 +133,12 @@ export function createContainer(): Container {
   container.bind(UpdateNoteUseCase).toSelf().inTransientScope();
   container.bind(DeleteNoteUseCase).toSelf().inTransientScope();
   container.bind(ListNotesForEntityUseCase).toSelf().inTransientScope();
+
+  container.bind(CreateReceiptUseCase).toSelf().inTransientScope();
+  container.bind(GetReceiptByIdUseCase).toSelf().inTransientScope();
+  container.bind(ListReceiptsUseCase).toSelf().inTransientScope();
+  container.bind(UpdateReceiptUseCase).toSelf().inTransientScope();
+  container.bind(DeleteReceiptUseCase).toSelf().inTransientScope();
 
   // Bind controllers
   container.bind(AuthController).toSelf().inTransientScope();
