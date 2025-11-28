@@ -71,7 +71,8 @@ Upkeep.io is a property management system built to track maintenance activities,
 ### For DevOps/Deployment
 1. Read [Deployment Lessons Learned](lessons-learned/deployment-lessons.md)
 2. Follow [Render Deployment Guide](guides/deployment/render-deployment.md)
-3. Keep [Troubleshooting Guide](guides/deployment/troubleshooting.md) handy
+3. Review [Branch Protection Setup](guides/deployment/github-branch-protection.md)
+4. Keep [Troubleshooting Guide](guides/deployment/troubleshooting.md) handy
 
 ### For Architects/Tech Leads
 1. Review [Architecture Decisions](lessons-learned/architecture-decisions.md)
