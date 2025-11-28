@@ -8,3 +8,4 @@ export type { LeaseOccupant } from './LeaseOccupant';
 export type { LeasePet, PetSpecies } from './LeasePet';
 export type { Profile, CreateProfileData } from './Profile';
 export type { Note, CreateNoteData, UpdateNoteData, NoteEntityType } from './Note';
+export type { Receipt, CreateReceiptData, UpdateReceiptData, ReceiptCategory } from './Receipt';
